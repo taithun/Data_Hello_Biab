@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI API Pricing Analysis 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f8f7f2; color: #2c2c2a; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #73726c; margin-bottom: 20px; }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .metric { background: #fff; border: 0.5px solid #d3d1c7; border-radius: 10px; padding: 14px; }
+  .metric-label { font-size: 11px; color: #73726c; margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 600; color: #1a1a18; }
+  .metric-sub { font-size: 11px; color: #b4b2a9; margin-top: 2px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .tab { padding: 6px 16px; border: 0.5px solid #b4b2a9; border-radius: 20px; font-size: 12px; cursor: pointer; background: transparent; color: #73726c; }
+  .tab.active { background: #e6f1fb; color: #185fa5; border-color: transparent; }
+  .chart-card { background: #fff; border: 0.5px solid #d3d1c7; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .chart-title { font-size: 12px; color: #5f5e5a; margin-bottom: 10px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; font-size: 12px; color: #73726c; }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .note { font-size: 11px; color: #b4b2a9; margin-top: 8px; }
+  .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .strat { background: #fff; border: 0.5px solid #d3d1c7; border-left: 3px solid; border-radius: 0 10px 10px 0; padding: 12px 14px; }
+  .strat-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .strat-desc { font-size: 12px; color: #5f5e5a; line-height: 1.5; }
+  .section-label { font-size: 12px; color: #73726c; font-weight: 500; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<h1>การวิเคราะห์ค่า AI API: เมื่อ Subsidy หมดลง</h1>
+<p class="subtitle">ข้อมูล ณ มีนาคม 2026 — อ้างอิง CostLayer, UptechStudio, IntuitionLabs</p>
+
+<!-- Metrics -->
+<div class="metrics">
+  <div class="metric">
+    <div class="metric-label">OpenAI burn rate (2026)</div>
+    <div class="metric-value">$14B</div>
+    <div class="metric-sub">ต่อปี (ขาดทุน)</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Anthropic ระดมทุนสะสม</div>
+    <div class="metric-value">$33B+</div>
+    <div class="metric-sub">VC Subsidy</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">ราคาที่ควรเป็น (ต้นทุนจริง)</div>
+    <div class="metric-value">3–10×</div>
+    <div class="metric-sub">ของราคาปัจจุบัน</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">โมเดลปรับราคา มี.ค. 2026</div>
+    <div class="metric-value">114</div>
+    <div class="metric-sub">จาก 483 โมเดล (24%)</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="showChart('price')">ราคาปัจจุบัน vs ต้นทุนจริง</button>
+  <button class="tab" onclick="showChart('forecast')">แนวโน้มราคาในอนาคต</button>
+  <button class="tab" onclick="showChart('risk')">ผลกระทบต่อองค์กร</button>
+</div>
+
+<!-- Chart 1 -->
+<div id="chart-price" class="chart-card">
+  <div class="chart-title">ราคา API ปัจจุบัน vs ต้นทุนจริงโดยประมาณ (USD / 1M output tokens)</div>
+  <div class="legend">
+    <span><span class="sw" style="background:#378ADD"></span>ราคาตลาดปัจจุบัน (Subsidized)</span>
+    <span><span class="sw" style="background:#E24B4A; opacity:0.6"></span>ต้นทุนจริงโดยประมาณ (3–10×)</span>
+  </div>
+  <div style="position: relative; width: 100%; height: 280px;">
+    <canvas id="priceChart"></canvas>
+  </div>
+  <div class="note">* ต้นทุนจริงประมาณจาก analyst estimates — ราคาที่เรียกเก็บยังต่ำกว่าต้นทุน inference จริง</div>
+</div>
+
+<!-- Chart 2 -->
+<div id="chart-forecast" class="chart-card" style="display:none">
+  <div class="chart-title">แนวโน้มราคา AI API ที่คาดการณ์ 2024–2030 (USD / 1M tokens, frontier model)</div>
+  <div class="legend">
+    <span><span class="sw" style="background:#378ADD"></span>ราคาตลาด (Subsidized)</span>
+    <span><span class="sw" style="background:#E24B4A"></span>ราคา Sustainable (คาดการณ์)</span>
+    <span><span class="sw" style="background:#EF9F27; opacity:0.4"></span>ช่วงความไม่แน่นอน</span>
+  </div>
+  <div style="position: relative; width: 100%; height: 280px;">
+    <canvas id="forecastChart"></canvas>
+  </div>
+  <div class="note">* IPO ของ OpenAI/Anthropic และการรวมตัวของตลาด (market consolidation) คือปัจจัยเร่งหลัก</div>
+</div>
+
+<!-- Chart 3 -->
+<div id="chart-risk" class="chart-card" style="display:none">
+  <div class="chart-title">ผลกระทบต้นทุนองค์กรหาก API ราคาเพิ่มขึ้น (สมมติ 50M tokens/เดือน)</div>
+  <div class="legend">
+    <span><span class="sw" style="background:#1D9E75"></span>ปัจจุบัน</span>
+    <span><span class="sw" style="background:#EF9F27"></span>+3× (กรณีต่ำสุด)</span>
+    <span><span class="sw" style="background:#E24B4A"></span>+10× (กรณีสูงสุด)</span>
+  </div>
+  <div style="position: relative; width: 100%; height: 280px;">
+    <canvas id="riskChart"></canvas>
+  </div>
+</div>
+
+<!-- Strategy -->
+<div class="section-label" style="margin-top: 8px;">กลยุทธ์รับมือ (Cost Resilience Strategies)</div>
+<div class="strategy-grid">
+  <div class="strat" style="border-color:#1D9E75">
+    <div class="strat-title">Prompt Caching</div>
+    <div class="strat-desc">ลดต้นทุนสูงสุด 90% สำหรับ repeated context เช่น system prompts และ regulation docs ใน RAG system</div>
+  </div>
+  <div class="strat" style="border-color:#1D9E75">
+    <div class="strat-title">Batch Processing</div>
+    <div class="strat-desc">ลดได้ 50% สำหรับ non-realtime workloads เช่น การ index เอกสารระเบียบ</div>
+  </div>
+  <div class="strat" style="border-color:#EF9F27">
+    <div class="strat-title">Multi-provider Strategy</div>
+    <div class="strat-desc">ออกแบบระบบให้สลับ provider ได้ผ่าน OpenRouter / Dify multi-model ไม่ผูกติดรายเดียว</div>
+  </div>
+  <div class="strat" style="border-color:#E24B4A">
+    <div class="strat-title">Self-hosting Open-source</div>
+    <div class="strat-desc">สำหรับ workload สูง พิจารณา Llama / Qwen บน on-premise เพื่อควบคุมต้นทุนระยะยาว</div>
+  </div>
+</div>
+
+<script>
+const gridC = 'rgba(0,0,0,0.06)';
+const tickC = '#888';
+
+function baseOpts() {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridC }, ticks: { color: tickC, font: { size: 11 } } },
+      y: { grid: { color: gridC }, ticks: { color: tickC, font: { size: 11 }, callback: v => '$' + v } }
+    }
+  };
+}
+
+new Chart(document.getElementById('priceChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Grok 4.1\n(xAI)', 'Claude\nSonnet', 'Gemini\n3 Flash', 'GPT-5.2', 'Gemini\n3.1 Pro'],
+    datasets: [
+      { label: 'ราคาตลาด', data: [0.50, 3.00, 3.00, 14.00, 12.00], backgroundColor: '#378ADD', borderRadius: 4 },
+      { label: 'ต้นทุนจริง', data: [5.0, 15.0, 9.0, 42.0, 36.0], backgroundColor: 'rgba(226,75,74,0.25)', borderColor: '#E24B4A', borderWidth: 1.5, borderRadius: 4 }
+    ]
+  },
+  options: { ...baseOpts(), plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toFixed(2) + ' / 1M tokens' } } } }
+});
+
+new Chart(document.getElementById('forecastChart'), {
+  type: 'line',
+  data: {
+    labels: ['2024', '2025', '2026', '2027', '2028', '2029', '2030'],
+    datasets: [
+      { label: 'ราคาตลาด', data: [30, 15, 14, 16, 22, 35, 55], borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.08)', fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2 },
+      { label: 'ราคา Sustainable', data: [null, null, 14, 30, 60, 90, 120], borderColor: '#E24B4A', borderDash: [5, 4], backgroundColor: 'transparent', tension: 0.4, pointRadius: 4, borderWidth: 2 },
+      { label: 'ช่วงความไม่แน่นอน', data: [null, null, 14, 45, 90, 130, 140], borderColor: 'transparent', backgroundColor: 'rgba(239,159,39,0.12)', fill: '-1', tension: 0.4, pointRadius: 0, borderWidth: 0 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y + ' / 1M tokens' } } }, scales: { x: { grid: { color: gridC }, ticks: { color: tickC, font: { size: 11 } } }, y: { grid: { color: gridC }, ticks: { color: tickC, font: { size: 11 }, callback: v => '$' + v } } } }
+});
+
+new Chart(document.getElementById('riskChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Claude Sonnet', 'GPT-class', 'Gemini Pro'],
+    datasets: [
+      { label: 'ปัจจุบัน', data: [150, 700, 600], backgroundColor: '#1D9E75', borderRadius: 4 },
+      { label: '+3×', data: [450, 2100, 1800], backgroundColor: '#EF9F27', borderRadius: 4 },
+      { label: '+10×', data: [1500, 7000, 6000], backgroundColor: '#E24B4A', borderRadius: 4 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toLocaleString() + ' / เดือน' } } }, scales: { x: { grid: { color: gridC }, ticks: { color: tickC, font: { size: 11 } } }, y: { grid: { color: gridC }, ticks: { color: tickC, font: { size: 11 }, callback: v => '$' + v.toLocaleString() } } } }
+});
+
+function showChart(id) {
+  ['price','forecast','risk'].forEach(k => {
+    document.getElementById('chart-'+k).style.display = k === id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['price','forecast','risk'][i] === id);
+  });
+}
+</script>
+</body>
+</html>

@@ -862,30 +862,76 @@
       </div>
     </div>
 
+    <div class="token-flow" style="margin-bottom:20px;">
+      <h3 style="font-size:13px;font-weight:500;margin-bottom:4px;">Orchestrator (เพิ่มเมื่อมี หลาย KB — Phase 1 และ Phase 2)</h3>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:16px;">เมื่อมี 4+ KB (PDPA, Cyber, จัดหา, Data Gov) Orchestrator จะทำงานก่อน Step 1 เพื่อ Route Query ไปยัง KB ที่ถูกต้อง</p>
+
+      <div class="flow-step">
+        <div class="flow-num" style="background:#854F0B;color:#FAEEDA;">0a</div>
+        <div class="flow-content">
+          <div class="flow-title">Classifier LLM (Single-KB Query — Phase 1)</div>
+          <div class="flow-detail">รับ User Query → จำแนกว่าเกี่ยวกับ KB ใด (PDPA / Cyber / จัดหา / Data Gov)<br>Input: ~300 tokens (query + category prompt) | Output: ~50 tokens (ชื่อ KB)</div>
+          <div class="flow-cost">Input: 300 × $3/M = $0.0009 | Output: 50 × $15/M = $0.00075 | รวม ~$0.00165 = ~0.061 ฿</div>
+        </div>
+        <div class="flow-bar-wrap">
+          <div style="font-size:10px;color:var(--text3);text-align:right;">+6% ของ base</div>
+          <div class="flow-bar-bg"><div class="flow-bar-fill" style="width:6%;background:#854F0B;height:6px;border-radius:3px;"></div></div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-num" style="background:#712B13;color:#FAECE7;">0b</div>
+        <div class="flow-content">
+          <div class="flow-title">Multi-level Classifier (Cross-KB Query — Phase 2 ~20% ของ queries)</div>
+          <div class="flow-detail">คำถามที่ Span หลาย KB เช่น "จัดซื้อ + การเงิน" → ต้องจำแนก 2 ระดับ + Trigger Multi-Retrieval<br>Input: ~400 tokens | Output: ~80 tokens | + ต้องวิ่ง Pipeline ซ้ำอีก 1 รอบสำหรับ KB ที่สอง</div>
+          <div class="flow-cost">Classifier: ~0.09 ฿ + Pipeline ที่สอง: ~0.984 ฿ | รวม Cross-KB query ~2.00 ฿ (แทน ~1.15 ฿)</div>
+        </div>
+        <div class="flow-bar-wrap">
+          <div style="font-size:10px;color:var(--text3);text-align:right;">+71% vs single</div>
+          <div class="flow-bar-bg"><div class="flow-bar-fill" style="width:71%;background:#712B13;height:6px;border-radius:3px;"></div></div>
+        </div>
+      </div>
+    </div>
+
     <div class="calc-block">
-      <h3>สรุปต้นทุน/Query</h3>
+      <h3>สรุปต้นทุน/Query — แยกตาม Phase และประเภท Query</h3>
       <table>
         <thead><tr><th>Step</th><th>Model</th><th>Input (tokens)</th><th>Output (tokens)</th><th>ราคา (USD)</th><th>ราคา (THB)</th><th>สัดส่วน</th></tr></thead>
         <tbody>
+          <tr><td colspan="7" style="background:var(--bg3);color:var(--text2);font-size:11px;padding:5px 10px;">Base Pipeline (ทุก Query)</td></tr>
           <tr><td>1. HyDE Generation</td><td class="td-mono">Claude Sonnet</td><td class="td-right">200</td><td class="td-right">300</td><td class="td-right td-mono">$0.00105</td><td class="td-right td-mono">~0.039 ฿</td><td class="td-right">4%</td></tr>
           <tr><td>2. Embedding (Large)</td><td class="td-mono">Embed Model</td><td class="td-right">300</td><td class="td-right">—</td><td class="td-right td-mono">$0.000039</td><td class="td-right td-mono">~0.001 ฿</td><td class="td-right">1%</td></tr>
           <tr><td>3. Retrieval</td><td class="td-mono">Vector DB</td><td class="td-right">—</td><td class="td-right">—</td><td class="td-right td-mono">~$0</td><td class="td-right td-mono">~0 ฿</td><td class="td-right">0%</td></tr>
           <tr><td>4. Rerank</td><td class="td-mono">Rerank Model</td><td class="td-right">3,000</td><td class="td-right">—</td><td class="td-right td-mono">$0.002</td><td class="td-right td-mono">~0.222 ฿</td><td class="td-right">22%</td></tr>
           <tr><td>5. Answer LLM</td><td class="td-mono">Claude Sonnet</td><td class="td-right">3,500</td><td class="td-right">600</td><td class="td-right td-mono">$0.0195</td><td class="td-right td-mono">~0.722 ฿</td><td class="td-right">73%</td></tr>
-          <tr class="total"><td colspan="4"><strong>รวมต่อ 1 Query</strong></td><td class="td-right td-mono"><strong>~$0.027</strong></td><td class="td-right td-mono"><strong>~0.984 ฿</strong></td><td class="td-right"><strong>100%</strong></td></tr>
+          <tr class="total"><td colspan="4"><strong>รวม Base Pipeline</strong></td><td class="td-right td-mono"><strong>~$0.0266</strong></td><td class="td-right td-mono"><strong>~0.984 ฿</strong></td><td class="td-right"><strong>100%</strong></td></tr>
+
+          <tr><td colspan="7" style="background:var(--bg3);color:var(--amber);font-size:11px;padding:5px 10px;">+ Orchestrator: Phase 1 — Single-KB Classifier (ทุก Query)</td></tr>
+          <tr><td>0a. Classifier LLM</td><td class="td-mono">Claude Sonnet</td><td class="td-right">300</td><td class="td-right">50</td><td class="td-right td-mono">$0.00165</td><td class="td-right td-mono">~0.061 ฿</td><td class="td-right">+6%</td></tr>
+          <tr class="total" style="background:var(--amber-dim);"><td colspan="4"><strong>รวม Phase 1 (Single-KB)</strong></td><td class="td-right td-mono"><strong>~$0.0282</strong></td><td class="td-right td-mono" style="color:var(--amber);"><strong>~1.045 ฿</strong></td><td class="td-right"><strong>—</strong></td></tr>
+
+          <tr><td colspan="7" style="background:var(--bg3);color:var(--red);font-size:11px;padding:5px 10px;">+ Orchestrator: Phase 2 — Cross-KB Query (~20% ของ queries)</td></tr>
+          <tr><td>0b. Multi-level Classifier</td><td class="td-mono">Claude Sonnet</td><td class="td-right">400</td><td class="td-right">80</td><td class="td-right td-mono">$0.0024</td><td class="td-right td-mono">~0.089 ฿</td><td class="td-right">—</td></tr>
+          <tr><td>Pipeline รอบที่ 2 (KB ที่สอง)</td><td class="td-mono">Full Pipeline</td><td class="td-right">~4,000</td><td class="td-right">~600</td><td class="td-right td-mono">~$0.027</td><td class="td-right td-mono">~0.984 ฿</td><td class="td-right">—</td></tr>
+          <tr class="total" style="background:var(--red-dim);"><td colspan="4"><strong>รวม Phase 2 (Cross-KB)</strong></td><td class="td-right td-mono"><strong>~$0.054</strong></td><td class="td-right td-mono" style="color:var(--red);"><strong>~2.00 ฿</strong></td><td class="td-right"><strong>—</strong></td></tr>
+
+          <tr><td colspan="7" style="background:var(--green-dim);color:var(--green);font-size:11px;padding:5px 10px;">Phase 2 Blended: 80% Single-KB × 1.15 ฿ + 20% Cross-KB × 2.00 ฿</td></tr>
+          <tr class="total" style="background:var(--green-dim);"><td colspan="4"><strong>Phase 2 Blended Average</strong></td><td class="td-right td-mono"><strong>—</strong></td><td class="td-right td-mono" style="color:var(--green);"><strong>~1.32 ฿</strong></td><td class="td-right"><strong>—</strong></td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="calc-block">
-      <h3>ต้นทุน API รายปี ตาม Users/วัน (Phase 1)</h3>
+      <h3>ต้นทุน API รายปี ตาม Users/วัน และ Phase</h3>
       <div class="formula">
-        <span class="comment">// สูตร: API Cost/ปี = Users/วัน × วันทำงาน × ราคา/Query + Infra</span><br>
-        API Cost/ปี <span class="op">=</span> users <span class="op">×</span> <span class="val">240</span> <span class="op">×</span> <span class="val">1.04</span> <span class="op">+</span> <span class="val">60,000</span><br><br>
-        <span class="comment">// ตัวอย่าง Realistic (200 users/วัน)</span><br>
-        API Cost <span class="op">=</span> <span class="val">200 × 240 × 1.04</span> <span class="op">=</span> <span class="val">49,920 ฿</span><br>
+        <span class="comment">// Phase 1 — Single-KB, Orchestrator รวม</span><br>
+        cost_p1 <span class="op">=</span> users <span class="op">×</span> <span class="val">240</span> <span class="op">×</span> <span class="val">1.045</span> <span class="op">+</span> <span class="val">60,000</span> <span class="comment">// 0.984 base + 0.061 orchestrator</span><br><br>
+        <span class="comment">// Phase 2 — Blended (80% single + 20% cross-KB)</span><br>
+        cost_p2 <span class="op">=</span> users <span class="op">×</span> <span class="val">240</span> <span class="op">×</span> <span class="val">1.32</span> <span class="op">+</span> <span class="val">96,000</span><br><br>
+        <span class="comment">// ตัวอย่าง Realistic Phase 1 (200 users/วัน)</span><br>
+        API Cost <span class="op">=</span> <span class="val">200 × 240 × 1.045</span> <span class="op">=</span> <span class="val">50,160 ฿</span><br>
         Infra+Maint <span class="op">=</span> <span class="val">60,000 ฿</span><br>
-        รวม <span class="op">=</span> <span class="val">109,920 ฿/ปี</span>
+        รวม <span class="op">=</span> <span class="val">110,160 ฿/ปี</span>
       </div>
       <div style="position:relative;height:220px;"><canvas id="c-apicost"></canvas></div>
     </div>

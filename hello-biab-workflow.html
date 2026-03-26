@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello Biab — Dify Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+Thai:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2330;
+  --bg4: #21262d;
+  --border: #30363d;
+  --border2: #444c56;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --teal: #39d353;
+  --teal2: #26a641;
+  --teal-dim: #1a3d24;
+  --blue: #58a6ff;
+  --blue-dim: #0d2d4f;
+  --amber: #e3b341;
+  --amber-dim: #3d2f0a;
+  --coral: #f85149;
+  --coral-dim: #3d1b1a;
+  --purple: #a371f7;
+  --purple-dim: #2d1f5e;
+  --pink: #db61a2;
+  --pink-dim: #3d1030;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Sarabun', sans-serif;
+  --serif: 'Noto Serif Thai', serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; }
+
+header {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 0 2rem; position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; gap: 1.5rem; height: 56px;
+}
+.logo { font-family: var(--mono); font-size: 13px; color: var(--purple); letter-spacing: 0.05em; white-space: nowrap; }
+.logo span { color: var(--text3); }
+nav { display: flex; gap: 0.25rem; margin-left: auto; }
+nav a {
+  font-size: 13px; color: var(--text2); text-decoration: none;
+  padding: 0.35rem 0.75rem; border-radius: 6px; transition: all 0.15s;
+  border: 1px solid transparent;
+}
+nav a:hover { background: var(--bg4); color: var(--text); }
+nav a.active { background: var(--purple-dim); color: var(--purple); border-color: #6040b0; }
+nav a.other { font-size: 12px; color: var(--text3); border-color: var(--border); }
+nav a.other:hover { border-color: var(--border2); color: var(--text2); }
+
+.layout { display: flex; min-height: calc(100vh - 56px); }
+
+aside {
+  width: 260px; flex-shrink: 0; background: var(--bg2);
+  border-right: 1px solid var(--border); padding: 1.5rem 0;
+  position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto;
+}
+.aside-section { margin-bottom: 1.5rem; }
+.aside-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0 1.25rem 0.5rem;
+}
+aside a {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.45rem 1.25rem; font-size: 13.5px; color: var(--text2);
+  text-decoration: none; transition: all 0.12s;
+  border-left: 2px solid transparent;
+}
+aside a:hover { color: var(--text); background: var(--bg3); }
+aside a.active { color: var(--purple); border-left-color: var(--purple); background: var(--purple-dim); }
+aside a .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); flex-shrink: 0; }
+aside a.active .dot { background: var(--purple); }
+
+main { flex: 1; min-width: 0; padding: 2.5rem 3rem; max-width: 920px; }
+
+.page-hero {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 2rem 2.5rem; margin-bottom: 2.5rem; position: relative; overflow: hidden;
+}
+.page-hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--purple), var(--pink), var(--coral));
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--purple-dim); color: var(--purple);
+  border: 1px solid #6040b0; padding: 0.2rem 0.7rem; border-radius: 20px;
+  font-size: 11px; font-family: var(--mono); margin-bottom: 0.75rem;
+}
+.page-hero h1 { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+.page-hero p { color: var(--text2); font-size: 14.5px; max-width: 560px; }
+
+.section { margin-bottom: 3rem; scroll-margin-top: 80px; }
+.section-title {
+  font-family: var(--mono); font-size: 11px; color: var(--text3);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.section-title::before { content: '//'; color: var(--purple); font-size: 12px; }
+h2 { font-family: var(--sans); font-size: 19px; font-weight: 600; color: var(--text); margin-bottom: 0.75rem; margin-top: 0.25rem; }
+h3 { font-size: 15px; font-weight: 600; color: var(--purple); margin: 1.5rem 0 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+h3::before { content: '›'; color: var(--teal); }
+p { color: var(--text2); margin-bottom: 0.75rem; font-size: 14.5px; }
+
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.25rem; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.card-title { font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+
+.badge { font-size: 10px; font-family: var(--mono); padding: 0.15rem 0.5rem; border-radius: 4px; border: 1px solid; }
+.badge-teal { background: var(--teal-dim); color: var(--teal); border-color: var(--teal2); }
+.badge-blue { background: var(--blue-dim); color: var(--blue); border-color: #1f5f9e; }
+.badge-amber { background: var(--amber-dim); color: var(--amber); border-color: #7a5c1a; }
+.badge-coral { background: var(--coral-dim); color: var(--coral); border-color: #7a2020; }
+.badge-purple { background: var(--purple-dim); color: var(--purple); border-color: #5a3e9e; }
+.badge-pink { background: var(--pink-dim); color: var(--pink); border-color: #7a2050; }
+
+.code-wrap { position: relative; margin: 0.75rem 0; }
+.code-label {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  background: var(--bg4); border: 1px solid var(--border); border-bottom: none;
+  border-radius: 6px 6px 0 0; padding: 0.3rem 0.85rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.copy-btn {
+  cursor: pointer; color: var(--text3); font-size: 10px;
+  background: none; border: none; padding: 0.1rem 0.4rem;
+  border-radius: 3px; transition: all 0.15s; font-family: var(--mono);
+}
+.copy-btn:hover { color: var(--text); background: var(--bg3); }
+pre {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 0 0 6px 6px;
+  padding: 1.1rem 1.25rem; overflow-x: auto;
+  font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: var(--text);
+}
+code {
+  font-family: var(--mono); font-size: 12.5px;
+  background: var(--bg4); padding: 0.1rem 0.4rem; border-radius: 3px; color: var(--amber);
+}
+.k { color: var(--purple); } .s { color: var(--teal); }
+.c { color: var(--text3); font-style: italic; } .n { color: var(--blue); }
+.o { color: var(--amber); } .p { color: var(--coral); }
+
+.tbl-wrap { overflow-x: auto; margin: 0.75rem 0; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th {
+  background: var(--bg4); color: var(--text); font-weight: 600; font-size: 12px;
+  text-align: left; padding: 0.65rem 1rem; border-bottom: 1px solid var(--border);
+  font-family: var(--mono); letter-spacing: 0.03em;
+}
+td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+
+.callout { border-left: 3px solid; padding: 0.85rem 1.1rem; border-radius: 0 8px 8px 0; margin: 0.75rem 0; font-size: 13.5px; }
+.callout-info { border-color: var(--blue); background: var(--blue-dim); color: #a8cef5; }
+.callout-warn { border-color: var(--amber); background: var(--amber-dim); color: #f0d080; }
+.callout-tip  { border-color: var(--teal); background: var(--teal-dim); color: #7ee89a; }
+.callout-purple { border-color: var(--purple); background: var(--purple-dim); color: #c8a8f8; }
+.callout-title { font-weight: 600; font-size: 12px; margin-bottom: 0.3rem; font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* ── WORKFLOW DIAGRAM ── */
+.wf-diagram {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem; margin: 1rem 0;
+  display: flex; flex-direction: column; align-items: center;
+}
+.wf-node {
+  padding: 0.55rem 1.4rem; border-radius: 8px;
+  font-size: 13px; font-weight: 500; text-align: center;
+  border: 1px solid; min-width: 220px;
+}
+.wf-node.input   { background: var(--bg4); color: var(--text2); border-color: var(--border2); }
+.wf-node.orch    { background: var(--purple-dim); color: var(--purple); border-color: #5a3e9e; }
+.wf-node.hyde    { background: var(--teal-dim); color: var(--teal); border-color: var(--teal2); }
+.wf-node.ret     { background: var(--blue-dim); color: var(--blue); border-color: #1f5f9e; }
+.wf-node.merge   { background: var(--amber-dim); color: var(--amber); border-color: #7a5c1a; }
+.wf-node.llm     { background: var(--coral-dim); color: var(--coral); border-color: #7a2020; }
+.wf-node.out     { background: var(--bg4); color: var(--teal); border-color: var(--teal2); }
+.wf-node.branch  { background: var(--pink-dim); color: var(--pink); border-color: #7a2050; border-style: dashed; }
+.wf-arrow { color: var(--text3); font-size: 14px; padding: 0.2rem 0; }
+.wf-row  { display: flex; align-items: center; gap: 0.6rem; margin: 0.2rem 0; flex-wrap: wrap; justify-content: center; }
+.wf-label { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+
+/* ── NODE CONFIG CARDS ── */
+.node-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1rem 0; }
+.node-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden;
+}
+.node-card-header {
+  padding: 0.75rem 1.1rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.node-card-title { font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+.node-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-family: var(--mono); font-weight: 600;
+  flex-shrink: 0;
+}
+.node-num.purple { background: var(--purple-dim); color: var(--purple); border: 1px solid #5a3e9e; }
+.node-num.teal   { background: var(--teal-dim);   color: var(--teal);   border: 1px solid var(--teal2); }
+.node-num.blue   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid #1f5f9e; }
+.node-num.amber  { background: var(--amber-dim);  color: var(--amber);  border: 1px solid #7a5c1a; }
+.node-num.coral  { background: var(--coral-dim);  color: var(--coral);  border: 1px solid #7a2020; }
+.node-num.pink   { background: var(--pink-dim);   color: var(--pink);   border: 1px solid #7a2050; }
+.node-num.green  { background: var(--teal-dim);   color: var(--teal);   border: 1px solid var(--teal2); }
+
+.node-body { padding: 1rem 1.1rem; }
+
+/* ── STEPS ── */
+.steps { display: flex; flex-direction: column; }
+.step { display: flex; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--border); }
+.step:last-child { border-bottom: none; }
+.step-num {
+  width: 26px; height: 26px; flex-shrink: 0;
+  background: var(--bg4); border: 1px solid var(--border2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; color: var(--purple); font-weight: 600;
+}
+.step-content { flex: 1; }
+.step-title { font-weight: 600; color: var(--text); font-size: 14px; margin-bottom: 0.2rem; }
+.step-desc { color: var(--text2); font-size: 13px; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.yaml-key { color: var(--blue); }
+.yaml-val { color: var(--teal); }
+.yaml-comment { color: var(--text3); font-style: italic; }
+.yaml-str { color: var(--amber); }
+.yaml-arr { color: var(--purple); }
+
+.inline-table { display: grid; grid-template-columns: 180px 1fr; gap: 0; font-size: 13px; }
+.it-key { color: var(--text3); padding: 0.25rem 0; font-family: var(--mono); font-size: 12px; }
+.it-val { color: var(--text); padding: 0.25rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">hello_biab<span>/</span>workflow</div>
+  <nav>
+    <a href="hello-biab-docs.html" class="other">⟵ เตรียมเอกสาร & KB</a>
+    <a href="#" class="active">Dify Workflow</a>
+  </nav>
+</header>
+
+<div class="layout">
+<aside>
+  <div class="aside-section">
+    <div class="aside-label">ภาพรวม</div>
+    <a href="#overview" class="active"><span class="dot"></span>Workflow Architecture</a>
+    <a href="#node-list"><span class="dot"></span>รายการ Node ทั้งหมด</a>
+  </div>
+  <div class="aside-section">
+    <div class="aside-label">Node Configuration</div>
+    <a href="#n1-orchestrator"><span class="dot"></span>1. Orchestrator LLM</a>
+    <a href="#n2-variable"><span class="dot"></span>2. Variable Assigner</a>
+    <a href="#n3-hyde"><span class="dot"></span>3. HyDE Generator</a>
+    <a href="#n4-retrieval"><span class="dot"></span>4. Knowledge Retrieval</a>
+    <a href="#n5-ifelse"><span class="dot"></span>5. If-Else (Cross-KB)</a>
+    <a href="#n6-ret2"><span class="dot"></span>6. Retrieval Secondary</a>
+    <a href="#n7-merge"><span class="dot"></span>7. Context Merger</a>
+    <a href="#n8-answer"><span class="dot"></span>8. Answer LLM</a>
+    <a href="#n9-citation"><span class="dot"></span>9. Citation Formatter</a>
+  </div>
+  <div class="aside-section">
+    <div class="aside-label">Prompt Templates</div>
+    <a href="#p-orchestrator"><span class="dot"></span>Orchestrator Prompt</a>
+    <a href="#p-hyde"><span class="dot"></span>HyDE Prompt</a>
+    <a href="#p-answer"><span class="dot"></span>Answer LLM Prompt</a>
+  </div>
+  <div class="aside-section">
+    <div class="aside-label">Code Nodes</div>
+    <a href="#code-merge"><span class="dot"></span>Context Merger Code</a>
+    <a href="#code-citation"><span class="dot"></span>Citation Formatter Code</a>
+  </div>
+</aside>
+
+<main>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-badge">⚙ ไฟล์ที่ 2/2</div>
+  <h1>Dify Workflow — Hello Biab</h1>
+  <p>การตั้งค่า Node ครบทุกตัว พร้อม System Prompt, User Prompt, และ Code Node สำหรับ Orchestrator → HyDE → Cross-KB Retrieval → Answer LLM</p>
+</div>
+
+<!-- OVERVIEW -->
+<div class="section" id="overview">
+  <div class="section-title">ภาพรวม</div>
+  <h2>Workflow Architecture</h2>
+  <div class="wf-diagram">
+    <div class="wf-node input">User Query</div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-node orch">① Orchestrator LLM<br><span style="font-size:11px;opacity:0.8">วิเคราะห์ domain + kb_targets</span></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-node input" style="min-width:180px;font-size:12px">② Variable Assigner<br>แยก primary / secondary KB</div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-node hyde">③ HyDE Generator<br><span style="font-size:11px;opacity:0.8">สร้าง Hypothetical Document</span></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-node ret">④ Knowledge Retrieval #1<br><span style="font-size:11px;opacity:0.8">Primary KB · Top K=5</span></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-node branch">⑤ If-Else: has_secondary_kb?</div>
+    <div class="wf-row">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.2rem">
+        <div class="wf-label">TRUE ↓</div>
+        <div class="wf-node ret">⑥ Knowledge Retrieval #2<br><span style="font-size:11px;opacity:0.8">Secondary KB · Top K=3</span></div>
+      </div>
+    </div>
+    <div class="wf-arrow">↓ (merge)</div>
+    <div class="wf-node merge">⑦ Context Merger (Code Node)<br><span style="font-size:11px;opacity:0.8">Dedup + Weight + Sort</span></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-node llm">⑧ Answer LLM<br><span style="font-size:11px;opacity:0.8">ตอบพร้อมอ้างอิง</span></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-node input" style="font-size:12px">⑨ Citation Formatter (Code Node)</div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-node out">Output + Doc Links</div>
+  </div>
+</div>
+
+<!-- NODE LIST -->
+<div class="section" id="node-list">
+  <div class="section-title">รายการ Node</div>
+  <h2>Node ทั้งหมดและการตั้งค่าย่อ</h2>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>#</th><th>Node Name</th><th>Type</th><th>Input</th><th>Output</th></tr>
+      <tr>
+        <td><span class="badge badge-purple">1</span></td>
+        <td>Orchestrator</td><td>LLM</td>
+        <td><code>user_query</code></td>
+        <td><code>domain, kb_targets, intent, primary_kb, secondary_kb, needs_hyde</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">2</span></td>
+        <td>Variable Assigner</td><td>Variable</td>
+        <td><code>kb_targets[0..2]</code></td>
+        <td><code>primary_kb, secondary_kb, has_secondary</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-teal">3</span></td>
+        <td>HyDE Generator</td><td>LLM</td>
+        <td><code>user_query, domain, intent</code></td>
+        <td><code>hyde_doc</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">4</span></td>
+        <td>Knowledge Retrieval #1</td><td>Retrieval</td>
+        <td><code>hyde_doc, primary_kb</code></td>
+        <td><code>primary_chunks</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-pink">5</span></td>
+        <td>If-Else</td><td>Condition</td>
+        <td><code>secondary_kb</code></td>
+        <td>TRUE / FALSE branch</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">6</span></td>
+        <td>Knowledge Retrieval #2</td><td>Retrieval</td>
+        <td><code>hyde_doc, secondary_kb</code></td>
+        <td><code>secondary_chunks</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-amber">7</span></td>
+        <td>Context Merger</td><td>Code (Python)</td>
+        <td><code>primary_chunks, secondary_chunks</code></td>
+        <td><code>merged_context, doc_links_md, kb_used</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-coral">8</span></td>
+        <td>Answer LLM</td><td>LLM</td>
+        <td><code>merged_context, user_query, doc_links_md</code></td>
+        <td><code>answer_raw</code></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-teal">9</span></td>
+        <td>Citation Formatter</td><td>Code (Python)</td>
+        <td><code>answer_raw, primary_chunks, secondary_chunks</code></td>
+        <td><code>final_answer</code></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- N1: ORCHESTRATOR CONFIG -->
+<div class="section" id="n1-orchestrator">
+  <div class="section-title">Node 1</div>
+  <h2>Orchestrator LLM — การตั้งค่า</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title">
+        <div class="node-num purple">1</div>
+        Orchestrator — Node Settings
+      </div>
+      <span class="badge badge-purple">LLM Node</span>
+    </div>
+    <div class="node-body">
+      <div class="inline-table">
+        <div class="it-key">Model</div><div class="it-val"><code>claude-3-5-sonnet</code> หรือ <code>gpt-4o</code></div>
+        <div class="it-key">Temperature</div><div class="it-val"><code>0.0</code> (ต้องการ deterministic output)</div>
+        <div class="it-key">Max Tokens</div><div class="it-val"><code>500</code></div>
+        <div class="it-key">Output Variable</div><div class="it-val"><code>orchestrator_json</code> (String)</div>
+        <div class="it-key">Input Variables</div><div class="it-val"><code>{{user_query}}</code></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout callout-warn">
+    <div class="callout-title">⚠ การ Parse JSON Output</div>
+    ต้องต่อด้วย Code Node เล็กๆ เพื่อ parse <code>orchestrator_json</code> → แยก field ต่างๆ ออกมาเป็น String Variable แต่ละตัว เพราะ Dify ไม่รองรับ JSON path variable โดยตรง
+  </div>
+</div>
+
+<!-- N2: VARIABLE ASSIGNER -->
+<div class="section" id="n2-variable">
+  <div class="section-title">Node 2</div>
+  <h2>Variable Assigner — การตั้งค่า</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title"><div class="node-num blue">2</div>Variable Assigner / Code Node</div>
+      <span class="badge badge-blue">Code Node</span>
+    </div>
+    <div class="node-body">
+      <div class="code-wrap">
+        <div class="code-label"><span>python — parse orchestrator output + assign variables</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre><span class="k">import</span> <span class="n">json</span>
+
+<span class="k">def</span> <span class="n">main</span>(orchestrator_json: <span class="n">str</span>) -> <span class="n">dict</span>:
+    <span class="k">try</span>:
+        data = json.loads(orchestrator_json)
+    <span class="k">except</span>:
+        <span class="c"># Fallback ถ้า LLM ส่ง JSON ไม่ครบ</span>
+        data = {
+            <span class="s">"domain"</span>: <span class="s">"KB_COMPLIANCE"</span>,
+            <span class="s">"kb_targets"</span>: [<span class="s">"KB_COMPLIANCE"</span>],
+            <span class="s">"intent"</span>: <span class="s">"general"</span>,
+            <span class="s">"needs_hyde"</span>: <span class="k">True</span>
+        }
+
+    kb_targets = data.get(<span class="s">"kb_targets"</span>, [data.get(<span class="s">"domain"</span>, <span class="s">"KB_COMPLIANCE"</span>)])
+
+    <span class="k">return</span> {
+        <span class="s">"domain"</span>:        data.get(<span class="s">"domain"</span>, <span class="s">"KB_COMPLIANCE"</span>),
+        <span class="s">"intent"</span>:        data.get(<span class="s">"intent"</span>, <span class="s">"general"</span>),
+        <span class="s">"primary_kb"</span>:    kb_targets[0] <span class="k">if</span> len(kb_targets) > <span class="o">0</span> <span class="k">else</span> <span class="s">"KB_COMPLIANCE"</span>,
+        <span class="s">"secondary_kb"</span>:  kb_targets[1] <span class="k">if</span> len(kb_targets) > <span class="o">1</span> <span class="k">else</span> <span class="s">""</span>,
+        <span class="s">"tertiary_kb"</span>:   kb_targets[2] <span class="k">if</span> len(kb_targets) > <span class="o">2</span> <span class="k">else</span> <span class="s">""</span>,
+        <span class="s">"has_secondary"</span>: len(kb_targets) > <span class="o">1</span>,
+        <span class="s">"needs_hyde"</span>:    data.get(<span class="s">"needs_hyde"</span>, <span class="k">True</span>),
+        <span class="s">"xref_reason"</span>:   data.get(<span class="s">"xref_reason"</span>, <span class="s">""</span>)
+    }</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- N3: HYDE -->
+<div class="section" id="n3-hyde">
+  <div class="section-title">Node 3</div>
+  <h2>HyDE Generator — การตั้งค่า</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title"><div class="node-num teal">3</div>HyDE Generator — Node Settings</div>
+      <span class="badge badge-teal">LLM Node</span>
+    </div>
+    <div class="node-body">
+      <div class="inline-table">
+        <div class="it-key">Model</div><div class="it-val"><code>claude-3-haiku</code> หรือ <code>gpt-4o-mini</code> (ประหยัด token)</div>
+        <div class="it-key">Temperature</div><div class="it-val"><code>0.3</code></div>
+        <div class="it-key">Max Tokens</div><div class="it-val"><code>300</code></div>
+        <div class="it-key">Input Variables</div><div class="it-val"><code>{{user_query}}</code>, <code>{{domain}}</code>, <code>{{intent}}</code></div>
+        <div class="it-key">Output Variable</div><div class="it-val"><code>hyde_doc</code> (String)</div>
+        <div class="it-key">เงื่อนไข Skip</div><div class="it-val">ถ้า <code>needs_hyde = false</code> → bypass ใช้ <code>user_query</code> ตรงๆ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- N4: RETRIEVAL 1 -->
+<div class="section" id="n4-retrieval">
+  <div class="section-title">Node 4</div>
+  <h2>Knowledge Retrieval #1 (Primary) — การตั้งค่า</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title"><div class="node-num blue">4</div>Knowledge Retrieval — Primary KB</div>
+      <span class="badge badge-blue">Retrieval Node</span>
+    </div>
+    <div class="node-body">
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Setting</th><th>ค่า</th></tr>
+          <tr><td>Knowledge Base</td><td>เลือก KB ที่ตรงกับ <code>{{primary_kb}}</code> (ต้องสร้างแยกสำหรับแต่ละ domain)</td></tr>
+          <tr><td>Query Variable</td><td><code>{{hyde_doc}}</code></td></tr>
+          <tr><td>Top K</td><td><code>5</code></td></tr>
+          <tr><td>Score Threshold</td><td><code>0.50</code></td></tr>
+          <tr><td>Rerank Model</td><td><code>bge-reranker-v2-m3</code></td></tr>
+          <tr><td>Top N (after rerank)</td><td><code>3</code></td></tr>
+          <tr><td>Search Mode</td><td>Hybrid (Semantic + Full-text)</td></tr>
+        </table>
+      </div>
+      <div class="callout callout-info">
+        <div class="callout-title">ℹ Dify Limitation</div>
+        Dify ไม่รองรับ Dynamic KB Selection จาก Variable โดยตรง — ต้องสร้าง Retrieval Node แยกสำหรับแต่ละ KB (4 Nodes) แล้วใช้ If-Else เลือก Node ที่จะ Execute ตาม <code>primary_kb</code> value
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- N5: IF-ELSE -->
+<div class="section" id="n5-ifelse">
+  <div class="section-title">Node 5</div>
+  <h2>If-Else Node — Cross-KB Detection</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title"><div class="node-num pink">5</div>If-Else: has_secondary_kb</div>
+      <span class="badge badge-pink">Condition Node</span>
+    </div>
+    <div class="node-body">
+      <div class="code-wrap">
+        <div class="code-label"><span>dify condition syntax</span></div>
+        <pre><span class="c"># Condition ที่ตั้งใน If-Else Node</span>
+Variable:   <span class="n">secondary_kb</span>
+Operator:   <span class="o">is not empty</span>
+<span class="c"># หรือ</span>
+Variable:   <span class="n">has_secondary</span>
+Operator:   <span class="o">== true</span>
+
+<span class="c"># TRUE  → ไปยัง Knowledge Retrieval #2 (Secondary KB)</span>
+<span class="c"># FALSE → ข้ามไปยัง Context Merger โดยตรง</span>
+<span class="c">#         (ส่ง primary_chunks เป็น input, secondary_chunks = [])</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- N6: RETRIEVAL 2 -->
+<div class="section" id="n6-ret2">
+  <div class="section-title">Node 6</div>
+  <h2>Knowledge Retrieval #2 (Secondary) — การตั้งค่า</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title"><div class="node-num blue">6</div>Knowledge Retrieval — Secondary KB</div>
+      <span class="badge badge-blue">Retrieval Node</span>
+    </div>
+    <div class="node-body">
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>Setting</th><th>ค่า</th><th>ต่างจาก Primary</th></tr>
+          <tr><td>Knowledge Base</td><td>KB ตาม <code>{{secondary_kb}}</code></td><td>—</td></tr>
+          <tr><td>Top K</td><td><code>3</code></td><td>ลดลง (เป็น supporting info)</td></tr>
+          <tr><td>Score Threshold</td><td><code>0.45</code></td><td>ยืดหยุ่นกว่าเล็กน้อย</td></tr>
+          <tr><td>Top N (after rerank)</td><td><code>2</code></td><td>ลดลง</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- N7: CONTEXT MERGER -->
+<div class="section" id="n7-merge">
+  <div class="section-title">Node 7</div>
+  <h2>Context Merger — Code Node</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title"><div class="node-num amber">7</div>Context Merger + Cross-KB Dedup</div>
+      <span class="badge badge-amber">Code Node (Python)</span>
+    </div>
+    <div class="node-body">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:0.75rem">รับ chunks จาก Primary และ Secondary KB → Dedup → Weight → Sort → Format สำหรับ Answer LLM</p>
+    </div>
+  </div>
+</div>
+
+<!-- N8: ANSWER LLM -->
+<div class="section" id="n8-answer">
+  <div class="section-title">Node 8</div>
+  <h2>Answer LLM — การตั้งค่า</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title"><div class="node-num coral">8</div>Answer LLM — Node Settings</div>
+      <span class="badge badge-coral">LLM Node</span>
+    </div>
+    <div class="node-body">
+      <div class="inline-table">
+        <div class="it-key">Model</div><div class="it-val"><code>claude-3-5-sonnet</code> หรือ <code>gpt-4o</code></div>
+        <div class="it-key">Temperature</div><div class="it-val"><code>0.1</code></div>
+        <div class="it-key">Max Tokens</div><div class="it-val"><code>1500</code></div>
+        <div class="it-key">Input Variables</div><div class="it-val"><code>{{merged_context}}</code>, <code>{{user_query}}</code>, <code>{{doc_links_md}}</code>, <code>{{kb_used}}</code></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- N9: CITATION -->
+<div class="section" id="n9-citation">
+  <div class="section-title">Node 9</div>
+  <h2>Citation Formatter — Code Node</h2>
+  <div class="node-card">
+    <div class="node-card-header">
+      <div class="node-card-title"><div class="node-num green">9</div>Citation Formatter</div>
+      <span class="badge badge-teal">Code Node (Python)</span>
+    </div>
+    <div class="node-body">
+      <p style="font-size:13px;color:var(--text2)">แทรก Doc Links และ Citation ลงใน answer_raw จาก Answer LLM → final_answer ที่พร้อมแสดงผล</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROMPTS ═══ -->
+
+<div class="section" id="p-orchestrator">
+  <div class="section-title">Prompt Templates</div>
+  <h2>Orchestrator — System Prompt</h2>
+  <div class="code-wrap">
+    <div class="code-label"><span>system prompt — Orchestrator LLM Node</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>## บทบาท
+คุณคือตัวกำหนดเส้นทาง (Router) ของระบบ Hello Biab สำหรับกฎระเบียบ กฟภ.
+ห้ามตอบคำถามโดยตรง — ให้วิเคราะห์และส่ง JSON เท่านั้น
+
+## Domain Mapping
+- "KB_IT_CYBER"    → PDPA, ข้อมูลส่วนบุคคล, Cybersecurity, Data Governance, IT Policy
+- "KB_HR_PROC"     → บุคลากร, จัดซื้อจัดจ้าง, งบประมาณ, สัญญา, วงเงิน
+- "KB_OPERATIONS"  → ความปลอดภัย, มาตรฐานช่าง, กฎกระทรวง, วิศวกรรม, ไฟฟ้า
+- "KB_COMPLIANCE"  → ISO 37301, CMS, ความเสี่ยง ISO 31000, Compliance Culture
+
+## Cross-KB Detection Rules
+ถ้าคำถามเกี่ยวข้องกับหลาย domain ให้ระบุ kb_targets เป็น Array
+
+กฎตรวจจับ Cross-KB (เพิ่ม KB_COMPLIANCE ถ้า):
+1. มีคำว่า "แนวปฏิบัติ", "วิธีปฏิบัติ", "ขั้นตอน", "procedure" → + KB_COMPLIANCE
+2. intent = "procedure" และ domain = KB_IT_CYBER → + KB_COMPLIANCE
+3. intent = "legal_ref" และ domain = KB_HR_PROC → + KB_COMPLIANCE
+4. คำถามถามทั้ง "หลักการ" และ "วิธีทำ" → ต้องดึงจาก 2 KB เสมอ
+
+## Output JSON (ส่งเฉพาะ JSON ไม่มีข้อความอื่น)
+{
+  "domain": "KB_IT_CYBER",
+  "kb_targets": ["KB_IT_CYBER"],
+  "intent": "definition|procedure|legal_ref|comparison|calculation|general",
+  "primary_kb": "KB_IT_CYBER",
+  "secondary_kb": "",
+  "xref_reason": "",
+  "keywords_th": ["PDPA", "ข้อมูลส่วนบุคคล"],
+  "keywords_en": ["personal data"],
+  "confidence": 0.92,
+  "needs_hyde": true
+}
+
+ตัวอย่าง Cross-KB:
+{
+  "domain": "KB_IT_CYBER",
+  "kb_targets": ["KB_IT_CYBER", "KB_COMPLIANCE"],
+  "primary_kb": "KB_IT_CYBER",
+  "secondary_kb": "KB_COMPLIANCE",
+  "xref_reason": "คำถามเกี่ยวกับแนวปฏิบัติ PDPA ซึ่งอยู่ใน KB_COMPLIANCE",
+  "needs_hyde": true
+}</pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label"><span>user prompt — Orchestrator LLM Node</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>วิเคราะห์คำถามต่อไปนี้และส่ง JSON ตาม format ที่กำหนด:
+
+คำถาม: {{user_query}}</pre>
+  </div>
+</div>
+
+<!-- HYDE PROMPT -->
+<div class="section" id="p-hyde">
+  <h2>HyDE Generator — System Prompt</h2>
+  <div class="code-wrap">
+    <div class="code-label"><span>system prompt — HyDE Generator LLM Node</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>## บทบาท
+คุณคือผู้เชี่ยวชาญกฎระเบียบ กฟภ. ที่เขียนตัวอย่างคำตอบสมมติ (Hypothetical Document)
+เพื่อใช้ใน Semantic Search เท่านั้น — ไม่ใช่คำตอบจริงสำหรับผู้ใช้
+
+## Domain ที่กำหนด: {{domain}}
+## Intent: {{intent}}
+
+## คำสั่ง
+เขียนย่อหน้า 3–5 ประโยค ในลักษณะที่เอกสารราชการ/ระเบียบ กฟภ. จะเขียน:
+- ใช้คำศัพท์เทคนิคตรงกับ Domain ที่กำหนด
+- อ้างอิงรูปแบบ "ข้อที่ X หมวดที่ Y" หากเหมาะสม
+- ห้ามอ้างเลขระเบียบจริงที่ไม่แน่ใจ
+- ภาษาไทยราชการ กระชับ ตรงประเด็น
+- ความยาวประมาณ 80–120 คำ
+
+Domain-specific guidance:
+- KB_IT_CYBER: ใช้ศัพท์ PDPA / Cybersecurity / Data Subject / Controller / Processor
+- KB_HR_PROC:  ใช้ศัพท์ วงเงิน / คณะกรรมการ / TOR / สเปก / วิธีการจัดซื้อ
+- KB_OPERATIONS: ใช้ศัพท์ มาตรฐาน / ความปลอดภัย / อุปกรณ์ป้องกัน / กฎกระทรวง
+- KB_COMPLIANCE: ใช้ศัพท์ ISO 37301 / ผู้บริหารระดับสูง / วัฒนธรรม / ความเสี่ยง</pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label"><span>user prompt — HyDE Generator</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>เขียน Hypothetical Document สำหรับคำถามต่อไปนี้:
+
+{{user_query}}</pre>
+  </div>
+</div>
+
+<!-- ANSWER PROMPT -->
+<div class="section" id="p-answer">
+  <h2>Answer LLM — System Prompt</h2>
+  <div class="code-wrap">
+    <div class="code-label"><span>system prompt — Answer LLM Node</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>## บทบาท
+คุณคือ "เบียบ" (Hello Biab) ผู้ช่วยด้านกฎระเบียบของ กฟภ.
+ตอบด้วยภาษาไทยที่เป็นทางการ กระชับ และอ้างอิงได้
+
+## Context จาก Knowledge Base ({{kb_used}})
+{{merged_context}}
+
+## กฎการตอบ (ปฏิบัติตามทุกข้อ)
+1. ตอบจาก Context ที่ให้มาเท่านั้น — ห้ามใช้ความรู้ทั่วไปนอก Context
+2. ถ้าไม่พบข้อมูลใน Context ให้ตอบว่า "ไม่พบข้อมูลในระเบียบที่มีใน KB ณ ขณะนี้"
+3. อ้างอิงแหล่งที่มาทุกจุดในรูปแบบ: [ชื่อเอกสาร · ข้อ X]
+4. ถ้าข้อมูลมาจาก 2 KB ให้ระบุชัดเจนว่าแต่ละส่วนมาจาก KB ไหน
+5. ห้ามคาดเดาหรือสรุปเองเกินกว่าที่ Context ระบุ
+
+## Format Output (Markdown)
+
+**สรุปคำตอบ:**
+(1–2 ประโยคกระชับ)
+
+**รายละเอียด:**
+- [จุดสำคัญ] — อ้างอิง: [ชื่อเอกสาร · ข้อ X]
+- [จุดสำคัญ] — อ้างอิง: [ชื่อเอกสาร · ข้อ X]
+
+**เอกสารที่เกี่ยวข้อง:**
+{{doc_links_md}}</pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label"><span>user prompt — Answer LLM Node</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>คำถาม: {{user_query}}</pre>
+  </div>
+</div>
+
+<!-- CODE: MERGER -->
+<div class="section" id="code-merge">
+  <div class="section-title">Code Nodes</div>
+  <h2>Context Merger — Python Code</h2>
+  <div class="code-wrap">
+    <div class="code-label"><span>python — Node 7: Context Merger</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="k">def</span> <span class="n">main</span>(
+    primary_chunks: <span class="n">list</span>,
+    secondary_chunks: <span class="n">list</span>,
+    primary_kb: <span class="n">str</span>,
+    secondary_kb: <span class="n">str</span>
+) -> <span class="n">dict</span>:
+
+    all_chunks = []
+    seen_content = <span class="n">set</span>()
+
+    <span class="c"># Primary KB — weight 1.0</span>
+    <span class="k">for</span> chunk <span class="k">in</span> (primary_chunks <span class="k">or</span> []):
+        content_hash = chunk.get(<span class="s">"content"</span>, <span class="s">""</span>)[:<span class="o">100</span>]
+        <span class="k">if</span> content_hash <span class="k">not in</span> seen_content:
+            chunk[<span class="s">"kb_source"</span>] = primary_kb
+            chunk[<span class="s">"weight"</span>] = <span class="o">1.0</span>
+            all_chunks.append(chunk)
+            seen_content.add(content_hash)
+
+    <span class="c"># Secondary KB — weight 0.85</span>
+    <span class="k">for</span> chunk <span class="k">in</span> (secondary_chunks <span class="k">or</span> []):
+        content_hash = chunk.get(<span class="s">"content"</span>, <span class="s">""</span>)[:<span class="o">100</span>]
+        <span class="k">if</span> content_hash <span class="k">not in</span> seen_content:
+            chunk[<span class="s">"kb_source"</span>] = secondary_kb
+            chunk[<span class="s">"weight"</span>] = <span class="o">0.85</span>
+            all_chunks.append(chunk)
+            seen_content.add(content_hash)
+
+    <span class="c"># เรียงตาม score × weight, จำกัด 7 chunks</span>
+    all_chunks.sort(
+        key=<span class="k">lambda</span> c: c.get(<span class="s">"score"</span>, <span class="o">0</span>) * c.get(<span class="s">"weight"</span>, <span class="o">1.0</span>),
+        reverse=<span class="k">True</span>
+    )
+    top_chunks = all_chunks[:<span class="o">7</span>]
+
+    <span class="c"># Format Context + Doc Links</span>
+    formatted = []
+    doc_links = []
+
+    <span class="k">for</span> i, chunk <span class="k">in</span> enumerate(top_chunks):
+        meta     = chunk.get(<span class="s">"metadata"</span>, {})
+        title    = meta.get(<span class="s">"doc_title"</span>, <span class="s">"ไม่ระบุ"</span>)
+        link     = meta.get(<span class="s">"doc_link"</span>, <span class="s">""</span>)
+        kb_src   = chunk.get(<span class="s">"kb_source"</span>, <span class="s">""</span>)
+        article  = meta.get(<span class="s">"article"</span>, <span class="s">""</span>)
+        content  = chunk.get(<span class="s">"content"</span>, <span class="s">""</span>)
+
+        ref = title
+        <span class="k">if</span> article:
+            ref += <span class="s">f" · {article}"</span>
+
+        formatted.append(<span class="s">f"[{i+1}] {ref} ({kb_src})\n{content}"</span>)
+
+        <span class="k">if</span> link <span class="k">and</span> title <span class="k">not in</span> [d[<span class="s">"title"</span>] <span class="k">for</span> d <span class="k">in</span> doc_links]:
+            doc_links.append({<span class="s">"title"</span>: title, <span class="s">"link"</span>: link, <span class="s">"kb"</span>: kb_src})
+
+    links_md = <span class="s">"\n"</span>.join(
+        [<span class="s">f"- 📄 [{d['title']}]({d['link']}) `{d['kb']}`"</span> <span class="k">for</span> d <span class="k">in</span> doc_links]
+    )
+    kb_used_str = <span class="s">", "</span>.join(<span class="n">list</span>({c[<span class="s">"kb_source"</span>] <span class="k">for</span> c <span class="k">in</span> top_chunks}))
+
+    <span class="k">return</span> {
+        <span class="s">"merged_context"</span>:   <span class="s">"\n---\n"</span>.join(formatted),
+        <span class="s">"doc_links_md"</span>:     links_md,
+        <span class="s">"total_sources"</span>:    <span class="n">len</span>(doc_links),
+        <span class="s">"kb_used"</span>:          kb_used_str
+    }</pre>
+  </div>
+</div>
+
+<!-- CODE: CITATION -->
+<div class="section" id="code-citation">
+  <h2>Citation Formatter — Python Code</h2>
+  <div class="code-wrap">
+    <div class="code-label"><span>python — Node 9: Citation Formatter</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="k">import</span> <span class="n">re</span>
+
+<span class="k">def</span> <span class="n">main</span>(
+    answer_raw: <span class="n">str</span>,
+    primary_chunks: <span class="n">list</span>,
+    secondary_chunks: <span class="n">list</span>
+) -> <span class="n">dict</span>:
+
+    <span class="c"># รวม chunks ทั้งหมดเพื่อสร้าง lookup table</span>
+    all_chunks = (primary_chunks <span class="k">or</span> []) + (secondary_chunks <span class="k">or</span> [])
+    link_map = {}
+
+    <span class="k">for</span> chunk <span class="k">in</span> all_chunks:
+        meta  = chunk.get(<span class="s">"metadata"</span>, {})
+        title = meta.get(<span class="s">"doc_title"</span>, <span class="s">""</span>)
+        link  = meta.get(<span class="s">"doc_link"</span>, <span class="s">""</span>)
+        <span class="k">if</span> title <span class="k">and</span> link:
+            link_map[title] = link
+
+    <span class="c"># แทน [ชื่อเอกสาร · ข้อ X] ด้วย Markdown link ถ้ามี doc_link</span>
+    <span class="k">def</span> <span class="n">replace_ref</span>(match):
+        full_ref = match.group(<span class="o">0</span>)   <span class="c"># [ชื่อ · ข้อ X]</span>
+        inner    = match.group(<span class="o">1</span>)   <span class="c"># ชื่อ · ข้อ X</span>
+        parts    = inner.split(<span class="s">" · "</span>)
+        doc_name = parts[<span class="o">0</span>].strip()
+
+        <span class="k">if</span> doc_name <span class="k">in</span> link_map:
+            <span class="k">return</span> <span class="s">f"[{inner}]({link_map[doc_name]})"</span>
+        <span class="k">return</span> full_ref
+
+    <span class="c"># Pattern: [text · text]</span>
+    pattern = <span class="s">r'\[([^\]]+·[^\]]+)\](?!\()'</span>
+    final_answer = re.sub(pattern, replace_ref, answer_raw)
+
+    <span class="k">return</span> {
+        <span class="s">"final_answer"</span>: final_answer,
+        <span class="s">"link_count"</span>:   <span class="n">len</span>(link_map)
+    }</pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">💡 ผลลัพธ์ที่ได้</div>
+    <code>[ระเบียบ PDPA กฟภ. · ข้อ 5]</code> จะถูกแปลงเป็น <code>[ระเบียบ PDPA กฟภ. · ข้อ 5](https://drive.google.com/...)</code> โดยอัตโนมัติ เมื่อ <code>doc_link</code> มีอยู่ใน Metadata
+  </div>
+
+  <h3>Checklist การตั้งค่าทั้งหมด</h3>
+  <div class="card">
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">สร้าง KB แยก 4 ชุด</div>
+          <div class="step-desc">KB_IT_CYBER, KB_HR_PROC, KB_OPERATIONS, KB_COMPLIANCE — แต่ละชุด Embed ด้วย bge-m3</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">อัปโหลด Markdown พร้อม YAML Frontmatter</div>
+          <div class="step-desc">ทุกไฟล์ต้องมี <code>doc_link</code> และ <code>cross_refs[].kb</code> ถ้ามี Cross-KB reference</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">สร้าง Workflow ตาม Node 1–9</div>
+          <div class="step-desc">เริ่มจาก Orchestrator → Variable Assigner → HyDE → Retrieval × 2 → Merger → Answer → Citation</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">ทดสอบ Cross-KB Route</div>
+          <div class="step-desc">ถามว่า "แนวปฏิบัติการคุ้มครองข้อมูลฯ มีกี่ขั้นตอน?" — ต้องดึงจาก KB_IT_CYBER + KB_COMPLIANCE</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">ตรวจสอบ Doc Links ใน Output</div>
+          <div class="step-desc">ในคำตอบสุดท้ายต้องมี "เอกสารที่เกี่ยวข้อง" พร้อม URL ที่คลิกได้จาก Google Drive</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1500);
+  });
+}
+const sections = document.querySelectorAll('.section');
+const sideLinks = document.querySelectorAll('aside a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+  sideLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+});
+</script>
+</body>
+</html>

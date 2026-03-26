@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello Biab — การเตรียมเอกสาร & Knowledge Base</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+Thai:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2330;
+  --bg4: #21262d;
+  --border: #30363d;
+  --border2: #444c56;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --teal: #39d353;
+  --teal2: #26a641;
+  --teal-dim: #1a3d24;
+  --blue: #58a6ff;
+  --blue-dim: #0d2d4f;
+  --amber: #e3b341;
+  --amber-dim: #3d2f0a;
+  --coral: #f85149;
+  --coral-dim: #3d1b1a;
+  --purple: #a371f7;
+  --purple-dim: #2d1f5e;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Sarabun', sans-serif;
+  --serif: 'Noto Serif Thai', serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; gap: 1.5rem;
+  height: 56px;
+}
+.logo {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--teal);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.logo span { color: var(--text3); }
+nav { display: flex; gap: 0.25rem; margin-left: auto; }
+nav a {
+  font-size: 13px; color: var(--text2);
+  text-decoration: none; padding: 0.35rem 0.75rem;
+  border-radius: 6px; transition: all 0.15s;
+  border: 1px solid transparent;
+}
+nav a:hover { background: var(--bg4); color: var(--text); }
+nav a.active { background: var(--teal-dim); color: var(--teal); border-color: var(--teal2); }
+.nav-other {
+  font-size: 12px; color: var(--text3);
+  text-decoration: none; padding: 0.35rem 0.75rem;
+  border: 1px solid var(--border); border-radius: 6px;
+  display: flex; align-items: center; gap: 0.4rem;
+  transition: all 0.15s;
+}
+.nav-other:hover { border-color: var(--border2); color: var(--text2); }
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: calc(100vh - 56px); }
+
+/* ── SIDEBAR ── */
+aside {
+  width: 260px; flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 0;
+  position: sticky; top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+.aside-section { margin-bottom: 1.5rem; }
+.aside-label {
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 500;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0 1.25rem 0.5rem;
+}
+aside a {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.45rem 1.25rem;
+  font-size: 13.5px; color: var(--text2);
+  text-decoration: none; transition: all 0.12s;
+  border-left: 2px solid transparent;
+}
+aside a:hover { color: var(--text); background: var(--bg3); }
+aside a.active { color: var(--teal); border-left-color: var(--teal); background: var(--teal-dim); }
+aside a .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border2); flex-shrink: 0;
+}
+aside a.active .dot { background: var(--teal); }
+
+/* ── MAIN ── */
+main { flex: 1; min-width: 0; padding: 2.5rem 3rem; max-width: 900px; }
+
+/* ── PAGE HERO ── */
+.page-hero {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  margin-bottom: 2.5rem;
+  position: relative; overflow: hidden;
+}
+.page-hero::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--blue), var(--purple));
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--teal-dim); color: var(--teal);
+  border: 1px solid var(--teal2);
+  padding: 0.2rem 0.7rem; border-radius: 20px;
+  font-size: 11px; font-family: var(--mono);
+  margin-bottom: 0.75rem;
+}
+.page-hero h1 {
+  font-family: var(--serif); font-size: 26px; font-weight: 600;
+  color: var(--text); margin-bottom: 0.5rem;
+}
+.page-hero p { color: var(--text2); font-size: 14.5px; max-width: 560px; }
+
+/* ── SECTION ── */
+.section { margin-bottom: 3rem; scroll-margin-top: 80px; }
+.section-title {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text3); letter-spacing: 0.12em;
+  text-transform: uppercase; margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.section-title::before {
+  content: '//'; color: var(--teal); font-size: 12px;
+}
+h2 {
+  font-family: var(--sans); font-size: 19px; font-weight: 600;
+  color: var(--text); margin-bottom: 0.75rem; margin-top: 0.25rem;
+}
+h3 {
+  font-size: 15px; font-weight: 600; color: var(--blue);
+  margin: 1.5rem 0 0.6rem; display: flex; align-items: center; gap: 0.5rem;
+}
+h3::before { content: '›'; color: var(--teal); }
+p { color: var(--text2); margin-bottom: 0.75rem; font-size: 14.5px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.badge {
+  font-size: 10px; font-family: var(--mono);
+  padding: 0.15rem 0.5rem; border-radius: 4px;
+  border: 1px solid;
+}
+.badge-teal { background: var(--teal-dim); color: var(--teal); border-color: var(--teal2); }
+.badge-blue { background: var(--blue-dim); color: var(--blue); border-color: #1f5f9e; }
+.badge-amber { background: var(--amber-dim); color: var(--amber); border-color: #7a5c1a; }
+.badge-coral { background: var(--coral-dim); color: var(--coral); border-color: #7a2020; }
+.badge-purple { background: var(--purple-dim); color: var(--purple); border-color: #5a3e9e; }
+
+/* ── CODE BLOCK ── */
+.code-wrap { position: relative; margin: 0.75rem 0; }
+.code-label {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  background: var(--bg4); border: 1px solid var(--border);
+  border-bottom: none; border-radius: 6px 6px 0 0;
+  padding: 0.3rem 0.85rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.copy-btn {
+  cursor: pointer; color: var(--text3); font-size: 10px;
+  background: none; border: none; padding: 0.1rem 0.4rem;
+  border-radius: 3px; transition: all 0.15s; font-family: var(--mono);
+}
+.copy-btn:hover { color: var(--text); background: var(--bg3); }
+pre {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 0 0 6px 6px;
+  padding: 1.1rem 1.25rem;
+  overflow-x: auto;
+  font-family: var(--mono); font-size: 12.5px;
+  line-height: 1.65; color: var(--text);
+}
+.code-wrap:first-child pre { border-radius: 6px; }
+code {
+  font-family: var(--mono); font-size: 12.5px;
+  background: var(--bg4); padding: 0.1rem 0.4rem;
+  border-radius: 3px; color: var(--amber);
+}
+
+/* syntax highlight */
+.k { color: var(--purple); }
+.s { color: var(--teal); }
+.c { color: var(--text3); font-style: italic; }
+.n { color: var(--blue); }
+.o { color: var(--amber); }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 0.75rem 0; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th {
+  background: var(--bg4); color: var(--text);
+  font-weight: 600; font-size: 12px;
+  text-align: left; padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono); letter-spacing: 0.03em;
+}
+td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2); vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+td code { font-size: 11.5px; }
+
+/* ── CALLOUT ── */
+.callout {
+  border-left: 3px solid;
+  padding: 0.85rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.75rem 0;
+  font-size: 13.5px;
+}
+.callout-info { border-color: var(--blue); background: var(--blue-dim); color: #a8cef5; }
+.callout-warn { border-color: var(--amber); background: var(--amber-dim); color: #f0d080; }
+.callout-tip  { border-color: var(--teal); background: var(--teal-dim); color: #7ee89a; }
+.callout-title { font-weight: 600; font-size: 12px; margin-bottom: 0.3rem; font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* ── STEPS ── */
+.steps { display: flex; flex-direction: column; gap: 0; }
+.step {
+  display: flex; gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: var(--bg4); border: 1px solid var(--border2);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; color: var(--teal); font-weight: 600;
+}
+.step-content { flex: 1; }
+.step-title { font-weight: 600; color: var(--text); font-size: 14px; margin-bottom: 0.25rem; }
+.step-desc { color: var(--text2); font-size: 13.5px; }
+
+/* ── KB GRID ── */
+.kb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+.kb-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1rem 1.1rem;
+}
+.kb-card-name {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  margin-bottom: 0.5rem; padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.kb-card-items { list-style: none; }
+.kb-card-items li {
+  font-size: 12.5px; color: var(--text2);
+  padding: 0.2rem 0;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.kb-card-items li::before { content: '—'; color: var(--border2); font-size: 10px; }
+
+/* ── YAML BLOCK ── */
+.yaml-key { color: var(--blue); }
+.yaml-val { color: var(--teal); }
+.yaml-comment { color: var(--text3); font-style: italic; }
+.yaml-str { color: var(--amber); }
+.yaml-arr { color: var(--purple); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── FLOW DIAGRAM ── */
+.flow {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.5rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.flow-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.3rem 0; }
+.flow-box {
+  padding: 0.5rem 1rem; border-radius: 6px;
+  font-size: 12.5px; font-weight: 500; text-align: center;
+  border: 1px solid;
+}
+.flow-box.teal { background: var(--teal-dim); color: var(--teal); border-color: var(--teal2); }
+.flow-box.blue { background: var(--blue-dim); color: var(--blue); border-color: #1f5f9e; }
+.flow-box.amber { background: var(--amber-dim); color: var(--amber); border-color: #7a5c1a; }
+.flow-box.gray { background: var(--bg4); color: var(--text2); border-color: var(--border2); }
+.flow-arrow { color: var(--text3); font-size: 16px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">hello_biab<span>/</span>docs</div>
+  <nav>
+    <a href="#" class="active">เตรียมเอกสาร & KB</a>
+    <a href="hello-biab-workflow.html" class="nav-other">
+      <span>⟶</span> Dify Workflow
+    </a>
+  </nav>
+</header>
+
+<div class="layout">
+<aside>
+  <div class="aside-section">
+    <div class="aside-label">ภาพรวม</div>
+    <a href="#overview" class="active"><span class="dot"></span>แนวทางระบบ</a>
+    <a href="#kb-structure"><span class="dot"></span>โครงสร้าง KB</a>
+  </div>
+  <div class="aside-section">
+    <div class="aside-label">Markdown</div>
+    <a href="#md-metadata"><span class="dot"></span>YAML Frontmatter</a>
+    <a href="#md-structure"><span class="dot"></span>โครงสร้างเนื้อหา</a>
+    <a href="#md-internal"><span class="dot"></span>Internal Links</a>
+    <a href="#md-crossref"><span class="dot"></span>Cross-Document Ref</a>
+    <a href="#md-crosskb"><span class="dot"></span>Cross-KB Reference</a>
+    <a href="#md-formats"><span class="dot"></span>Format ต่างประเภท</a>
+    <a href="#md-prompt"><span class="dot"></span>Prompt สร้าง Markdown</a>
+  </div>
+  <div class="aside-section">
+    <div class="aside-label">Knowledge Base</div>
+    <a href="#kb-embed"><span class="dot"></span>Embedding Model</a>
+    <a href="#kb-chunk"><span class="dot"></span>Chunking Strategy</a>
+    <a href="#kb-retrieval"><span class="dot"></span>Retrieval Config</a>
+    <a href="#kb-rerank"><span class="dot"></span>Reranking</a>
+  </div>
+</aside>
+
+<main>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-badge">📄 ไฟล์ที่ 1/2</div>
+  <h1>การเตรียมเอกสาร & Knowledge Base</h1>
+  <p>แนวทางครบวงจรสำหรับแปลงเอกสารกฎระเบียบ กฟภ. เป็น Markdown พร้อม Cross-Reference และตั้งค่า Knowledge Base ใน Dify อย่างถูกต้อง</p>
+</div>
+
+<!-- OVERVIEW -->
+<div class="section" id="overview">
+  <div class="section-title">ภาพรวม</div>
+  <h2>แนวทางระบบ Hello Biab</h2>
+  <p>ปัญหาหลักที่พบคือ <strong>คำตอบสับสนข้ามหมวด</strong> เมื่อ PDPA และ Cybersecurity อยู่ใน KB เดียวกัน แนวทางแก้ไขคือแยก KB ตาม Domain อย่างเคร่งครัด และออกแบบ Markdown ให้มี Metadata ที่ Orchestrator อ่านได้</p>
+  <div class="flow">
+    <div class="flow-row">
+      <div class="flow-box gray">เอกสาร PDF/Word ต้นฉบับ</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-row">
+      <div class="flow-box amber">แปลงเป็น Markdown + YAML Metadata</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-row">
+      <div class="flow-box teal">อัปโหลดแยก KB ตาม Domain</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-row">
+      <div class="flow-box blue">Embed + Chunk + Index ใน Dify</div>
+    </div>
+  </div>
+</div>
+
+<!-- KB STRUCTURE -->
+<div class="section" id="kb-structure">
+  <div class="section-title">โครงสร้าง KB</div>
+  <h2>การแบ่ง Knowledge Base ตาม Domain</h2>
+  <p>แบ่งออกเป็น 4 KB หลัก แต่ละ KB มี sub-domain ชัดเจน เพื่อให้ Orchestrator ส่ง Query ไปยัง KB ที่ถูกต้อง</p>
+  <div class="kb-grid">
+    <div class="kb-card">
+      <div class="kb-card-name" style="color:var(--teal)">KB-1 · IT &amp; Cybersecurity</div>
+      <ul class="kb-card-items">
+        <li>PDPA (พ.ร.บ. คุ้มครองข้อมูลฯ)</li>
+        <li>Cybersecurity Policy</li>
+        <li>Data Governance</li>
+        <li>IT Infrastructure Policy</li>
+      </ul>
+    </div>
+    <div class="kb-card">
+      <div class="kb-card-name" style="color:var(--amber)">KB-2 · HR &amp; Procurement</div>
+      <ul class="kb-card-items">
+        <li>HR &amp; Labour Law</li>
+        <li>Procurement (พ.ร.บ. จัดซื้อฯ)</li>
+        <li>Finance &amp; Budget</li>
+        <li>Contract &amp; Legal</li>
+      </ul>
+    </div>
+    <div class="kb-card">
+      <div class="kb-card-name" style="color:var(--blue)">KB-3 · Operations &amp; Safety</div>
+      <ul class="kb-card-items">
+        <li>Safety &amp; Work Standards</li>
+        <li>Electrical &amp; Engineering Regs</li>
+        <li>กฎกระทรวง · มาตรฐาน กฟภ.</li>
+      </ul>
+    </div>
+    <div class="kb-card">
+      <div class="kb-card-name" style="color:var(--purple)">KB-4 · Compliance &amp; Governance</div>
+      <ul class="kb-card-items">
+        <li>ISO 37301 · CMS Framework</li>
+        <li>Risk Management (ISO 31000)</li>
+        <li>Compliance Culture Policy</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout callout-warn">
+    <div class="callout-title">⚠ ข้อสำคัญ</div>
+    เอกสารหนึ่งฉบับต้องอยู่ใน KB เดียวเท่านั้น ถ้าเอกสารครอบคลุมหลาย Domain ให้แยกเป็นหลายไฟล์ Markdown ตาม Section แล้วอัปโหลดคนละ KB
+  </div>
+</div>
+
+<!-- YAML FRONTMATTER -->
+<div class="section" id="md-metadata">
+  <div class="section-title">YAML Frontmatter</div>
+  <h2>โครงสร้าง Metadata บนสุดของทุกไฟล์</h2>
+  <p>Metadata เป็นส่วนที่ Orchestrator จะอ่านเพื่อตัดสินใจ Route และ Retrieval Node จะดึง <code>doc_link</code> มาแสดงในคำตอบ</p>
+  <div class="code-wrap">
+    <div class="code-label">
+      <span>markdown — YAML Frontmatter (บังคับทุกไฟล์)</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="yaml-comment">---</span>
+<span class="yaml-key">doc_id</span>:          <span class="yaml-str">"REG-PDPA-001"</span>            <span class="yaml-comment"># รหัสเอกสารไม่ซ้ำกัน</span>
+<span class="yaml-key">doc_title</span>:       <span class="yaml-str">"ระเบียบการคุ้มครองข้อมูลส่วนบุคคล กฟภ. 2566"</span>
+<span class="yaml-key">doc_type</span>:        <span class="yaml-str">"ระเบียบ"</span>                  <span class="yaml-comment"># ระเบียบ|กฎกระทรวง|ประกาศ|คำสั่ง|แนวปฏิบัติ</span>
+<span class="yaml-key">domain</span>:          <span class="yaml-str">"KB_IT_CYBER"</span>
+<span class="yaml-key">sub_domain</span>:      <span class="yaml-str">"PDPA"</span>
+<span class="yaml-key">effective_date</span>:  <span class="yaml-str">"2023-06-01"</span>
+<span class="yaml-key">doc_link</span>:        <span class="yaml-str">"https://drive.google.com/file/d/FILE_ID/view"</span>
+<span class="yaml-key">source</span>:          <span class="yaml-str">"กฟภ."</span>
+<span class="yaml-key">version</span>:         <span class="yaml-str">"1.0"</span>
+<span class="yaml-key">tags</span>:            <span class="yaml-arr">["PDPA", "ข้อมูลส่วนบุคคล", "เจ้าของข้อมูล", "DPO"]</span>
+<span class="yaml-key">cross_refs</span>:
+  - <span class="yaml-key">doc_id</span>:    <span class="yaml-str">"GUIDE-PDPA-001"</span>
+    <span class="yaml-key">doc_title</span>: <span class="yaml-str">"แนวปฏิบัติการคุ้มครองข้อมูลส่วนบุคคล"</span>
+    <span class="yaml-key">doc_link</span>:  <span class="yaml-str">"https://drive.google.com/file/d/GUIDE_ID/view"</span>
+    <span class="yaml-key">reason</span>:    <span class="yaml-str">"รายละเอียดปฏิบัติของระเบียบฉบับนี้"</span>
+    <span class="yaml-key">kb</span>:        <span class="yaml-str">"KB_COMPLIANCE"</span>           <span class="yaml-comment"># ระบุ KB ที่เอกสารนั้นอยู่ (ถ้าคนละ KB)</span>
+<span class="yaml-comment">---</span></pre>
+  </div>
+  <div class="callout callout-tip">
+    <div class="callout-title">💡 เหตุผลที่ต้องระบุ kb ใน cross_refs</div>
+    เมื่อ Orchestrator อ่าน Metadata เจอ <code>cross_refs[].kb = "KB_COMPLIANCE"</code> จะรู้ทันทีว่าต้องส่ง Query ไปยังอีก KB ด้วย ทำให้ระบบ Cross-KB Retrieval ทำงานได้อัตโนมัติ
+  </div>
+</div>
+
+<!-- MD STRUCTURE -->
+<div class="section" id="md-structure">
+  <div class="section-title">โครงสร้างเนื้อหา</div>
+  <h2>การจัดลำดับ Heading ใน Markdown</h2>
+  <div class="code-wrap">
+    <div class="code-label">
+      <span>markdown — โครงสร้างมาตรฐานเอกสารกฎระเบียบ</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="c"># ระเบียบการคุ้มครองข้อมูลส่วนบุคคล กฟภ. พ.ศ. 2566</span>
+
+<span class="c">## ภาพรวม</span>
+ระเบียบนี้กำหนดหลักเกณฑ์การเก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคล
+ของผู้ใช้บริการและพนักงาน กฟภ. ให้สอดคล้องกับ พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
+
+<span class="c">## คำนิยาม</span>
+| คำ | ความหมาย |
+|---|---|
+| ข้อมูลส่วนบุคคล | ข้อมูลที่ทำให้ระบุตัวบุคคลได้... |
+| เจ้าของข้อมูล | บุคคลธรรมดาซึ่งเป็นเจ้าของข้อมูล... |
+
+<span class="c">## หมวดที่ 1 — หลักการทั่วไป</span>
+
+<span class="c">### ข้อ 1 — วัตถุประสงค์</span>
+ระเบียบนี้มีวัตถุประสงค์เพื่อกำหนดแนวทาง...
+
+<span class="c">### ข้อ 2 — ขอบเขตการบังคับใช้</span>
+ระเบียบนี้บังคับใช้กับหน่วยงาน กฟภ. ทุกแห่ง...
+
+<span class="c">## หมวดที่ 2 — การเก็บรวบรวมข้อมูล</span>
+
+<span class="c">### ข้อ 5 — การจัดเก็บข้อมูลส่วนบุคคล</span>
+ผู้ควบคุมข้อมูลต้องจัดเก็บข้อมูลด้วยมาตรการที่เหมาะสม...
+
+<span class="c">## บทกำหนดโทษ</span>
+...
+
+<span class="c">## เอกสารที่เกี่ยวข้อง</span>
+- [แนวปฏิบัติฯ](https://...) — รายละเอียดการปฏิบัติ
+
+---
+*อัปเดตล่าสุด: 2566-06-01*</pre>
+  </div>
+  <div class="callout callout-info">
+    <div class="callout-title">ℹ หลักการตั้ง Heading</div>
+    <code>#</code> = ชื่อเอกสาร (1 ครั้งต่อไฟล์) · <code>##</code> = หมวด · <code>###</code> = ข้อ · <code>####</code> = วรรค/ย่อหน้า — Dify จะใช้ Heading เป็นจุดตัด Chunk โดยอัตโนมัติเมื่อตั้ง Splitter เป็น Regex
+  </div>
+</div>
+
+<!-- INTERNAL LINKS -->
+<div class="section" id="md-internal">
+  <div class="section-title">Internal Links</div>
+  <h2>การ Reference ภายในไฟล์เดียวกัน</h2>
+  <p>ใช้สำหรับอ้างอิงจาก ข้อ 5 ไปยัง ข้อ 12 ภายในระเบียบฉบับเดียวกัน</p>
+  <div class="code-wrap">
+    <div class="code-label">
+      <span>markdown — Internal anchor link</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="c">### ข้อ 5 — การจัดเก็บข้อมูลส่วนบุคคล</span>
+
+ผู้ควบคุมข้อมูลต้องจัดเก็บข้อมูลด้วยมาตรการรักษาความมั่นคงปลอดภัยที่เหมาะสม
+โดยให้ปฏิบัติตามแนวทางใน
+[ข้อ 12 — ระยะเวลาการเก็บรักษา](#ข้อ-12--ระยะเวลาการเก็บรักษา)
+และ [ข้อ 15 — การทำลายข้อมูล](#ข้อ-15--การทำลายข้อมูล)</pre>
+  </div>
+  <div class="callout callout-tip">
+    <div class="callout-title">💡 กฎการตั้งชื่อ Anchor</div>
+    ตัวพิมพ์เล็กทั้งหมด · แทนช่องว่างด้วย <code>-</code> · ตัดอักขระพิเศษออก (วงเล็บ / จุด) · เครื่องหมาย — ใช้ <code>--</code> · เช่น <code>ข้อ 12 — ระยะเวลา</code> → <code>#ข้อ-12--ระยะเวลา</code>
+  </div>
+</div>
+
+<!-- CROSS-DOC REF -->
+<div class="section" id="md-crossref">
+  <div class="section-title">Cross-Document Reference</div>
+  <h2>การ Reference ข้ามไฟล์ (ภายใน KB เดียวกัน)</h2>
+  <p>เมื่อ ระเบียบ ข้อ 5 ต้องการอ้างถึง แนวปฏิบัติ ข้อ 16–20 ที่อยู่คนละไฟล์แต่ KB เดียวกัน</p>
+
+  <h3>ฝั่งต้นทาง (ระเบียบ)</h3>
+  <div class="code-wrap">
+    <div class="code-label">
+      <span>markdown — REG-PDPA-001.md (ข้อ 5)</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="c">### ข้อ 5 — การจัดเก็บข้อมูลส่วนบุคคล</span>
+
+ผู้ควบคุมข้อมูลต้องจัดเก็บข้อมูลด้วยมาตรการรักษาความมั่นคงปลอดภัย
+ที่เหมาะสม ป้องกันการสูญหาย เข้าถึง ใช้ เปลี่ยนแปลง หรือเปิดเผยโดยไม่ได้รับอนุญาต
+
+> **📎 ดูแนวปฏิบัติเพิ่มเติม:**
+> ระเบียบข้อนี้กำหนดหลักการ — รายละเอียดวิธีปฏิบัติจริงอยู่ใน
+> **แนวปฏิบัติการคุ้มครองข้อมูลส่วนบุคคล ข้อ 16–20**
+> 📄 [เปิดเอกสาร](https://drive.google.com/file/d/GUIDE_ID/view)
+>
+> &lt;!-- XREF: doc_id=GUIDE-PDPA-001 articles=16,17,18,19,20 --&gt;
+
+**บทบัญญัติที่เกี่ยวข้อง:**
+- 📄 [แนวปฏิบัติฯ ข้อ 16–20](https://drive.google.com/file/d/GUIDE_ID/view) — วิธีการจัดเก็บ
+- 📄 [แบบฟอร์ม PDPA-03](https://drive.google.com/file/d/FORM_ID/view) — บันทึกกิจกรรมประมวลผล</pre>
+  </div>
+
+  <h3>ฝั่งปลายทาง (แนวปฏิบัติ)</h3>
+  <div class="code-wrap">
+    <div class="code-label">
+      <span>markdown — GUIDE-PDPA-001.md (ข้อ 16)</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="c">---</span>
+<span class="yaml-key">doc_id</span>:     <span class="yaml-str">"GUIDE-PDPA-001"</span>
+<span class="yaml-key">parent_ref</span>:
+  <span class="yaml-key">doc_id</span>:    <span class="yaml-str">"REG-PDPA-001"</span>
+  <span class="yaml-key">doc_title</span>: <span class="yaml-str">"ระเบียบการคุ้มครองข้อมูลส่วนบุคคล กฟภ. 2566"</span>
+  <span class="yaml-key">doc_link</span>:  <span class="yaml-str">"https://drive.google.com/file/d/REG_ID/view"</span>
+  <span class="yaml-key">articles</span>:  <span class="yaml-arr">[5, 7, 9]</span>
+<span class="c">---</span>
+
+> **📌 เอกสารนี้เป็นแนวปฏิบัติรองรับ:**
+> [ระเบียบการคุ้มครองข้อมูลส่วนบุคคล กฟภ. 2566](https://drive.google.com/file/d/REG_ID/view)
+> โดยเฉพาะ ข้อ 5, 7 และ 9
+>
+> &lt;!-- PARENT: doc_id=REG-PDPA-001 articles=5,7,9 --&gt;
+
+<span class="c">### ข้อ 16 — มาตรการทางเทคนิคในการจัดเก็บ</span>
+
+*[รองรับ ระเบียบฯ ข้อ 5 — การจัดเก็บข้อมูลส่วนบุคคล]*
+&lt;!-- REF_FROM: REG-PDPA-001 article=5 --&gt;
+
+การจัดเก็บข้อมูลส่วนบุคคลในระบบสารสนเทศต้องดำเนินการดังนี้...</pre>
+  </div>
+  <div class="callout callout-tip">
+    <div class="callout-title">💡 ทำไมต้องมี HTML Comment</div>
+    Comment <code>&lt;!-- XREF: ... --&gt;</code> ไม่แสดงผลบนหน้า แต่ถูก Chunk ไปพร้อมเนื้อหา ทำให้ LLM ใน Dify เห็นข้อมูล Cross-Reference ได้แม้ไม่มีการ render
+  </div>
+</div>
+
+<!-- CROSS-KB REF -->
+<div class="section" id="md-crosskb">
+  <div class="section-title">Cross-KB Reference</div>
+  <h2>การ Reference ข้าม KB ต่างกัน</h2>
+  <p>กรณีที่ <strong>ระเบียบ</strong> อยู่ใน KB_IT_CYBER แต่ <strong>แนวปฏิบัติ</strong> อยู่ใน KB_COMPLIANCE — ต้องแจ้ง KB ปลายทางใน Metadata ด้วย</p>
+  <div class="code-wrap">
+    <div class="code-label">
+      <span>markdown — cross_refs ที่ระบุ kb ปลายทาง</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre><span class="c">---</span>
+<span class="yaml-key">doc_id</span>:    <span class="yaml-str">"REG-PDPA-001"</span>
+<span class="yaml-key">domain</span>:    <span class="yaml-str">"KB_IT_CYBER"</span>
+<span class="yaml-key">cross_refs</span>:
+  - <span class="yaml-key">doc_id</span>:    <span class="yaml-str">"GUIDE-PDPA-001"</span>
+    <span class="yaml-key">doc_title</span>: <span class="yaml-str">"แนวปฏิบัติการคุ้มครองข้อมูลส่วนบุคคล"</span>
+    <span class="yaml-key">doc_link</span>:  <span class="yaml-str">"https://drive.google.com/file/d/GUIDE_ID/view"</span>
+    <span class="yaml-key">kb</span>:        <span class="yaml-str">"KB_COMPLIANCE"</span>  <span class="yaml-comment"># &lt;-- บอก Orchestrator ว่าต้องดึง KB นี้ด้วย</span>
+    <span class="yaml-key">articles</span>:  <span class="yaml-arr">[16, 17, 18, 19, 20]</span>
+    <span class="yaml-key">reason</span>:    <span class="yaml-str">"รายละเอียดวิธีปฏิบัติสำหรับข้อ 5"</span>
+<span class="c">---</span>
+
+<span class="c">### ข้อ 5 — การจัดเก็บข้อมูลส่วนบุคคล</span>
+
+> **📎 ดูแนวปฏิบัติเพิ่มเติม (KB: Compliance):**
+> 📄 [แนวปฏิบัติฯ ข้อ 16–20](https://drive.google.com/file/d/GUIDE_ID/view)
+>
+> &lt;!-- XREF: doc_id=GUIDE-PDPA-001 kb=KB_COMPLIANCE articles=16,17,18,19,20 --&gt;</pre>
+  </div>
+  <div class="callout callout-warn">
+    <div class="callout-title">⚠ สิ่งที่ Orchestrator ต้องทำเมื่อเจอ cross_refs.kb</div>
+    เมื่อ Retrieved Chunk มี comment <code>kb=KB_COMPLIANCE</code> — Orchestrator จะต้องเพิ่ม <code>"KB_COMPLIANCE"</code> เข้าใน <code>kb_targets</code> array และ Workflow จะ trigger Retrieval Node ของ KB นั้นเพิ่มเติม (ดูรายละเอียดในไฟล์ Dify Workflow)
+  </div>
+</div>
+
+<!-- FORMATS -->
+<div class="section" id="md-formats">
+  <div class="section-title">Format ต่างประเภท</div>
+  <h2>การจัดการเอกสารแต่ละรูปแบบ</h2>
+  <div class="tbl-wrap">
+    <table>
+      <tr>
+        <th>ประเภทเอกสาร</th>
+        <th>วิธีจัดการ</th>
+        <th>ข้อควรระวัง</th>
+      </tr>
+      <tr>
+        <td><span class="badge badge-coral">PDF สแกน</span></td>
+        <td>OCR ก่อน → ตรวจสอบเลขข้อ → แปลง</td>
+        <td>ตัวเลข OCR ผิดพลาดบ่อย โดยเฉพาะ ๑, ๒, ๓ ไทย</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">Word (Heading)</span></td>
+        <td>Map Heading 1→<code>#</code>, H2→<code>##</code>, H3→<code>###</code></td>
+        <td>ตรวจ Heading ที่ใช้ Bold แทน Heading Style</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-amber">ประกาศไม่มีหมวด</span></td>
+        <td>ใช้ <code>## ข้อ X</code> เป็น Section หลัก</td>
+        <td>เพิ่ม <code>doc_type: "ประกาศ"</code> ใน Metadata</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-teal">กฎกระทรวง</span></td>
+        <td>เพิ่ม <code>section_type: "กฎกระทรวง"</code> ใน YAML</td>
+        <td>มักมี "มาตรา" แทน "ข้อ" — ปรับ Regex Splitter</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">ตารางอ้างอิง</span></td>
+        <td>แปลงเป็น Markdown Table ทุกตาราง</td>
+        <td>Merged cell ต้องแยกเป็นแถวแทน</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- PROMPT -->
+<div class="section" id="md-prompt">
+  <div class="section-title">Prompt สร้าง Markdown</div>
+  <h2>Prompt สำหรับ LLM แปลงเอกสารเป็น Markdown</h2>
+  <div class="code-wrap">
+    <div class="code-label">
+      <span>prompt — ใช้กับ Claude / GPT เพื่อแปลงเอกสาร</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre>## Task: Convert Thai Regulation to Structured Markdown
+
+แปลงเอกสารกฎระเบียบไทยต่อไปนี้เป็น Markdown พร้อม Metadata
+
+## Input Document:
+{{raw_text_or_pdf_content}}
+
+## Output Format ที่ต้องการ:
+
+---
+doc_id: "REG-[DOMAIN]-[NUMBER]"       # เช่น REG-PDPA-001
+doc_title: "ชื่อระเบียบเต็ม"
+doc_type: "ระเบียบ|กฎกระทรวง|ประกาศ|คำสั่ง|แนวปฏิบัติ"
+domain: "KB_IT_CYBER|KB_HR_PROC|KB_OPERATIONS|KB_COMPLIANCE"
+sub_domain: "PDPA|Cybersecurity|HR|Procurement|Safety|ISO"
+effective_date: "YYYY-MM-DD"
+doc_link: "{{google_drive_link}}"
+source: "กฟภ.|กระทรวงฯ|สำนักนายกฯ"
+version: "1.0"
+tags: ["คำสำคัญ1", "คำสำคัญ2"]
+cross_refs: []    # จะเพิ่มทีหลังเมื่อทราบเอกสารเชื่อมโยง
+---
+
+# {{ชื่อระเบียบ}}
+
+## ภาพรวม
+(สรุป 2–3 ประโยค)
+
+## คำนิยาม (ถ้ามี)
+| คำ | ความหมาย |
+|---|---|
+
+## หมวดที่ 1 — {{ชื่อหมวด}}
+
+### ข้อ 1 — {{ชื่อข้อ}}
+{{เนื้อหา}}
+
+## บทกำหนดโทษ (ถ้ามี)
+
+## เอกสารที่เกี่ยวข้อง
+
+---
+*อัปเดตล่าสุด: {{date}}*
+
+## กฎการแปลง:
+1. รักษาหมายเลข ข้อ/หมวด/มาตรา ตามต้นฉบับทุกตัว
+2. ถ้าเอกสารมีตาราง → Markdown Table
+3. ถ้าเอกสารมีรายการ → Bullet หรือ Numbered List
+4. ห้ามสรุปหรือตัดเนื้อหาสำคัญออก
+5. คำศัพท์เทคนิคให้คงไว้ตามต้นฉบับ
+6. Metadata block ต้องอยู่บนสุดเสมอ (YAML frontmatter)</pre>
+  </div>
+
+  <h3>Prompt สร้าง Cross-Reference อัตโนมัติ</h3>
+  <div class="code-wrap">
+    <div class="code-label">
+      <span>prompt — ใช้เมื่อมีเอกสาร 2 ฉบับที่เชื่อมกัน</span>
+      <button class="copy-btn" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre>## Task: สร้าง Cross-Reference Markdown
+
+คุณได้รับเอกสาร 2 ฉบับ:
+- เอกสาร A (ต้นทาง): {{doc_a_content}}
+  doc_id={{doc_a_id}}  link={{doc_a_link}}  kb={{doc_a_kb}}
+- เอกสาร B (ปลายทาง): {{doc_b_content}}
+  doc_id={{doc_b_id}}  link={{doc_b_link}}  kb={{doc_b_kb}}
+
+## งาน
+1. วิเคราะห์หาความเชื่อมโยงระหว่างข้อต่างๆ
+2. เพิ่ม Cross-Reference Block ทันทีหลังเนื้อหาข้อที่เชื่อมกัน:
+
+> **📎 ดูแนวปฏิบัติเพิ่มเติม:**
+> [ชื่อเอกสาร B ข้อ XX]({{doc_b_link}})
+>
+> &lt;!-- XREF: doc_id={{doc_b_id}} kb={{doc_b_kb}} articles=XX,YY --&gt;
+
+3. เพิ่ม cross_refs ใน YAML Frontmatter ของเอกสาร A (ระบุ kb ถ้าต่าง KB)
+4. เพิ่ม parent_ref ใน YAML Frontmatter ของเอกสาร B
+
+## กฎ
+- ระบุเฉพาะข้อที่เชื่อมกันจริงเท่านั้น
+- ถ้าข้อใน A เชื่อมหลายข้อใน B ให้ระบุช่วง: articles=16,17,18,19,20
+- ส่วนที่มองเห็น: ภาษาไทย · HTML Comment: ภาษาอังกฤษเท่านั้น</pre>
+  </div>
+</div>
+
+<!-- EMBEDDING -->
+<div class="section" id="kb-embed">
+  <div class="section-title">Embedding Model</div>
+  <h2>การตั้งค่า Embedding</h2>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">แนะนำ: BAAI/bge-m3</div>
+      <span class="badge badge-teal">Multilingual</span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Parameter</th><th>ค่า</th><th>เหตุผล</th></tr>
+        <tr><td>Model</td><td><code>BAAI/bge-m3</code></td><td>รองรับไทย-อังกฤษในเวกเตอร์เดียวกัน</td></tr>
+        <tr><td>Dimension</td><td><code>1024</code></td><td>ความละเอียดสูง เหมาะกับเอกสารกฎหมาย</td></tr>
+        <tr><td>Max Tokens</td><td><code>8192</code></td><td>รองรับ Chunk ขนาดใหญ่</td></tr>
+        <tr><td>Normalize</td><td><code>true</code></td><td>จำเป็นสำหรับ Cosine similarity</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CHUNKING -->
+<div class="section" id="kb-chunk">
+  <div class="section-title">Chunking Strategy</div>
+  <h2>การตั้งค่าการตัด Chunk</h2>
+  <div class="tbl-wrap">
+    <table>
+      <tr>
+        <th>KB</th><th>Chunk Size</th><th>Overlap</th><th>Splitter Regex</th>
+      </tr>
+      <tr>
+        <td><code>KB_IT_CYBER</code></td><td>500 tokens</td><td>100</td>
+        <td><code>ข้อ\s+\d+|หมวด\s+\d+|มาตรา\s+\d+</code></td>
+      </tr>
+      <tr>
+        <td><code>KB_HR_PROC</code></td><td>600 tokens</td><td>100</td>
+        <td><code>ข้อ\s+\d+|หมวด\s+\d+</code></td>
+      </tr>
+      <tr>
+        <td><code>KB_OPERATIONS</code></td><td>400 tokens</td><td>80</td>
+        <td><code>ข้อ\s+\d+|ส่วนที่\s+\d+</code></td>
+      </tr>
+      <tr>
+        <td><code>KB_COMPLIANCE</code></td><td>500 tokens</td><td>100</td>
+        <td><code>ข้อ\s+\d+|หมวด\s+\d+|มาตรฐาน\s+ISO</code></td>
+      </tr>
+    </table>
+  </div>
+  <div class="callout callout-info">
+    <div class="callout-title">ℹ เหตุผลที่ใช้ Regex Splitter</div>
+    เอกสารกฎระเบียบไทยมีโครงสร้าง "ข้อ X" ชัดเจน การตัดตาม Regex ทำให้แต่ละ Chunk เป็นหนึ่งข้อพอดี ไม่ตัดกลางเนื้อหา ผลการ Retrieval แม่นยำกว่าการตัดตาม Token Count อย่างเดียว
+  </div>
+</div>
+
+<!-- RETRIEVAL -->
+<div class="section" id="kb-retrieval">
+  <div class="section-title">Retrieval Config</div>
+  <h2>การตั้งค่า Knowledge Retrieval Node</h2>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>Parameter</th><th>Primary KB</th><th>Secondary KB</th><th>เหตุผล</th></tr>
+      <tr><td>Top K</td><td><code>5</code></td><td><code>3</code></td><td>Secondary ลด Top K เพราะเป็นข้อมูลเสริม</td></tr>
+      <tr><td>Score Threshold</td><td><code>0.50</code></td><td><code>0.45</code></td><td>Secondary ยืดหยุ่นกว่าเล็กน้อย</td></tr>
+      <tr><td>Search Type</td><td><code>Hybrid</code></td><td><code>Hybrid</code></td><td>รวม Semantic + Keyword ดีกว่า Pure Vector</td></tr>
+      <tr><td>Alpha (Hybrid)</td><td><code>0.7</code></td><td><code>0.6</code></td><td>เน้น Semantic มากกว่า Keyword</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- RERANK -->
+<div class="section" id="kb-rerank">
+  <div class="section-title">Reranking</div>
+  <h2>การตั้งค่า Rerank Model</h2>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">แนะนำ: BAAI/bge-reranker-v2-m3</div>
+      <span class="badge badge-blue">Cross-Encoder</span>
+    </div>
+    <p style="font-size:13.5px;color:var(--text2);margin-bottom:1rem">Reranker ทำงานหลังจาก Retrieval ได้ Chunk มาแล้ว โดยนำ Query + Chunk ทั้งหมดไปประเมินคะแนนใหม่แบบ Cross-Encoder ซึ่งแม่นยำกว่า Bi-Encoder (Embedding) มาก</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">เปิด Rerank ใน Knowledge Retrieval Node</div>
+          <div class="step-desc">Settings → Rerank Model → เลือก <code>bge-reranker-v2-m3</code> → Top N After Rerank = 3</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">ตั้งค่า Rerank Score Threshold</div>
+          <div class="step-desc">Min Rerank Score = <code>0.3</code> — ตัด Chunk ที่ Reranker ให้คะแนนต่ำออก แม้จะผ่าน Vector Score</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Cross-KB: Rerank รวมกัน</div>
+          <div class="step-desc">หลัง Merge Chunks จาก Primary + Secondary KB แล้ว ให้ส่ง Chunks ทั้งหมดผ่าน Reranker อีกรอบใน Code Node ก่อนส่งให้ Answer LLM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1500);
+  });
+}
+
+// Active sidebar on scroll
+const sections = document.querySelectorAll('.section');
+const sideLinks = document.querySelectorAll('aside a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  sideLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>

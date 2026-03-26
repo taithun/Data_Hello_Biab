@@ -1,5 +1,26 @@
-<html>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าหลัก - My GitHub Project</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; }
+        nav { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+        nav a { margin-right: 15px; text-decoration: none; color: blue; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+    </style>
+</head>
 <body>
-<a href="ai_api_pricing_chart.html">ราคา AI ในอนาคต</a>
+
+    <nav>
+        <a href="ai_api_pricing_chart.html">ราคา AI ในอนาคต</a>
+    </nav>
+
+    <h1>ยินดีต้อนรับสู่หน้าหลัก</h1>
+    <p>นี่คือตัวอย่างการสร้างลิงก์ไปยังหน้าอื่นใน Repository เดียวกันบน GitHub</p>
+    
+    <p>คลิกที่นี่เพื่อไปหน้า <a href="about.html">About Us</a></p>
+
 </body>
 </html>

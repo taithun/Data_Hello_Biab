@@ -338,7 +338,7 @@ h1 {
     <div class="goal-desc">ต้นทุน API ยังสูงกว่าระบบค้นหาเดิมมาก เพราะนับเฉพาะต้นทุนค่าแรงที่ประหยัดได้ แนวทางลดต้นทุน AI ในอนาคตมี 2 ทางเลือก:</div>
     <div class="goal-item">
       <div class="goal-dot" style="background:#a371f7;"></div>
-      <div><strong>Digital-native Regulation</strong> — จัดทำกฎระเบียบในรูปแบบ Structured Digital ตั้งแต่ต้น (JSON-LD, XML Schema) ลด Token ใน Answer LLM ได้ ~40–60% เพราะ Context กระชับขึ้น → ต้นทุน API ลดได้ ~30–40%</div>
+      <div><strong>Digital-native Regulation</strong> — จัดทำกฎระเบียบเป็น Structured Format (JSON-LD, XML Schema) ตั้งแต่ต้น ลด Input tokens ใน Answer LLM จาก ~3,500 → ~1,500 tokens (~57%) → ต้นทุน API ลดได้ ~33% ทุก Scenario | Phase 1: 1.045 → 0.700 ฿/query · Phase 2: 1.32 → 0.884 ฿/query</div>
     </div>
     <div class="goal-item">
       <div class="goal-dot" style="background:#388bfd;"></div>
@@ -365,6 +365,12 @@ const SAVE_PER_SESSION = SAVE_MIN * CPM;             // 65.63 ฿
 const CPQ_P1 = 1.045, CPQ_P2 = 1.32, CPQ_LOCAL = 0.336;
 const INFRA_P1 = 60000, INFRA_P2 = 96000, INFRA_LOCAL = 128760;
 
+// Digital-native Regulation: Structured format ลด Input tokens Answer LLM ~57%
+// Answer LLM: 3,500 tokens → ~1,500 tokens | HyDE: 200 tokens → ~120 tokens
+// Cost ลด: Step5 input savings + HyDE savings ≈ -0.350 ฿/query (~33%)
+const CPQ_P1_DN = 1.045 * (1 - 0.33);   // ~0.700 ฿/query
+const CPQ_P2_DN = 1.32  * (1 - 0.33);   // ~0.884 ฿/query
+
 const SCENARIOS = {
   ga4:      { users: 49,  qps: 1, label: 'GA4 Baseline' },
   realistic:{ users: 200, qps: 1, label: 'Realistic' },
@@ -386,8 +392,10 @@ function calcCosts(s) {
   const queries  = sessions * qps;
   return {
     manual:  sessions * MANUAL_PER_SESSION,
-    p1:      queries * CPQ_P1 + INFRA_P1,
-    p2:      queries * CPQ_P2 + INFRA_P2,
+    p1:      queries * CPQ_P1    + INFRA_P1,
+    dn_p1:   queries * CPQ_P1_DN + INFRA_P1,
+    p2:      queries * CPQ_P2    + INFRA_P2,
+    dn_p2:   queries * CPQ_P2_DN + INFRA_P2,
     local:   queries * CPQ_LOCAL + INFRA_LOCAL,
   };
 }
@@ -396,24 +404,40 @@ const BAR_DEFS = [
   {
     key: 'manual',
     label: 'การค้นหาแบบเดิม',
-    sublabel: 'ต้นทุนค่าแรงบุคลากร',
+    sublabel: 'ต้นทุนค่าแรงบุคลากร (Baseline)',
     color: '#6e7681',
     note: null,
     highlight: true,
   },
   {
     key: 'p1',
-    label: 'Hello Biab — LLM API (Phase 1)',
+    label: 'Hello Biab — LLM API Phase 1',
     sublabel: 'IT/Cyber · 4 KB · 1.045 ฿/query',
     color: '#388bfd',
     note: null,
   },
   {
+    key: 'dn_p1',
+    label: 'Hello Biab — Phase 1 + Digital-native Regulation',
+    sublabel: 'Structured JSON/XML → Input tokens ลด 57% → ~0.700 ฿/query (-33%)',
+    color: '#85B7EB',
+    note: '* ต้องลงทุน Re-digitize เอกสารกฎระเบียบก่อน — ต้นทุนครั้งเดียว',
+    indent: true,
+  },
+  {
     key: 'p2',
-    label: 'Hello Biab — LLM API (Phase 2)',
+    label: 'Hello Biab — LLM API Phase 2',
     sublabel: 'ครบทุกหมวด · 15 KB · 1.32 ฿/query (blended)',
     color: '#534AB7',
     note: null,
+  },
+  {
+    key: 'dn_p2',
+    label: 'Hello Biab — Phase 2 + Digital-native Regulation',
+    sublabel: 'Structured ทุก KB → ~0.884 ฿/query (-33%)',
+    color: '#AFA9EC',
+    note: '* ยิ่งมี KB มาก ผลลัพธ์ยิ่งชัด เพราะ Context Window ไม่ถูกใช้สิ้นเปลือง',
+    indent: true,
   },
   {
     key: 'local',
@@ -452,25 +476,53 @@ function render() {
 
   BAR_DEFS.forEach((def, idx) => {
     const val = costs[def.key];
-    const pct = Math.max(2, (val / maxCost) * 100);
-    const savings = def.key !== 'manual'
-      ? ' (ประหยัดได้ ' + fmtFull(Math.round(costs.manual - val)) + ' ฿/ปี)'
-      : '';
+    const pct = Math.max(1.5, (val / maxCost) * 100);
+
+    // Savings vs manual (for non-manual bars)
+    const savingsVsManual = def.key !== 'manual'
+      ? fmtFull(Math.round(costs.manual - val)) + ' ฿/ปี'
+      : null;
+
+    // For DN bars: savings vs parent (p1 or p2)
+    const parentKey = def.key === 'dn_p1' ? 'p1' : def.key === 'dn_p2' ? 'p2' : null;
+    const savingsVsParent = parentKey
+      ? fmtFull(Math.round(costs[parentKey] - val)) + ' ฿/ปี ถูกกว่า ' + def.key.startsWith('dn') ? '' : ''
+      : null;
 
     const group = document.createElement('div');
     group.className = 'bar-group';
-    group.style.animationDelay = (idx * 0.1) + 's';
+    group.style.animationDelay = (idx * 0.08) + 's';
+    if (def.indent) {
+      group.style.paddingLeft = '24px';
+      group.style.borderLeft = '2px solid #30363d';
+      group.style.marginLeft = '12px';
+      group.style.marginTop = '-8px';
+    }
+
+    const tagHtml = parentKey
+      ? `<span style="font-size:10px;font-family:'IBM Plex Mono',monospace;background:#1a3827;color:#3fb950;padding:2px 7px;border-radius:100px;margin-left:8px;">
+           -${fmtFull(Math.round(costs[parentKey] - val))} ฿/ปี vs ${parentKey.toUpperCase()}
+         </span>`
+      : '';
+
+    const savingsBadge = savingsVsManual
+      ? `<span style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:#6e7681;margin-left:8px;">ประหยัด ${savingsVsManual} vs manual</span>`
+      : '';
 
     group.innerHTML = `
       <div class="bar-label-row">
-        <div class="bar-label">${def.highlight ? '<strong>' + def.label + '</strong>' : def.label}
+        <div class="bar-label" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+          ${def.highlight ? '<strong>' + def.label + '</strong>' : def.label}
           <span style="font-size:11px;color:#6e7681;"> — ${def.sublabel}</span>
+          ${tagHtml}
         </div>
-        <div class="bar-value" style="color:${def.color};">${fmtFull(Math.round(val))} ฿/ปี</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <div class="bar-value" style="color:${def.color};">${fmtFull(Math.round(val))} ฿/ปี</div>
+        </div>
       </div>
       <div class="bar-track">
         <div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${def.color};">
-          ${savings}
+          ${savingsBadge}
         </div>
       </div>
       ${def.note ? `<div class="bar-note">${def.note}</div>` : ''}

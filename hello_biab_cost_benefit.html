@@ -488,37 +488,71 @@
   <div class="section active" id="tab-overview">
     <p class="sec-title">key metrics — สรุปภาพรวม</p>
 
-    <div class="kpi-grid">
-      <div class="kpi">
-        <div class="kpi-label">Baseline sessions/วันทำงาน (GA4 จริง)</div>
-        <div class="kpi-val kv-blue">~49</div>
-        <div class="kpi-sub">30,474 sessions ÷ 625 วัน (2.5 ปี)</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:20px;">
+      <div style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">ปรับตัวแปร — ผลจะอัปเดตทุกตัวเลขในหน้านี้ทันที</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Users/วัน (Realistic Scenario)</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="range" min="49" max="500" step="1" value="200" id="sl-users" style="flex:1;">
+            <span style="font-size:13px;font-weight:500;min-width:60px;text-align:right;font-family:'IBM Plex Mono',monospace;" id="sl-users-out">200 คน</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Queries/Session <span style="color:var(--amber);font-size:11px;">(ส่งผลต่อ Cost เท่านั้น)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="range" min="1" max="5" step="1" value="1" id="sl-qps" style="flex:1;">
+            <span style="font-size:13px;font-weight:500;min-width:60px;text-align:right;font-family:'IBM Plex Mono',monospace;" id="sl-qps-out">1 query</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Phase</div>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            <button id="btn-p1" onclick="setPhase(1)" style="flex:1;padding:5px;font-size:11px;font-family:'IBM Plex Mono',monospace;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;">Phase 1 (1.045 ฿)</button>
+            <button id="btn-p2" onclick="setPhase(2)" style="flex:1;padding:5px;font-size:11px;font-family:'IBM Plex Mono',monospace;background:var(--bg3);color:var(--text2);border:1px solid var(--border);border-radius:4px;cursor:pointer;">Phase 2 (1.32 ฿)</button>
+          </div>
+        </div>
       </div>
-      <div class="kpi">
-        <div class="kpi-label">ต้นทุน/Query — Workflow จริง</div>
-        <div class="kpi-val kv-amber">~1.04 ฿</div>
-        <div class="kpi-sub">HyDE + Embed + Rerank + LLM-Large</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">ต้นทุต Hello Biab Phase 1/ปี</div>
-        <div class="kpi-val kv-red">~110K ฿</div>
-        <div class="kpi-sub">200 users/วัน · 4 KB · Infra รวม</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">B/C Ratio — Realistic Scenario</div>
-        <div class="kpi-val kv-blue">14x</div>
-        <div class="kpi-sub">Phase 1 · 200 users/วัน</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">ROI ปีแรก — Realistic</div>
-        <div class="kpi-val kv-green">1,302%</div>
-        <div class="kpi-sub">Payback &lt; 1 เดือน</div>
+      <div style="margin-top:10px;padding:8px 12px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace;" id="formula-display">
+        Benefit = 200 × 240 × 54.68 ฿ = 2,627,040 ฿ | Cost = 200 × 240 × 1 × 1.045 + 60,000 = 110,160 ฿
       </div>
     </div>
 
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Queries/ปี (รวม Follow-up)</div>
+        <div class="kpi-val kv-amber" id="kpi-queries">48,000</div>
+        <div class="kpi-sub" id="kpi-queries-sub">200 × 240 × 1 query</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">ต้นทุน Hello Biab/ปี</div>
+        <div class="kpi-val kv-red" id="kpi-cost">110K ฿</div>
+        <div class="kpi-sub" id="kpi-cost-sub">API + Infra รวม</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Benefit/ปี (ค่าแรงที่ประหยัด)</div>
+        <div class="kpi-val kv-green" id="kpi-benefit">2.63M ฿</div>
+        <div class="kpi-sub">Sessions × 54.68 ฿ (คงที่ตาม Sessions)</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">B/C Ratio</div>
+        <div class="kpi-val kv-blue" id="kpi-bc">23.8x</div>
+        <div class="kpi-sub" id="kpi-bc-sub">Benefit ÷ Total Cost</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">ROI ปีแรก</div>
+        <div class="kpi-val kv-green" id="kpi-roi">2,285%</div>
+        <div class="kpi-sub" id="kpi-payback">Payback &lt; 1 เดือน</div>
+      </div>
+    </div>
+
+    <div style="background:var(--amber-dim);border:1px solid var(--amber);border-radius:6px;padding:8px 14px;font-size:11px;color:var(--amber);margin-bottom:16px;font-family:'IBM Plex Mono',monospace;">
+      ⚠ Benefit คงที่ตาม Sessions ไม่ใช่ Queries — 15-30 นาทีครอบคลุม Follow-up อยู่แล้ว | ยิ่ง Queries/Session สูง Cost สูงขึ้น แต่ Benefit เท่าเดิม → B/C ลดลง (Conservative)
+    </div>
+
     <div class="chart-card">
-      <div class="chart-title">ต้นทุนรวม/ปี เทียบ 3 Scenarios (฿)</div>
-      <div class="chart-desc">ต้นทุนค้นหาแบบเดิม vs ต้นทุต Hello Biab vs Net Saving · ใช้ 240 วันทำงาน/ปี, เงินเดือน 35,000 ฿/เดือน, ประหยัด 18 นาที/query</div>
+      <div class="chart-title" id="chart-overview-title">ต้นทุนรวม/ปี เทียบ 3 Scenarios — Phase 1 (฿)</div>
+      <div class="chart-desc" id="chart-overview-desc">ต้นทุนค้นหาแบบเดิม vs ต้นทุน Hello Biab vs Net Saving · 240 วัน/ปี · เงินเดือน 35,000 ฿ · ประหยัด 18 นาที/session</div>
       <div class="legend">
         <div class="legend-item"><div class="legend-sq" style="background:#6e7681;"></div>ต้นทุนแรงงานเดิม</div>
         <div class="legend-item"><div class="legend-sq" style="background:#388bfd;"></div>ต้นทุต Hello Biab (API+Infra)</div>
@@ -545,6 +579,86 @@
         <div style="position:relative;height:180px;"><canvas id="c-token-pie"></canvas></div>
       </div>
     </div>
+
+    <p class="sec-title">reality check — ตัวเลขที่น่าเชื่อถือกว่า ROI</p>
+
+    <div style="background:var(--amber-dim);border:1px solid var(--amber);border-radius:8px;padding:14px 18px;margin-bottom:16px;font-size:12px;color:var(--amber);">
+      <strong>ทำไม ROI สูงๆ ถึงอาจ "หลอก":</strong> Benefit คือ "เวลาที่คืนกลับมา" ไม่ใช่เงินสด — ถ้าเวลา 18 นาทีที่ประหยัดได้ไม่ถูกนำไปใช้งานที่สร้างมูลค่าเพิ่ม ตัวเลข ROI ก็ไม่เกิดขึ้นจริง และ Cost ที่คำนวณยังไม่รวม Setup, Training, และ IT overhead
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px;">
+
+      <div class="kpi" style="border-left:3px solid var(--blue);">
+        <div class="kpi-label">Framing 1 — เวลาที่คืนกลับมา</div>
+        <div class="kpi-val kv-blue" id="rc-fte">7.5 FTE</div>
+        <div class="kpi-sub" id="rc-fte-sub">เทียบเท่าพนักงานเต็มเวลา/ปี ที่ได้เวลาคืน</div>
+      </div>
+
+      <div class="kpi" style="border-left:3px solid var(--green);">
+        <div class="kpi-label">Framing 2 — ต้นทุนต่อคำถาม</div>
+        <div class="kpi-val kv-green" id="rc-cpq">1.05 ฿</div>
+        <div class="kpi-sub" id="rc-cpq-sub">vs ค้นหาเอง ~80 ฿/ครั้ง · ถูกกว่า 76 เท่า</div>
+      </div>
+
+      <div class="kpi" style="border-left:3px solid var(--amber);">
+        <div class="kpi-label">Framing 3 — Break-even Users</div>
+        <div class="kpi-val kv-amber" id="rc-breakeven">8</div>
+        <div class="kpi-sub" id="rc-breakeven-sub">คน/วัน ก็คุ้มทุนแล้ว (GA4 baseline = 49)</div>
+      </div>
+
+      <div class="kpi" style="border-left:3px solid var(--purple);">
+        <div class="kpi-label">Framing 4 — เทียบจ้างคนเพิ่ม</div>
+        <div class="kpi-val kv-purple" id="rc-headcount">0.26</div>
+        <div class="kpi-sub" id="rc-headcount-sub">FTE ที่ต้องจ้างเพิ่ม vs Hello Biab ให้บริการ 200 คน/วัน</div>
+      </div>
+
+      <div class="kpi" style="border-left:3px solid var(--red);">
+        <div class="kpi-label">Framing 5 — Conservative Floor</div>
+        <div class="kpi-val kv-red" id="rc-floor">10%</div>
+        <div class="kpi-sub" id="rc-floor-sub">แม้ใช้งานจริงแค่ 10% ของสมมติฐาน ก็ยังคุ้มทุน</div>
+      </div>
+
+      <div class="kpi" style="border-left:3px solid var(--teal);">
+        <div class="kpi-label">Framing 6 — ต้นทุนที่ยังไม่นับ</div>
+        <div class="kpi-val" style="color:var(--teal);font-size:16px;">~150-300K ฿</div>
+        <div class="kpi-sub">Setup + Training + IT overhead (ปีแรก) ควรระบุในการนำเสนอ</div>
+      </div>
+
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:500;margin-bottom:12px;">ต้นทุนที่ซ่อนอยู่ — ควรระบุให้ครบเมื่อนำเสนอต่อผู้บริหาร</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="font-size:12px;padding:8px 12px;background:var(--bg3);border-radius:6px;">
+          <div style="color:var(--text2);margin-bottom:3px;">Setup & Development (ปีแรก)</div>
+          <div style="font-family:'IBM Plex Mono',monospace;color:var(--amber);">~80,000–150,000 ฿</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">เวลาทีม IT + ค่าจ้างที่ปรึกษา + Testing</div>
+        </div>
+        <div style="font-size:12px;padding:8px 12px;background:var(--bg3);border-radius:6px;">
+          <div style="color:var(--text2);margin-bottom:3px;">Change Management & Training</div>
+          <div style="font-family:'IBM Plex Mono',monospace;color:var(--amber);">~30,000–80,000 ฿</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">อบรมผู้ใช้ คู่มือ Communication</div>
+        </div>
+        <div style="font-size:12px;padding:8px 12px;background:var(--bg3);border-radius:6px;">
+          <div style="color:var(--text2);margin-bottom:3px;">Knowledge Base Preparation</div>
+          <div style="font-family:'IBM Plex Mono',monospace;color:var(--amber);">~40,000–100,000 ฿</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">จัดทำ Normalize เอกสารกฎระเบียบทุก KB</div>
+        </div>
+        <div style="font-size:12px;padding:8px 12px;background:var(--bg3);border-radius:6px;">
+          <div style="color:var(--text2);margin-bottom:3px;">Ongoing IT Support (0.25–0.5 FTE)</div>
+          <div style="font-family:'IBM Plex Mono',monospace;color:var(--amber);">~105,000–210,000 ฿/ปี</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Monitor, Update KB, Tune Prompts</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:8px 12px;background:var(--red-dim);border-radius:6px;font-size:12px;color:var(--red);">
+        ถ้านับต้นทุนซ่อนครบ: ปีแรก Total Cost อาจสูงถึง <strong>~400,000–650,000 ฿</strong> → B/C จริงปีแรก ~5–8x (ยังคุ้มค่า แต่ Credible กว่ามาก)
+      </div>
+    </div>
+
+    <div style="background:var(--green-dim);border:1px solid var(--green);border-radius:8px;padding:14px 18px;font-size:12px;color:var(--green);">
+      <strong>วิธีนำเสนอที่แนะนำ:</strong> อย่าพูดตัว ROI% — ใช้ Framing 1–4 แทน โดยเฉพาะ <em>"ประหยัด X FTE-ปี"</em> และ <em>"ต้นทุนต่อคำถาม 1 บาท เทียบค้นเองที่ 80 บาท"</em> ซึ่งจับต้องได้และป้องกันการโต้แย้งได้ดีกว่า
+    </div>
+
   </div>
 
   <!-- ===== USER JOURNEY ===== -->
@@ -1147,19 +1261,24 @@
     <div class="calc-block">
       <h3>สูตรคำนวณ B/C Ratio และ ROI ฉบับเต็ม</h3>
       <div class="formula">
-        <span class="comment">// === ฝั่ง BENEFIT ===</span><br>
-        cost_per_min <span class="op">=</span> salary <span class="op">÷</span> (work_days <span class="op">×</span> hrs_per_day <span class="op">×</span> <span class="val">60</span>)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="op">=</span> <span class="val">35,000</span> <span class="op">÷</span> (<span class="val">240 × 8 × 60</span>) <span class="op">=</span> <span class="val">3.038 ฿/นาที</span><br><br>
+        <span class="comment">// === ฝั่ง BENEFIT — คงที่ตาม Sessions ไม่ใช่ Queries ===</span><br>
+        cost_per_min <span class="op">=</span> salary/เดือน <span class="op">÷</span> (วันทำงาน/เดือน <span class="op">×</span> hrs_per_day <span class="op">×</span> <span class="val">60</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="op">=</span> <span class="val">35,000</span> <span class="op">÷</span> (<span class="val">20 × 8 × 60</span>) <span class="op">=</span> <span class="val">3.646 ฿/นาที</span><br><br>
         benefit_per_session <span class="op">=</span> (manual_min <span class="op">-</span> ai_min) <span class="op">×</span> cost_per_min<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="op">=</span> (<span class="val">22 - 4</span>) <span class="op">×</span> <span class="val">3.038</span> <span class="op">=</span> <span class="val">54.68 ฿/session</span><br><br>
-        annual_benefit <span class="op">=</span> users_per_day <span class="op">×</span> work_days <span class="op">×</span> benefit_per_session<br><br>
-        <span class="comment">// === ฝั่ง COST ===</span><br>
-        api_cost <span class="op">=</span> users_per_day <span class="op">×</span> work_days <span class="op">×</span> cost_per_query<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="op">=</span> (<span class="val">22 - 4</span>) <span class="op">×</span> <span class="val">3.646</span> <span class="op">=</span> <span class="val">65.63 ฿/session</span><br><br>
+        annual_benefit <span class="op">=</span> sessions/วัน <span class="op">×</span> work_days <span class="op">×</span> benefit_per_session<br>
+        <span class="comment">// หมายเหตุ: 15-30 นาที = ทั้งกระบวนการรวม Follow-up แล้ว → Benefit ไม่เพิ่มตาม Queries</span><br><br>
+        <span class="comment">// === ฝั่ง COST — เพิ่มตาม Queries ===</span><br>
+        queries/ปี <span class="op">=</span> sessions/วัน <span class="op">×</span> work_days <span class="op">×</span> <strong>queries_per_session</strong><br>
+        api_cost <span class="op">=</span> queries/ปี <span class="op">×</span> cost_per_query <span class="comment">// 1.045 ฿ (P1) หรือ 1.32 ฿ (P2)</span><br>
         total_cost <span class="op">=</span> api_cost <span class="op">+</span> infra_annual<br><br>
         <span class="comment">// === B/C และ ROI ===</span><br>
         BC_ratio <span class="op">=</span> annual_benefit <span class="op">÷</span> total_cost<br>
         ROI <span class="op">=</span> (annual_benefit <span class="op">-</span> total_cost) <span class="op">÷</span> total_cost <span class="op">×</span> <span class="val">100</span> <span class="comment">// %</span><br>
-        payback_months <span class="op">=</span> total_cost <span class="op">÷</span> annual_benefit <span class="op">×</span> <span class="val">12</span>
+        payback_months <span class="op">=</span> total_cost <span class="op">÷</span> annual_benefit <span class="op">×</span> <span class="val">12</span><br><br>
+        <span class="comment">// ผลของ Queries/Session: Cost ↑ แต่ Benefit คงที่ → B/C ลดลง (Conservative)</span><br>
+        <span class="comment">// ตัวอย่าง 200 users, Phase 1, 1 q/session: BC = 3,150K ÷ 110K = 28.6x</span><br>
+        <span class="comment">// ตัวอย่าง 200 users, Phase 2, 5 q/session: BC = 3,150K ÷ 413K = 7.6x</span>
       </div>
     </div>
 
@@ -1168,6 +1287,7 @@
       <table>
         <thead><tr><th>ข้อจำกัด</th><th>ผลกระทบ</th><th>วิธีรับมือ</th></tr></thead>
         <tbody>
+          <tr><td>Queries/Session สมมติที่ 1 (default)</td><td>ถ้าผู้ใช้ถามเฉลี่ย 3 q/session → Cost เพิ่ม 3x แต่ Benefit เท่าเดิม</td><td>ใช้ Slider ในหน้าภาพรวมเพื่อดู Sensitivity ก่อนนำเสนอ</td></tr>
           <tr><td>Benefit = Opportunity Cost ไม่ใช่ Cash</td><td>ผู้บริหารอาจโต้แย้ง</td><td>ระบุ Use Case ที่เวลาถูกนำไปใช้จริง</td></tr>
           <tr><td>GA4 วัดได้แค่ขั้นค้นหาไฟล์ ไม่เห็นต้นทุนหลัง Download</td><td>ต้นทุนจริงอาจสูงกว่า Benefit ที่คำนวณ</td><td>โมเดลนี้ Conservative — เป็นข้อได้เปรียบเมื่อนำเสนอ</td></tr>
           <tr><td>Adoption Rate 2x — อาจต่ำกว่าจริง</td><td>Unmet Demand 60% (~29/วัน) รอการตอบสนองอยู่แล้ว</td><td>200 คน/วัน (Realistic) = Conservative และป้องกันการโต้แย้งได้</td></tr>
@@ -1190,145 +1310,305 @@ function showTab(id) {
 }
 
 const WORK_DAYS = 240;
-const SALARY = 35000;
-const COST_PER_MIN = SALARY / (WORK_DAYS * 8 * 60);
+const WORK_DAYS_MONTH = 20;           // 240 ÷ 12 วัน/เดือน
+const SALARY = 35000;                  // บาท/เดือน
+const COST_PER_MIN = SALARY / (WORK_DAYS_MONTH * 8 * 60);  // 35,000 ÷ (20×8×60) = 3.646 ฿/นาที
 const MANUAL_MIN = 22, AI_MIN = 4;
-const SAVE_PER_Q = (MANUAL_MIN - AI_MIN) * COST_PER_MIN;
-const CPQ_P1 = 1.04, CPQ_P2 = 1.32;
+const SAVE_MIN = MANUAL_MIN - AI_MIN;                        // 18 นาที
+const SAVE_PER_SESSION = SAVE_MIN * COST_PER_MIN;            // 18 × 3.646 = 65.63 ฿/session
+const MANUAL_COST_PER_SESSION = MANUAL_MIN * COST_PER_MIN;  // 22 × 3.646 = 80.21 ฿/session
+const CPQ_P1 = 1.045, CPQ_P2 = 1.32;
 const INFRA_P1 = 60000, INFRA_P2 = 96000;
 
-function benefit(u) { return u * WORK_DAYS * SAVE_PER_Q; }
-function aiCost(u, cpq, infra) { return u * WORK_DAYS * cpq + infra; }
-function roi(u, cpq, infra) { return (benefit(u) - aiCost(u,cpq,infra)) / aiCost(u,cpq,infra) * 100; }
+let currentPhase = 1;
+let currentUsers = 200;
+let currentQPS = 1;
 
-const scenarios = [
-  { label: 'Conservative\n98/วัน', u: 98 },
-  { label: 'Realistic\n200/วัน', u: 200 },
-  { label: 'Peak Capture\n300/วัน', u: 300 },
-];
+function setPhase(p) {
+  currentPhase = p;
+  document.getElementById('btn-p1').style.background = p===1 ? 'var(--accent)' : 'var(--bg3)';
+  document.getElementById('btn-p1').style.color = p===1 ? '#fff' : 'var(--text2)';
+  document.getElementById('btn-p1').style.border = p===1 ? 'none' : '1px solid var(--border)';
+  document.getElementById('btn-p2').style.background = p===2 ? 'var(--green)' : 'var(--bg3)';
+  document.getElementById('btn-p2').style.color = p===2 ? '#fff' : 'var(--text2)';
+  document.getElementById('btn-p2').style.border = p===2 ? 'none' : '1px solid var(--border)';
+  updateAll();
+}
 
-// Chart 1: Overview bar
-new Chart(document.getElementById('c-overview'), {
-  type: 'bar',
-  data: {
-    labels: scenarios.map(s => s.label),
-    datasets: [
-      { label: 'ต้นทุนแรงงานเดิม', data: scenarios.map(s => Math.round(s.u * WORK_DAYS * MANUAL_MIN * COST_PER_MIN)), backgroundColor: '#6e7681' },
-      { label: 'ต้นทุต Hello Biab', data: scenarios.map(s => Math.round(aiCost(s.u, CPQ_P1, INFRA_P1))), backgroundColor: '#388bfd' },
-      { label: 'Net Saving', data: scenarios.map(s => Math.round(benefit(s.u) - aiCost(s.u, CPQ_P1, INFRA_P1))), backgroundColor: '#3fb950' },
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + Math.round(ctx.raw).toLocaleString('th-TH') + ' ฿' } } },
-    scales: {
-      x: { ticks: { color: '#8b949e', font: { size: 11 }, autoSkip: false }, grid: { color: '#21262d' } },
-      y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M ฿' : v >= 1000 ? (v/1000).toFixed(0)+'K ฿' : v }, grid: { color: '#21262d' } }
-    }
-  }
+function fmt(n) { return Math.round(n).toLocaleString('th-TH'); }
+function fmtK(n) { return n >= 1e6 ? (n/1e6).toFixed(2)+'M' : (n/1000).toFixed(0)+'K'; }
+
+function calcMetrics(u, qps, phase) {
+  const cpq = phase === 1 ? CPQ_P1 : CPQ_P2;
+  const infra = phase === 1 ? INFRA_P1 : INFRA_P2;
+  const queries = u * WORK_DAYS * qps;
+  const benefit = u * WORK_DAYS * SAVE_PER_SESSION;
+  const apiCost = queries * cpq;
+  const totalCost = apiCost + infra;
+  const net = benefit - totalCost;
+  const bc = benefit / totalCost;
+  const roi = (net / totalCost) * 100;
+  const payback = (totalCost / benefit) * 12;
+  return { queries, benefit, apiCost, totalCost, net, bc, roi, payback };
+}
+
+function updateAll() {
+  const u = currentUsers, qps = currentQPS, ph = currentPhase;
+  const cpq = ph === 1 ? CPQ_P1 : CPQ_P2;
+  const infra = ph === 1 ? INFRA_P1 : INFRA_P2;
+  const m = calcMetrics(u, qps, ph);
+
+  document.getElementById('sl-users-out').textContent = fmt(u) + ' คน';
+  document.getElementById('sl-qps-out').textContent = qps + (qps === 1 ? ' query' : ' queries');
+
+  document.getElementById('kpi-queries').textContent = fmtK(m.queries);
+  document.getElementById('kpi-queries-sub').textContent = fmt(u) + ' × 240 × ' + qps + ' q/session';
+  document.getElementById('kpi-cost').textContent = fmtK(m.totalCost) + ' ฿';
+  document.getElementById('kpi-cost-sub').textContent = 'API ' + fmtK(m.apiCost) + ' + Infra ' + fmtK(infra);
+  document.getElementById('kpi-benefit').textContent = fmtK(m.benefit) + ' ฿';
+  document.getElementById('kpi-bc').textContent = m.bc.toFixed(1) + 'x';
+  document.getElementById('kpi-bc-sub').textContent = fmtK(m.benefit) + ' ÷ ' + fmtK(m.totalCost);
+  document.getElementById('kpi-roi').textContent = fmt(m.roi) + '%';
+  document.getElementById('kpi-payback').textContent = 'Payback ' + m.payback.toFixed(1) + ' เดือน';
+
+  // Reality Check framings — FTE reactive ตาม Users
+  const minutesPerYear = u * WORK_DAYS * SAVE_MIN;
+  const hoursPerYear = minutesPerYear / 60;
+  const ftePerYear = hoursPerYear / (WORK_DAYS * 8);
+  document.getElementById('rc-fte').textContent = ftePerYear.toFixed(1) + ' FTE';
+  document.getElementById('rc-fte-sub').textContent =
+    Math.round(hoursPerYear).toLocaleString('th-TH') + ' ชั่วโมง/ปี · ' +
+    Math.round(hoursPerYear / 8).toLocaleString('th-TH') + ' วันทำงาน · จาก ' + fmt(u) + ' users/วัน';
+
+  // Framing 2 — ต้นทุนต่อคำถาม (reactive ตาม Phase)
+  const cpqDisplay = cpq.toFixed(3);
+  const manualCostPerQuery = MANUAL_COST_PER_SESSION; // 80.21 ฿ = ค่าแรงที่ใช้ค้นเอง
+  const ratio = Math.round(manualCostPerQuery / cpq);
+  document.getElementById('rc-cpq').textContent = cpq.toFixed(3) + ' ฿';
+  document.getElementById('rc-cpq-sub').textContent =
+    'vs ค้นหาเอง ~' + Math.round(manualCostPerQuery) + ' ฿/ครั้ง · ถูกกว่า ' + ratio + ' เท่า';
+
+  // Break-even users
+  const benefitPerUserDay = SAVE_PER_SESSION;
+  const costPerUserDay = qps * cpq;
+  const netPerUserDay = benefitPerUserDay - costPerUserDay;
+  const breakEvenUsers = netPerUserDay > 0 ? Math.ceil(infra / (WORK_DAYS * netPerUserDay)) : 9999;
+  document.getElementById('rc-breakeven').textContent = breakEvenUsers < 9999 ? breakEvenUsers + ' คน/วัน' : 'N/A';
+  document.getElementById('rc-breakeven-sub').textContent =
+    'GA4 baseline = 49/วัน' + (breakEvenUsers < 49 ? ' · เกิน Break-even แล้ว ✓' : ' · ยังไม่ถึง Break-even');
+
+  // Headcount equivalent
+  const headcount = m.totalCost / (SALARY * 12);
+  document.getElementById('rc-headcount').textContent = headcount.toFixed(2) + ' คน';
+  document.getElementById('rc-headcount-sub').textContent =
+    fmt(Math.round(m.totalCost)) + ' ฿/ปี = เงินเดือน ' + headcount.toFixed(2) + ' คน · ให้บริการ ' + fmt(u) + ' คน/วัน';
+
+  // Conservative floor
+  const floorUsers = breakEvenUsers < 9999 ? breakEvenUsers : 0;
+  const floorPctOfScenario = floorUsers > 0 ? Math.round((floorUsers / u) * 100) : 0;
+  document.getElementById('rc-floor').textContent = floorPctOfScenario + '%';
+  document.getElementById('rc-floor-sub').textContent =
+    'ใช้งานจริงแค่ ' + floorUsers + ' คน/วัน (' + floorPctOfScenario + '% ของ ' + u + ') ก็ยังคุ้มทุน';
+
+  document.getElementById('formula-display').textContent =
+    'Benefit = ' + fmt(u) + ' × 240 × 65.63 ฿ = ' + fmt(m.benefit) + ' ฿  |  ' +
+    'Cost = ' + fmt(u) + ' × 240 × ' + qps + ' × ' + cpq + ' + ' + fmt(infra) + ' = ' + fmt(m.totalCost) + ' ฿  |  ' +
+    'B/C = ' + m.bc.toFixed(1) + 'x  |  ROI = ' + Math.round(m.roi) + '%';
+
+  const phLabel = ph === 1 ? 'Phase 1 (1.045 ฿/query)' : 'Phase 2 (1.32 ฿/query)';
+  document.getElementById('chart-overview-title').textContent =
+    'ต้นทุนรวม/ปี เทียบ 3 Scenarios — ' + phLabel + (qps > 1 ? ' · ' + qps + ' queries/session' : '');
+
+  updateCharts();
+}
+
+document.getElementById('sl-users').addEventListener('input', function() {
+  currentUsers = +this.value;
+  updateAll();
+});
+document.getElementById('sl-qps').addEventListener('input', function() {
+  currentQPS = +this.value;
+  updateAll();
 });
 
-// Chart 2: ROI bars
-new Chart(document.getElementById('c-roi'), {
-  type: 'bar',
-  data: {
-    labels: ['Baseline\nManual', 'Conservative\n98/วัน', 'Realistic\n200/วัน', 'Peak\n300/วัน', 'Phase 2\n500/วัน'],
-    datasets: [{ label: 'ROI (%)', data: [0, Math.round(roi(98,CPQ_P1,INFRA_P1)), Math.round(roi(200,CPQ_P1,INFRA_P1)), Math.round(roi(300,CPQ_P1,INFRA_P1)), Math.round(roi(500,CPQ_P2,INFRA_P2))], backgroundColor: ['#6e7681','#B4B2A9','#388bfd','#185FA5','#3fb950'] }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => 'ROI: ' + Math.round(ctx.raw).toLocaleString('th-TH') + '%' } } },
-    scales: {
-      x: { ticks: { color: '#8b949e', font: { size: 10 }, autoSkip: false }, grid: { color: '#21262d' } },
-      y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v.toLocaleString('th-TH') + '%' }, grid: { color: '#21262d' } }
-    }
-  }
-});
-
-// Chart 3: Token pie
-new Chart(document.getElementById('c-token-pie'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Answer LLM 73%', 'Rerank 22%', 'HyDE 4%', 'Embed 1%'],
-    datasets: [{ data: [73, 22, 4, 1], backgroundColor: ['#388bfd', '#a371f7', '#3fb950', '#6e7681'], borderWidth: 0 }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false } } }
-});
-
-// Chart: API cost line
 const userLevels = [49, 98, 150, 200, 300, 500, 750];
-new Chart(document.getElementById('c-apicost'), {
-  type: 'line',
-  data: {
-    labels: userLevels.map(u => u + '/วัน'),
-    datasets: [{ label: 'API Cost/ปี', data: userLevels.map(u => Math.round(aiCost(u, CPQ_P1, INFRA_P1))), borderColor: '#388bfd', backgroundColor: 'rgba(56,139,253,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#388bfd' }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => Math.round(ctx.raw).toLocaleString('th-TH') + ' ฿/ปี' } } },
-    scales: {
-      x: { ticks: { color: '#8b949e', font: { size: 11 }, autoSkip: false }, grid: { color: '#21262d' } },
-      y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K ฿' }, grid: { color: '#21262d' } }
-    }
-  }
-});
+let chartOverview, chartRoi, chartTokenPie, chartApicost, chartBc, chartPeak, chartPhase;
 
-// Chart: B/C scenarios
-new Chart(document.getElementById('c-bc'), {
-  type: 'line',
-  data: {
-    labels: userLevels.map(u => u + '/วัน'),
-    datasets: [
-      { label: 'Benefit', data: userLevels.map(u => Math.round(benefit(u))), borderColor: '#3fb950', backgroundColor: 'rgba(63,185,80,0.08)', tension: 0.3, fill: true, pointRadius: 4 },
-      { label: 'Total AI Cost', data: userLevels.map(u => Math.round(aiCost(u, CPQ_P1, INFRA_P1))), borderColor: '#f85149', backgroundColor: 'rgba(248,81,73,0.08)', tension: 0.3, fill: true, pointRadius: 4 }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + Math.round(ctx.raw).toLocaleString('th-TH') + ' ฿/ปี' } } },
-    scales: {
-      x: { ticks: { color: '#8b949e', font: { size: 11 }, autoSkip: false }, grid: { color: '#21262d' } },
-      y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M ฿' : (v/1000).toFixed(0)+'K ฿' }, grid: { color: '#21262d' } }
-    }
-  }
-});
+function makeCharts() {
+  const scenarios3 = [
+    { label: 'Conservative\n98/วัน', u: 98 },
+    { label: 'Realistic\n200/วัน', u: 200 },
+    { label: 'Peak Capture\n300/วัน', u: 300 },
+  ];
 
-// Chart: Peak analysis
-new Chart(document.getElementById('c-peak'), {
-  type: 'bar',
-  data: {
-    labels: ['Avg ปกติ\n(GA4)', 'Peak ต.ค. 2023\n(ประเมินฯ)', 'Hello Biab\nConservative 2x', 'Hello Biab\nRealistic', 'Hello Biab\nPeak Capture'],
-    datasets: [{ label: 'Sessions/วัน', data: [49, 650, 98, 200, 400], backgroundColor: ['#6e7681', '#f85149', '#B5D4F4', '#388bfd', '#185FA5'] }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { color: '#8b949e', font: { size: 10 }, autoSkip: false }, grid: { color: '#21262d' } },
-      y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v + '/วัน' }, grid: { color: '#21262d' } }
-    }
+  function getOverviewData() {
+    const ph = currentPhase, qps = currentQPS;
+    const cpq = ph===1 ? CPQ_P1 : CPQ_P2, infra = ph===1 ? INFRA_P1 : INFRA_P2;
+    return {
+      labor: scenarios3.map(s => Math.round(s.u * WORK_DAYS * MANUAL_COST_PER_SESSION)),
+      aiCost: scenarios3.map(s => Math.round(s.u * WORK_DAYS * qps * cpq + infra)),
+      net: scenarios3.map(s => {
+        const ben = s.u * WORK_DAYS * SAVE_PER_SESSION;
+        const cost = s.u * WORK_DAYS * qps * cpq + infra;
+        return Math.round(ben - cost);
+      })
+    };
   }
-});
 
-// Chart: Phase comparison
-new Chart(document.getElementById('c-phase'), {
-  type: 'line',
-  data: {
-    labels: userLevels.map(u => u + '/วัน'),
-    datasets: [
-      { label: 'Phase 1', data: userLevels.map(u => Math.round(aiCost(u, CPQ_P1, INFRA_P1))), borderColor: '#a371f7', tension: 0.3, fill: false, pointRadius: 4 },
-      { label: 'Phase 2', data: userLevels.map(u => Math.round(aiCost(u, CPQ_P2, INFRA_P2))), borderColor: '#3fb950', tension: 0.3, fill: false, pointRadius: 4 }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + Math.round(ctx.raw).toLocaleString('th-TH') + ' ฿/ปี' } } },
-    scales: {
-      x: { ticks: { color: '#8b949e', font: { size: 11 }, autoSkip: false }, grid: { color: '#21262d' } },
-      y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K ฿' }, grid: { color: '#21262d' } }
-    }
+  function getRoiData() {
+    return [0, 98, 200, 300, 500].map(u => {
+      if (u === 0) return 0;
+      return Math.round(calcMetrics(u, currentQPS, currentPhase).roi);
+    });
   }
-});
+
+  chartOverview = new Chart(document.getElementById('c-overview'), {
+    type: 'bar',
+    data: {
+      labels: scenarios3.map(s => s.label),
+      datasets: [
+        { label: 'ต้นทุนแรงงานเดิม', data: getOverviewData().labor, backgroundColor: '#6e7681' },
+        { label: 'ต้นทุน Hello Biab', data: getOverviewData().aiCost, backgroundColor: '#388bfd' },
+        { label: 'Net Saving', data: getOverviewData().net, backgroundColor: '#3fb950' },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + Math.round(ctx.raw).toLocaleString('th-TH') + ' ฿' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', font: { size: 11 }, autoSkip: false }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M ฿' : v >= 1000 ? (v/1000).toFixed(0)+'K ฿' : v }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+
+  chartRoi = new Chart(document.getElementById('c-roi'), {
+    type: 'bar',
+    data: {
+      labels: ['Manual\nBaseline', 'Conservative\n98/วัน', 'Realistic\n200/วัน', 'Peak\n300/วัน', 'Full\n500/วัน'],
+      datasets: [{ label: 'ROI (%)', data: getRoiData(), backgroundColor: ['#6e7681','#B4B2A9','#388bfd','#185FA5','#3fb950'] }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => 'ROI: ' + Math.round(ctx.raw).toLocaleString('th-TH') + '%' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', font: { size: 10 }, autoSkip: false }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v.toLocaleString('th-TH') + '%' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+
+  chartTokenPie = new Chart(document.getElementById('c-token-pie'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Answer LLM 73%', 'Rerank 22%', 'HyDE 4%', 'Embed 1%'],
+      datasets: [{ data: [73, 22, 4, 1], backgroundColor: ['#388bfd', '#a371f7', '#3fb950', '#6e7681'], borderWidth: 0 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false } } }
+  });
+
+  chartApicost = new Chart(document.getElementById('c-apicost'), {
+    type: 'line',
+    data: {
+      labels: userLevels.map(u => u + '/วัน'),
+      datasets: [{ label: 'API Cost/ปี', data: userLevels.map(u => Math.round(u * WORK_DAYS * currentQPS * CPQ_P1 + INFRA_P1)), borderColor: '#388bfd', backgroundColor: 'rgba(56,139,253,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#388bfd' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => Math.round(ctx.raw).toLocaleString('th-TH') + ' ฿/ปี' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', font: { size: 11 }, autoSkip: false }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K ฿' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+
+  chartBc = new Chart(document.getElementById('c-bc'), {
+    type: 'line',
+    data: {
+      labels: userLevels.map(u => u + '/วัน'),
+      datasets: [
+        { label: 'Benefit', data: userLevels.map(u => Math.round(u * WORK_DAYS * SAVE_PER_SESSION)), borderColor: '#3fb950', backgroundColor: 'rgba(63,185,80,0.08)', tension: 0.3, fill: true, pointRadius: 4 },
+        { label: 'Total AI Cost', data: userLevels.map(u => Math.round(u * WORK_DAYS * currentQPS * CPQ_P1 + INFRA_P1)), borderColor: '#f85149', backgroundColor: 'rgba(248,81,73,0.08)', tension: 0.3, fill: true, pointRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + Math.round(ctx.raw).toLocaleString('th-TH') + ' ฿/ปี' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', font: { size: 11 }, autoSkip: false }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M ฿' : (v/1000).toFixed(0)+'K ฿' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+
+  chartPeak = new Chart(document.getElementById('c-peak'), {
+    type: 'bar',
+    data: {
+      labels: ['Avg ปกติ\n(GA4)', 'Peak ต.ค. 2023\n(ประเมินฯ)', 'Hello Biab\nConservative 2x', 'Hello Biab\nRealistic', 'Hello Biab\nPeak Capture'],
+      datasets: [{ label: 'Sessions/วัน', data: [49, 650, 98, 200, 400], backgroundColor: ['#6e7681', '#f85149', '#B5D4F4', '#388bfd', '#185FA5'] }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8b949e', font: { size: 10 }, autoSkip: false }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v + '/วัน' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+
+  chartPhase = new Chart(document.getElementById('c-phase'), {
+    type: 'line',
+    data: {
+      labels: userLevels.map(u => u + '/วัน'),
+      datasets: [
+        { label: 'Phase 1', data: userLevels.map(u => Math.round(u * WORK_DAYS * currentQPS * CPQ_P1 + INFRA_P1)), borderColor: '#a371f7', tension: 0.3, fill: false, pointRadius: 4 },
+        { label: 'Phase 2', data: userLevels.map(u => Math.round(u * WORK_DAYS * currentQPS * CPQ_P2 + INFRA_P2)), borderColor: '#3fb950', tension: 0.3, fill: false, pointRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + Math.round(ctx.raw).toLocaleString('th-TH') + ' ฿/ปี' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', font: { size: 11 }, autoSkip: false }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e', font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K ฿' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+}
+
+function updateCharts() {
+  if (!chartOverview) return;
+  const ph = currentPhase, qps = currentQPS;
+  const cpq = ph===1 ? CPQ_P1 : CPQ_P2, infra = ph===1 ? INFRA_P1 : INFRA_P2;
+  const sc3 = [{ u: 98 }, { u: 200 }, { u: 300 }];
+
+  chartOverview.data.datasets[0].data = sc3.map(s => Math.round(s.u * WORK_DAYS * MANUAL_COST_PER_SESSION));
+  chartOverview.data.datasets[1].data = sc3.map(s => Math.round(s.u * WORK_DAYS * qps * cpq + infra));
+  chartOverview.data.datasets[2].data = sc3.map(s => Math.round(s.u * WORK_DAYS * SAVE_PER_SESSION - (s.u * WORK_DAYS * qps * cpq + infra)));
+  chartOverview.update('none');
+
+  chartRoi.data.datasets[0].data = [0, 98, 200, 300, 500].map(u => {
+    if (u === 0) return 0;
+    return Math.round(calcMetrics(u, qps, ph).roi);
+  });
+  chartRoi.update('none');
+
+  chartApicost.data.datasets[0].data = userLevels.map(u => Math.round(u * WORK_DAYS * qps * cpq + infra));
+  chartApicost.update('none');
+
+  chartBc.data.datasets[0].data = userLevels.map(u => Math.round(u * WORK_DAYS * SAVE_PER_SESSION));
+  chartBc.data.datasets[1].data = userLevels.map(u => Math.round(u * WORK_DAYS * qps * cpq + infra));
+  chartBc.update('none');
+
+  chartPhase.data.datasets[0].data = userLevels.map(u => Math.round(u * WORK_DAYS * qps * CPQ_P1 + INFRA_P1));
+  chartPhase.data.datasets[1].data = userLevels.map(u => Math.round(u * WORK_DAYS * qps * CPQ_P2 + INFRA_P2));
+  chartPhase.update('none');
+}
+
+makeCharts();
+updateAll();
 </script>
 </body>
 </html>

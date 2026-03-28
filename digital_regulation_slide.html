@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เส้นทางสู่ Digital Regulation</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0d1117;
+  color: #e6edf3;
+  font-family: 'IBM Plex Sans Thai', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.slide {
+  width: 100%;
+  max-width: 1100px;
+}
+
+h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.h1-sub {
+  font-size: 14px;
+  color: #6e7681;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+
+/* Scenario Toggle */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+.toggle-label {
+  font-size: 13px;
+  color: #8b949e;
+  margin-right: 4px;
+}
+.toggle-btn {
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid #30363d;
+  background: #161b22;
+  color: #8b949e;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.toggle-btn.active {
+  background: #388bfd;
+  border-color: #388bfd;
+  color: #fff;
+}
+.toggle-btn:hover:not(.active) {
+  border-color: #8b949e;
+  color: #e6edf3;
+}
+
+/* Main layout */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Chart area */
+.chart-area { }
+
+.bar-group {
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateX(-12px);
+  animation: fadeIn .4s ease forwards;
+}
+.bar-group:nth-child(1) { animation-delay: .05s; }
+.bar-group:nth-child(2) { animation-delay: .15s; }
+.bar-group:nth-child(3) { animation-delay: .25s; }
+.bar-group:nth-child(4) { animation-delay: .35s; }
+.bar-group:nth-child(5) { animation-delay: .45s; }
+
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.bar-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+.bar-label {
+  font-size: 13px;
+  color: #8b949e;
+  font-weight: 400;
+}
+.bar-label strong { color: #e6edf3; font-weight: 500; }
+.bar-value {
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+}
+
+.bar-track {
+  height: 36px;
+  background: #161b22;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+  position: relative;
+}
+.bar-note {
+  font-size: 11px;
+  color: #6e7681;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* X axis */
+.x-axis {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #21262d;
+  margin-top: 8px;
+}
+.x-tick {
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #6e7681;
+}
+
+/* Right panel */
+.right-panel { }
+
+.baseline-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.baseline-tag {
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #d29922;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+}
+.baseline-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #d29922;
+  margin-bottom: 4px;
+}
+.baseline-desc {
+  font-size: 12px;
+  color: #8b949e;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.baseline-amount {
+  font-size: 42px;
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #f85149;
+  line-height: 1;
+}
+.baseline-unit {
+  font-size: 14px;
+  color: #8b949e;
+  margin-top: 4px;
+}
+.baseline-sub {
+  font-size: 11px;
+  color: #6e7681;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #21262d;
+}
+
+/* Scenario assumptions box */
+.assumption-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 20px;
+}
+.assumption-title {
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 12px;
+}
+.assumption-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid #21262d;
+}
+.assumption-row:last-child { border: none; }
+.ak { color: #8b949e; }
+.av { font-family: 'IBM Plex Mono', monospace; color: #e6edf3; font-size: 11px; }
+.av.hi { color: #388bfd; }
+
+/* Goal box */
+.goal-box {
+  margin-top: 32px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 22px 26px;
+}
+.goal-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.goal-desc {
+  font-size: 13px;
+  color: #8b949e;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.goal-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.goal-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* Footnote */
+.footnote {
+  margin-top: 20px;
+  font-size: 11px;
+  color: #6e7681;
+  font-family: 'IBM Plex Mono', monospace;
+  border-top: 1px solid #21262d;
+  padding-top: 12px;
+  line-height: 1.7;
+}
+.footnote span { color: #d29922; }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="h1-sub">Hello Biab · PEA Compliance Division · GRC Day 2026</div>
+  <h1>ต้นทุน และเส้นทางสู่<br><span style="color:#388bfd;">Digital Regulation</span></h1>
+
+  <div class="toggle-wrap">
+    <span class="toggle-label">เลือก Scenario:</span>
+    <button class="toggle-btn active" onclick="setScenario('ga4')">GA4 Baseline (49 คน/วัน)</button>
+    <button class="toggle-btn" onclick="setScenario('realistic')">Realistic (200 คน/วัน · 1 คำถาม)</button>
+    <button class="toggle-btn" onclick="setScenario('full')">Full Rollout (500 คน/วัน · 5 คำถาม)</button>
+  </div>
+
+  <div class="main-grid">
+
+    <div class="chart-area">
+      <div id="bars-container"></div>
+      <div class="x-axis" id="x-axis"></div>
+    </div>
+
+    <div class="right-panel">
+      <div class="baseline-card">
+        <div class="baseline-tag">การค้นหาแบบเดิม</div>
+        <div class="baseline-title">ต้นทุนค่าแรงบุคลากร</div>
+        <div class="baseline-desc">ค้นหาไฟล์ + เปิด PDF + อ่าน + ตีความ รวม 15–30 นาที/ครั้ง คิดเป็นค่าแรง 3.646 ฿/นาที</div>
+        <div class="baseline-amount" id="baseline-amount">942,000</div>
+        <div class="baseline-unit">บาท/ปี</div>
+        <div class="baseline-sub" id="baseline-sub">49 คน/วัน × 240 วัน × 80.21 ฿/session</div>
+      </div>
+
+      <div class="assumption-card">
+        <div class="assumption-title">Assumptions</div>
+        <div class="assumption-row"><span class="ak">Users/วัน</span><span class="av hi" id="a-users">49 คน</span></div>
+        <div class="assumption-row"><span class="ak">Queries/Session</span><span class="av hi" id="a-qps">1 query</span></div>
+        <div class="assumption-row"><span class="ak">วันทำงาน/ปี</span><span class="av">240 วัน</span></div>
+        <div class="assumption-row"><span class="ak">เงินเดือนเฉลี่ย</span><span class="av">35,000 ฿/เดือน</span></div>
+        <div class="assumption-row"><span class="ak">ต้นทุนค่าแรง/นาที</span><span class="av">3.646 ฿</span></div>
+        <div class="assumption-row"><span class="ak">เวลาที่ประหยัด/session</span><span class="av">18 นาที</span></div>
+        <div class="assumption-row"><span class="ak">LLM API (Phase 1)</span><span class="av">1.045 ฿/query</span></div>
+        <div class="assumption-row"><span class="ak">LLM API (Phase 2)</span><span class="av">1.32 ฿/query</span></div>
+        <div class="assumption-row"><span class="ak">Local LLM (CPU เดิม)</span><span class="av">0.336 ฿/query + Infra</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="goal-box">
+    <div class="goal-title">เป้าหมายระยะยาว — ลดการพึ่งพา LLM API</div>
+    <div class="goal-desc">ต้นทุน API ยังสูงกว่าระบบค้นหาเดิมมาก เพราะนับเฉพาะต้นทุนค่าแรงที่ประหยัดได้ แนวทางลดต้นทุน AI ในอนาคตมี 2 ทางเลือก:</div>
+    <div class="goal-item">
+      <div class="goal-dot" style="background:#a371f7;"></div>
+      <div><strong>Digital-native Regulation</strong> — จัดทำกฎระเบียบในรูปแบบ Structured Digital ตั้งแต่ต้น (JSON-LD, XML Schema) ลด Token ใน Answer LLM ได้ ~40–60% เพราะ Context กระชับขึ้น → ต้นทุน API ลดได้ ~30–40%</div>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot" style="background:#388bfd;"></div>
+      <div><strong>Local LLM (Hybrid)</strong> — ใช้ Typhoon2-8B บน CPU Server ที่มีอยู่แทน Orchestrator/Classifier และ Typhoon2-70B + RTX 4090 แทน Answer LLM เมื่อ Scale ถึง 300+ users/วัน — ต้องระวัง Hallucination ในการอ้างอิง ข้อ/หมวด</div>
+    </div>
+  </div>
+
+  <div class="footnote">
+    <span>* Benefit</span> = ต้นทุนโอกาสค่าแรง ไม่ใช่ Cash Saving — เวลาที่ประหยัดต้องถูกนำไปใช้งานที่สร้างมูลค่าเพิ่ม &nbsp;|&nbsp;
+    <span>* Local LLM</span> ตัวเลขรวม Infra (ค่าไฟ + Maintenance) แต่ไม่รวม Capex Hardware &nbsp;|&nbsp;
+    <span>* ข้อมูลอ้างอิง</span> GA4 มี.ค. 2023 – มี.ค. 2026 · 30,474 sessions ÷ 625 วันทำงาน = 49 sessions/วัน
+  </div>
+
+</div>
+
+<script>
+const WORK_DAYS = 240;
+const WORK_DAYS_MONTH = 20;
+const SALARY = 35000;
+const CPM = SALARY / (WORK_DAYS_MONTH * 8 * 60);   // 3.646 ฿/min
+const MANUAL_MIN = 22, SAVE_MIN = 18;
+const MANUAL_PER_SESSION = MANUAL_MIN * CPM;         // 80.21 ฿
+const SAVE_PER_SESSION = SAVE_MIN * CPM;             // 65.63 ฿
+const CPQ_P1 = 1.045, CPQ_P2 = 1.32, CPQ_LOCAL = 0.336;
+const INFRA_P1 = 60000, INFRA_P2 = 96000, INFRA_LOCAL = 128760;
+
+const SCENARIOS = {
+  ga4:      { users: 49,  qps: 1, label: 'GA4 Baseline' },
+  realistic:{ users: 200, qps: 1, label: 'Realistic' },
+  full:     { users: 500, qps: 5, label: 'Full Rollout' },
+};
+
+let currentScenario = 'ga4';
+
+function fmt(n) {
+  if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return Math.round(n/1000) + 'K';
+  return Math.round(n).toString();
+}
+function fmtFull(n) { return Math.round(n).toLocaleString('th-TH'); }
+
+function calcCosts(s) {
+  const { users, qps } = s;
+  const sessions = users * WORK_DAYS;
+  const queries  = sessions * qps;
+  return {
+    manual:  sessions * MANUAL_PER_SESSION,
+    p1:      queries * CPQ_P1 + INFRA_P1,
+    p2:      queries * CPQ_P2 + INFRA_P2,
+    local:   queries * CPQ_LOCAL + INFRA_LOCAL,
+  };
+}
+
+const BAR_DEFS = [
+  {
+    key: 'manual',
+    label: 'การค้นหาแบบเดิม',
+    sublabel: 'ต้นทุนค่าแรงบุคลากร',
+    color: '#6e7681',
+    note: null,
+    highlight: true,
+  },
+  {
+    key: 'p1',
+    label: 'Hello Biab — LLM API (Phase 1)',
+    sublabel: 'IT/Cyber · 4 KB · 1.045 ฿/query',
+    color: '#388bfd',
+    note: null,
+  },
+  {
+    key: 'p2',
+    label: 'Hello Biab — LLM API (Phase 2)',
+    sublabel: 'ครบทุกหมวด · 15 KB · 1.32 ฿/query (blended)',
+    color: '#534AB7',
+    note: null,
+  },
+  {
+    key: 'local',
+    label: 'Local LLM (Hybrid · CPU Server เดิม)',
+    sublabel: 'Typhoon2-8B Classifier + Cloud Answer LLM · 0.336 ฿/query',
+    color: '#1D9E75',
+    note: '* รวม Infra ค่าไฟ + Maintenance ไม่รวม Capex Hardware',
+  },
+];
+
+function setScenario(key) {
+  currentScenario = key;
+  document.querySelectorAll('.toggle-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['ga4','realistic','full'][i] === key);
+  });
+  render();
+}
+
+function render() {
+  const s = SCENARIOS[currentScenario];
+  const costs = calcCosts(s);
+  const maxCost = costs.manual;
+
+  // Update assumption cards
+  document.getElementById('a-users').textContent = s.users.toLocaleString('th-TH') + ' คน';
+  document.getElementById('a-qps').textContent = s.qps + (s.qps === 1 ? ' query' : ' queries');
+
+  // Update baseline
+  document.getElementById('baseline-amount').textContent = fmtFull(costs.manual);
+  document.getElementById('baseline-sub').textContent =
+    s.users + ' คน/วัน × 240 วัน × ' + MANUAL_PER_SESSION.toFixed(2) + ' ฿/session';
+
+  // Build bars
+  const container = document.getElementById('bars-container');
+  container.innerHTML = '';
+
+  BAR_DEFS.forEach((def, idx) => {
+    const val = costs[def.key];
+    const pct = Math.max(2, (val / maxCost) * 100);
+    const savings = def.key !== 'manual'
+      ? ' (ประหยัดได้ ' + fmtFull(Math.round(costs.manual - val)) + ' ฿/ปี)'
+      : '';
+
+    const group = document.createElement('div');
+    group.className = 'bar-group';
+    group.style.animationDelay = (idx * 0.1) + 's';
+
+    group.innerHTML = `
+      <div class="bar-label-row">
+        <div class="bar-label">${def.highlight ? '<strong>' + def.label + '</strong>' : def.label}
+          <span style="font-size:11px;color:#6e7681;"> — ${def.sublabel}</span>
+        </div>
+        <div class="bar-value" style="color:${def.color};">${fmtFull(Math.round(val))} ฿/ปี</div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${def.color};">
+          ${savings}
+        </div>
+      </div>
+      ${def.note ? `<div class="bar-note">${def.note}</div>` : ''}
+    `;
+    container.appendChild(group);
+  });
+
+  // X axis ticks
+  const xAxis = document.getElementById('x-axis');
+  const ticks = 6;
+  xAxis.innerHTML = '';
+  for (let i = 0; i <= ticks; i++) {
+    const v = Math.round((maxCost / ticks) * i);
+    const tick = document.createElement('span');
+    tick.className = 'x-tick';
+    tick.textContent = fmt(v) + ' ฿';
+    xAxis.appendChild(tick);
+  }
+}
+
+render();
+</script>
+</body>
+</html>

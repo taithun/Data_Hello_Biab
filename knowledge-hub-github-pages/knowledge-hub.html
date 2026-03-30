@@ -1,0 +1,2604 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KNOWLEDGE HUB — AI · RAG · หุ้น</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1e2330;
+    --border2: #252b3a;
+    --text-primary: #e8ecf4;
+    --text-secondary: #8892a4;
+    --text-muted: #4a5568;
+    --accent-ai: #00d4ff;
+    --accent-rag: #7c3aed;
+    --accent-stock: #10b981;
+    --accent-news: #f59e0b;
+    --glow-ai: rgba(0,212,255,0.15);
+    --glow-rag: rgba(124,58,237,0.15);
+    --glow-stock: rgba(16,185,129,0.15);
+    --font-body: 'IBM Plex Sans Thai', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --sidebar-w: 260px;
+    --header-h: 56px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    height: var(--header-h);
+    background: rgba(10,12,16,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 20px 0 0;
+    gap: 16px;
+  }
+
+  .header-brand {
+    width: var(--sidebar-w);
+    padding: 0 20px;
+    display: flex; align-items: center; gap: 10px;
+    border-right: 1px solid var(--border);
+    height: 100%;
+    flex-shrink: 0;
+  }
+
+  .brand-logo {
+    width: 28px; height: 28px;
+    background: conic-gradient(from 0deg, var(--accent-ai), var(--accent-rag), var(--accent-stock), var(--accent-ai));
+    border-radius: 6px;
+    animation: spin-slow 8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin-slow {
+    to { transform: rotate(360deg); }
+  }
+
+  .brand-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--text-primary);
+    text-transform: uppercase;
+  }
+
+  .header-search {
+    flex: 1;
+    position: relative;
+  }
+
+  .header-search input {
+    width: 100%; max-width: 480px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 16px 8px 36px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .header-search input:focus {
+    border-color: var(--accent-ai);
+    box-shadow: 0 0 0 3px var(--glow-ai);
+  }
+
+  .header-search input::placeholder { color: var(--text-muted); }
+
+  .search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); font-size: 14px; pointer-events: none;
+  }
+
+  .header-meta {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--accent-stock); letter-spacing: 0.1em;
+  }
+
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent-stock);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .clock {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: flex;
+    margin-top: var(--header-h);
+    min-height: calc(100vh - var(--header-h));
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: var(--header-h);
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+    flex-shrink: 0;
+    z-index: 50;
+  }
+
+  aside::-webkit-scrollbar { width: 4px; }
+  aside::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .sidebar-section {
+    padding: 16px 0 8px;
+  }
+
+  .sidebar-section-label {
+    padding: 0 16px 8px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+
+  .nav-category {
+    margin-bottom: 2px;
+  }
+
+  .nav-cat-btn {
+    width: 100%;
+    display: flex; align-items: center;
+    padding: 9px 16px;
+    background: none; border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    gap: 10px;
+    transition: all 0.15s;
+    text-align: left;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-cat-btn:hover {
+    background: var(--surface2);
+    color: var(--text-primary);
+  }
+
+  .nav-cat-btn.active {
+    color: var(--text-primary);
+    background: var(--surface2);
+  }
+
+  .nav-cat-btn.ai.active { border-left-color: var(--accent-ai); color: var(--accent-ai); }
+  .nav-cat-btn.rag.active { border-left-color: var(--accent-rag); color: var(--accent-rag); }
+  .nav-cat-btn.stock.active { border-left-color: var(--accent-stock); color: var(--accent-stock); }
+  .nav-cat-btn.news.active { border-left-color: var(--accent-news); color: var(--accent-news); }
+
+  .cat-icon { font-size: 15px; flex-shrink: 0; }
+
+  .cat-arrow {
+    margin-left: auto;
+    font-size: 10px;
+    transition: transform 0.2s;
+    color: var(--text-muted);
+  }
+
+  .nav-cat-btn.open .cat-arrow { transform: rotate(90deg); }
+
+  .nav-subitems {
+    display: none;
+    padding-bottom: 4px;
+  }
+
+  .nav-subitems.open { display: block; }
+
+  .nav-sub-btn {
+    width: 100%;
+    display: flex; align-items: center;
+    padding: 7px 16px 7px 38px;
+    background: none; border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 12px;
+    gap: 8px;
+    transition: all 0.15s;
+    text-align: left;
+  }
+
+  .nav-sub-btn:hover { color: var(--text-secondary); background: rgba(255,255,255,0.03); }
+
+  .nav-sub-btn.active {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .nav-sub-btn.active::before {
+    content: '';
+    display: inline-block;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    margin-right: 4px;
+  }
+
+  .count-badge {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--surface2);
+    color: var(--text-muted);
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 28px 32px;
+    min-height: calc(100vh - var(--header-h));
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex; align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title-wrap {}
+
+  .section-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .section-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+
+  .section-actions {
+    margin-left: auto;
+    display: flex; gap: 8px;
+  }
+
+  .btn-filter {
+    padding: 7px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-filter:hover, .btn-filter.active {
+    background: var(--border2);
+    color: var(--text-primary);
+    border-color: transparent;
+  }
+
+  /* ── CONTENT PANEL ── */
+  .content-panel { display: none; }
+  .content-panel.active { display: block; }
+
+  /* ── CARD GRID ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card.ai-card::before { background: linear-gradient(90deg, var(--accent-ai), transparent); }
+  .card.rag-card::before { background: linear-gradient(90deg, var(--accent-rag), transparent); }
+  .card.stock-card::before { background: linear-gradient(90deg, var(--accent-stock), transparent); }
+  .card.news-card::before { background: linear-gradient(90deg, var(--accent-news), transparent); }
+
+  .card-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .card-tag.ai { background: var(--glow-ai); color: var(--accent-ai); border: 1px solid rgba(0,212,255,0.2); }
+  .card-tag.rag { background: var(--glow-rag); color: var(--accent-rag); border: 1px solid rgba(124,58,237,0.2); }
+  .card-tag.stock { background: var(--glow-stock); color: var(--accent-stock); border: 1px solid rgba(16,185,129,0.2); }
+  .card-tag.news { background: rgba(245,158,11,0.1); color: var(--accent-news); border: 1px solid rgba(245,158,11,0.2); }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .card-body {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .card-footer {
+    display: flex; align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .card-source {
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .card-meta { margin-left: auto; }
+
+  /* ── FEATURED ARTICLE ── */
+  .featured-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: start;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .featured-card::after {
+    content: 'FEATURED';
+    position: absolute; top: 16px; right: 16px;
+    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.2em;
+    padding: 3px 8px;
+    background: var(--glow-ai);
+    color: var(--accent-ai);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 3px;
+  }
+
+  .featured-card:hover {
+    border-color: var(--border2);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+
+  .featured-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .featured-title {
+    font-size: 20px; font-weight: 700;
+    line-height: 1.3; margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .featured-body {
+    font-size: 13px; color: var(--text-secondary);
+    line-height: 1.7; margin-bottom: 16px;
+  }
+
+  .featured-tags {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .tag-chip {
+    padding: 4px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* ── TICKER BAR ── */
+  .ticker-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 32px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .ticker-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-muted); white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ticker-items {
+    display: flex; gap: 32px;
+    animation: ticker 25s linear infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .ticker-item {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 12px;
+  }
+
+  .ticker-symbol { font-weight: 700; color: var(--text-primary); }
+  .ticker-price { color: var(--text-secondary); }
+  .ticker-change { font-size: 11px; }
+  .ticker-change.up { color: var(--accent-stock); }
+  .ticker-change.down { color: #ef4444; }
+
+  /* ── KNOWLEDGE TREE ── */
+  .knowledge-tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .tree-title {
+    font-size: 14px; font-weight: 600;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text-primary);
+  }
+
+  .tree-item {
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .tree-item:hover { background: var(--surface2); }
+
+  .tree-item-icon { font-size: 14px; flex-shrink: 0; }
+
+  .tree-item-content {}
+
+  .tree-item-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+
+  .tree-item-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .tree-item-level {
+    display: flex; align-items: center;
+    gap: 4px; margin-left: auto;
+  }
+
+  .level-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border2);
+  }
+
+  .level-dot.filled { background: var(--accent-ai); }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+  }
+
+  .data-table th {
+    padding: 10px 16px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-family: var(--font-mono); font-size: 10px;
+    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    text-align: left; border-bottom: 1px solid var(--border);
+  }
+
+  .data-table th:first-child { border-radius: 8px 0 0 0; }
+  .data-table th:last-child { border-radius: 0 8px 0 0; }
+
+  .data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    vertical-align: middle;
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .td-symbol { font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); }
+
+  .td-up { color: var(--accent-stock); font-family: var(--font-mono); font-weight: 600; }
+  .td-down { color: #ef4444; font-family: var(--font-mono); font-weight: 600; }
+
+  .sector-pill {
+    padding: 3px 10px; border-radius: 4px;
+    font-size: 10px; font-weight: 600;
+    background: var(--surface2);
+    color: var(--text-muted);
+    display: inline-block;
+  }
+
+  /* ── CHART BAR ── */
+  .mini-bar-chart {
+    display: flex; align-items: flex-end;
+    gap: 2px; height: 32px;
+  }
+
+  .bar {
+    flex: 1; border-radius: 2px 2px 0 0;
+    transition: opacity 0.2s;
+  }
+
+  .bar:hover { opacity: 0.7; }
+
+  /* ── CONCEPT CARDS ── */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .concept-card:hover {
+    border-color: var(--border2);
+    background: var(--surface2);
+  }
+
+  .concept-num {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+
+  .concept-name {
+    font-size: 14px; font-weight: 600;
+    margin-bottom: 6px; color: var(--text-primary);
+  }
+
+  .concept-def {
+    font-size: 12px; color: var(--text-secondary); line-height: 1.5;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 24px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute; left: 7px; top: 8px; bottom: 8px;
+    width: 1px; background: var(--border2);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 0 0 24px 20px;
+  }
+
+  .timeline-dot {
+    position: absolute; left: -18px; top: 6px;
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 2px solid var(--bg);
+    flex-shrink: 0;
+  }
+
+  .timeline-year {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--text-muted); margin-bottom: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  .timeline-event { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+
+  .timeline-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* ── SCROLLABLE TABLE WRAP ── */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .table-header-bar {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .table-header-title {
+    font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .update-time {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--text-muted); margin-left: auto;
+  }
+
+  /* ── SUBSECTION TITLE ── */
+  .sub-heading {
+    font-size: 14px; font-weight: 600;
+    color: var(--text-secondary);
+    margin: 24px 0 12px;
+    display: flex; align-items: center; gap: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .sub-heading::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--border);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    :root { --sidebar-w: 0px; }
+    aside { display: none; }
+    .header-brand { display: none; }
+    main { margin-left: 0; padding: 16px; }
+  }
+
+  /* ── FADE IN ── */
+  .content-panel.active {
+    animation: fadeUp 0.25s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── DETAIL MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center; justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: fadeUp 0.2s ease;
+  }
+
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 28px; height: 28px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    cursor: pointer; color: var(--text-secondary);
+    font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .modal-close:hover { background: var(--border2); color: var(--text-primary); }
+
+  .modal-eyebrow {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .modal-title {
+    font-size: 20px; font-weight: 700;
+    margin-bottom: 16px; line-height: 1.3;
+  }
+
+  .modal-body {
+    font-size: 13.5px; color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .modal-body p { margin-bottom: 12px; }
+
+  .modal-body ul {
+    padding-left: 20px; margin-bottom: 12px;
+  }
+
+  .modal-body li { margin-bottom: 6px; }
+
+  .modal-tags {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  /* ── DOC LINKS ── */
+  .doc-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px;
+    background: var(--glow-rag);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 4px;
+    color: var(--accent-rag);
+    font-size: 11px; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .doc-link:hover {
+    background: rgba(124,58,237,0.25);
+    border-color: var(--accent-rag);
+    transform: translateY(-1px);
+  }
+
+  /* ── NEWS META BAR ── */
+  .news-meta-bar {
+    display: flex; align-items: center;
+    padding: 8px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 11px; font-family: var(--font-mono);
+    color: var(--text-muted);
+    gap: 8px;
+  }
+
+  .news-status-pill {
+    font-size: 11px; font-family: var(--font-mono);
+    color: var(--text-muted);
+  }
+
+  .news-status-pill.refreshing {
+    color: var(--accent-ai);
+    animation: pulse 1s infinite;
+  }
+
+  .news-status-pill.done {
+    color: var(--accent-stock);
+  }
+
+  .news-status-pill.error {
+    color: #ef4444;
+  }
+
+  /* ── SKELETON ── */
+  @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+
+  .skeleton-card {
+    height: 160px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.5s infinite;
+    border: 1px solid var(--border);
+  }
+
+  /* ── REFRESH SPIN ── */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .spinning {
+    display: inline-block;
+    animation: spin 0.8s linear infinite;
+  }
+
+  /* ── AUTO-UPDATE BADGE ── */
+  .auto-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 4px;
+    font-size: 10px; font-family: var(--font-mono);
+    color: var(--accent-stock);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-brand">
+    <div class="brand-logo"></div>
+    <div>
+      <div class="brand-name">Knowledge Hub</div>
+    </div>
+  </div>
+  <div class="header-search">
+    <span class="search-icon">⌕</span>
+    <input type="text" placeholder="ค้นหาบทความ แนวคิด หรือข้อมูล..." id="searchInput" oninput="handleSearch(this.value)">
+  </div>
+  <div class="header-meta">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <span>LIVE</span>
+    </div>
+    <div class="clock" id="clock"></div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">หมวดหมู่</div>
+
+      <!-- AI -->
+      <div class="nav-category">
+        <button class="nav-cat-btn ai active open" onclick="toggleCat(this,'ai')">
+          <span class="cat-icon">🤖</span>
+          <span>ปัญญาประดิษฐ์ (AI)</span>
+          <span class="cat-arrow">›</span>
+        </button>
+        <div class="nav-subitems open">
+          <button class="nav-sub-btn active" onclick="showPanel('ai-overview',this)">📋 ภาพรวม AI</button>
+          <button class="nav-sub-btn" onclick="showPanel('ai-llm',this)">🧠 LLM & โมเดลภาษา</button>
+          <button class="nav-sub-btn" onclick="showPanel('ai-tools',this)">🛠️ เครื่องมือ AI <span class="count-badge">12</span></button>
+          <button class="nav-sub-btn" onclick="showPanel('ai-agents',this)">⚡ AI Agents</button>
+          <button class="nav-sub-btn" onclick="showPanel('ai-ethics',this)">⚖️ จริยธรรม AI</button>
+          <button class="nav-sub-btn" onclick="showPanel('ai-news',this)">📰 ข่าว AI <span class="count-badge">8</span></button>
+        </div>
+      </div>
+
+      <!-- RAG -->
+      <div class="nav-category">
+        <button class="nav-cat-btn rag" onclick="toggleCat(this,'rag')">
+          <span class="cat-icon">🔍</span>
+          <span>RAG & Knowledge</span>
+          <span class="cat-arrow">›</span>
+        </button>
+        <div class="nav-subitems">
+          <button class="nav-sub-btn" onclick="showPanel('rag-overview',this)">📋 RAG คืออะไร</button>
+          <button class="nav-sub-btn" onclick="showPanel('rag-pipeline',this)">🔄 RAG Pipeline</button>
+          <button class="nav-sub-btn" onclick="showPanel('rag-vector',this)">📐 Vector Database</button>
+          <button class="nav-sub-btn" onclick="showPanel('rag-advanced',this)">🚀 Advanced RAG <span class="count-badge">HyDE</span></button>
+          <button class="nav-sub-btn" onclick="showPanel('rag-dify',this)">⚙️ Dify & Tools</button>
+          <button class="nav-sub-btn" onclick="showPanel('rag-usecase',this)">💼 Use Cases</button>
+        </div>
+      </div>
+
+      <!-- STOCK -->
+      <div class="nav-category">
+        <button class="nav-cat-btn stock" onclick="toggleCat(this,'stock')">
+          <span class="cat-icon">📈</span>
+          <span>หุ้น & การลงทุน</span>
+          <span class="cat-arrow">›</span>
+        </button>
+        <div class="nav-subitems">
+          <button class="nav-sub-btn" onclick="showPanel('stock-overview',this)">📋 ภาพรวมตลาด</button>
+          <button class="nav-sub-btn" onclick="showPanel('stock-thai',this)">🇹🇭 หุ้นไทย (SET)</button>
+          <button class="nav-sub-btn" onclick="showPanel('stock-us',this)">🇺🇸 หุ้นต่างประเทศ</button>
+          <button class="nav-sub-btn" onclick="showPanel('stock-fundamental',this)">📊 วิเคราะห์ปัจจัยพื้นฐาน</button>
+          <button class="nav-sub-btn" onclick="showPanel('stock-technical',this)">📉 เทคนิคอล</button>
+          <button class="nav-sub-btn" onclick="showPanel('stock-news',this)">📰 ข่าวหุ้น <span class="count-badge">5</span></button>
+        </div>
+      </div>
+
+      <!-- NEWS -->
+      <div class="nav-category">
+        <button class="nav-cat-btn news" onclick="toggleCat(this,'news')">
+          <span class="cat-icon">📡</span>
+          <span>ข่าวสาร & เทรนด์</span>
+          <span class="cat-arrow">›</span>
+        </button>
+        <div class="nav-subitems">
+          <button class="nav-sub-btn" onclick="showPanel('news-latest',this)">🔥 ข่าวล่าสุด</button>
+          <button class="nav-sub-btn" onclick="showPanel('news-weekly',this)">📅 สรุปรายสัปดาห์</button>
+          <button class="nav-sub-btn" onclick="showPanel('news-global',this)">🌏 ข่าวต่างประเทศ</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- ── AI OVERVIEW ── -->
+    <div class="content-panel active" id="panel-ai-overview">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-ai)">🤖 AI / Artificial Intelligence</div>
+          <div class="section-title">ปัญญาประดิษฐ์ — ภาพรวม</div>
+          <div class="section-desc">รวมความรู้ แนวคิด และพัฒนาการด้าน AI ที่สำคัญ</div>
+        </div>
+      </div>
+
+      <!-- Featured -->
+      <div class="featured-card" onclick="openModal('ai-featured')">
+        <div>
+          <div class="featured-label" style="color:var(--accent-ai)">🌟 บทความเด่น</div>
+          <div class="featured-title">Generative AI กำลังเปลี่ยนแปลงโลกธุรกิจอย่างไร?</div>
+          <div class="featured-body">นับตั้งแต่การเปิดตัว ChatGPT ปลายปี 2022 โลกแห่ง Generative AI ได้พัฒนาอย่างก้าวกระโดด องค์กรทั่วโลกกำลังนำ AI มาประยุกต์ใช้ในกระบวนการทำงาน ตั้งแต่การสร้างเนื้อหา ไปจนถึงการวิเคราะห์ข้อมูลที่ซับซ้อน</div>
+          <div class="featured-tags">
+            <span class="tag-chip">Generative AI</span>
+            <span class="tag-chip">LLM</span>
+            <span class="tag-chip">Digital Transformation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Concept Grid -->
+      <div class="sub-heading">💡 แนวคิดพื้นฐาน</div>
+      <div class="concept-grid">
+        <div class="concept-card" onclick="openModal('ai-ml')">
+          <div class="concept-num">01</div>
+          <div class="concept-name">Machine Learning</div>
+          <div class="concept-def">การเรียนรู้ของเครื่องจากข้อมูล โดยไม่ต้องโปรแกรมกฎเกณฑ์ทุกอย่างเอง</div>
+        </div>
+        <div class="concept-card" onclick="openModal('ai-dl')">
+          <div class="concept-num">02</div>
+          <div class="concept-name">Deep Learning</div>
+          <div class="concept-def">Neural Network หลายชั้น ที่สามารถเรียนรู้ฟีเจอร์จากข้อมูลดิบได้โดยตรง</div>
+        </div>
+        <div class="concept-card" onclick="openModal('ai-transformer')">
+          <div class="concept-num">03</div>
+          <div class="concept-name">Transformer Architecture</div>
+          <div class="concept-def">สถาปัตยกรรมหลักของ LLM ยุคใหม่ ใช้ Self-Attention Mechanism</div>
+        </div>
+        <div class="concept-card" onclick="openModal('ai-prompt')">
+          <div class="concept-num">04</div>
+          <div class="concept-name">Prompt Engineering</div>
+          <div class="concept-def">ศิลปะการออกแบบ Prompt เพื่อดึงประสิทธิภาพสูงสุดจากโมเดล</div>
+        </div>
+        <div class="concept-card" onclick="openModal('ai-finetuning')">
+          <div class="concept-num">05</div>
+          <div class="concept-name">Fine-tuning</div>
+          <div class="concept-def">การปรับโมเดลที่ Train ไว้แล้วให้เหมาะสมกับงานเฉพาะทางมากขึ้น</div>
+        </div>
+        <div class="concept-card" onclick="openModal('ai-multimodal')">
+          <div class="concept-num">06</div>
+          <div class="concept-name">Multimodal AI</div>
+          <div class="concept-def">AI ที่ประมวลผลได้หลายรูปแบบ ทั้งข้อความ ภาพ เสียง และวิดีโอ</div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="sub-heading">⏱️ Timeline การพัฒนา AI</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px;">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--text-muted)"></div>
+            <div class="timeline-year">2017</div>
+            <div class="timeline-event">Attention is All You Need</div>
+            <div class="timeline-desc">Google เผยแพร่งานวิจัย Transformer ที่เปลี่ยนโฉมหน้า NLP</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:#6366f1"></div>
+            <div class="timeline-year">2020</div>
+            <div class="timeline-event">GPT-3 เปิดตัว</div>
+            <div class="timeline-desc">OpenAI เปิดตัวโมเดล 175 พันล้านพารามิเตอร์ที่สร้างความตื่นตะลึง</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--accent-rag)"></div>
+            <div class="timeline-year">2022</div>
+            <div class="timeline-event">ChatGPT & Stable Diffusion</div>
+            <div class="timeline-desc">AI เข้าถึงผู้ใช้ทั่วไปได้จริง — 100 ล้านผู้ใช้ใน 2 เดือน</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--accent-ai)"></div>
+            <div class="timeline-year">2023</div>
+            <div class="timeline-event">GPT-4, Claude, Gemini</div>
+            <div class="timeline-desc">การแข่งขัน LLM ระดับโลกปะทุขึ้น — Multimodal กลายเป็นมาตรฐาน</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--accent-stock)"></div>
+            <div class="timeline-year">2024–25</div>
+            <div class="timeline-event">AI Agents & Reasoning Models</div>
+            <div class="timeline-desc">o1, Claude 3.5, Gemini 2.0 — AI เริ่มวางแผนและดำเนินการเองได้</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AI LLM ── -->
+    <div class="content-panel" id="panel-ai-llm">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-ai)">🧠 Large Language Models</div>
+          <div class="section-title">โมเดลภาษาขนาดใหญ่</div>
+          <div class="section-desc">เปรียบเทียบและทำความเข้าใจ LLM ชั้นนำของโลก</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header-bar">
+          <div class="table-header-title">🏆 เปรียบเทียบ LLM ชั้นนำ</div>
+          <div class="update-time">อัปเดต: มี.ค. 2568</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>โมเดล</th>
+              <th>บริษัท</th>
+              <th>Context</th>
+              <th>จุดเด่น</th>
+              <th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="td-symbol">GPT-4o</span></td>
+              <td>OpenAI</td>
+              <td style="font-family:var(--font-mono);font-size:12px;">128K</td>
+              <td style="font-size:12px;">Multimodal, Fast, RLHF</td>
+              <td><span class="tag-chip" style="color:var(--accent-stock)">Available</span></td>
+            </tr>
+            <tr>
+              <td><span class="td-symbol">Claude 3.7</span></td>
+              <td>Anthropic</td>
+              <td style="font-family:var(--font-mono);font-size:12px;">200K</td>
+              <td style="font-size:12px;">Extended Thinking, Safe</td>
+              <td><span class="tag-chip" style="color:var(--accent-stock)">Available</span></td>
+            </tr>
+            <tr>
+              <td><span class="td-symbol">Gemini 2.0</span></td>
+              <td>Google</td>
+              <td style="font-family:var(--font-mono);font-size:12px;">1M</td>
+              <td style="font-size:12px;">Huge Context, Multimodal</td>
+              <td><span class="tag-chip" style="color:var(--accent-stock)">Available</span></td>
+            </tr>
+            <tr>
+              <td><span class="td-symbol">LLaMA 3</span></td>
+              <td>Meta</td>
+              <td style="font-family:var(--font-mono);font-size:12px;">128K</td>
+              <td style="font-size:12px;">Open Source, Self-host</td>
+              <td><span class="tag-chip" style="color:var(--accent-news)">Open</span></td>
+            </tr>
+            <tr>
+              <td><span class="td-symbol">DeepSeek R1</span></td>
+              <td>DeepSeek</td>
+              <td style="font-family:var(--font-mono);font-size:12px;">64K</td>
+              <td style="font-size:12px;">Reasoning, Cost Efficient</td>
+              <td><span class="tag-chip" style="color:var(--accent-news)">Open</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── AI TOOLS ── -->
+    <div class="content-panel" id="panel-ai-tools">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-ai)">🛠️ AI Tools</div>
+          <div class="section-title">เครื่องมือ AI ที่น่าสนใจ</div>
+          <div class="section-desc">รวม Platform, Framework และ Infrastructure สำหรับสร้าง AI Application</div>
+        </div>
+      </div>
+      <div class="sub-heading">🏗️ Platform & Orchestration</div>
+      <div class="card-grid">
+        <div class="card ai-card" onclick="openModal('tool-dify')">
+          <div class="card-tag ai">Workflow</div>
+          <div class="card-title">Dify — Open Source LLM App Framework</div>
+          <div class="card-body">Platform สำหรับสร้าง AI Workflow และ RAG Application แบบ No-Code/Low-Code รองรับ Knowledge Base และ Multi-Model</div>
+          <div class="card-footer"><span class="card-source">🔗 dify.ai</span><span class="card-meta">Self-hosted ✓</span></div>
+        </div>
+        <div class="card ai-card" onclick="openModal('tool-n8n')">
+          <div class="card-tag ai">Automation</div>
+          <div class="card-title">n8n — Workflow Automation</div>
+          <div class="card-body">เครื่องมือ Automation ที่รองรับ AI Nodes และการเชื่อมต่อกับ 400+ services รองรับ Self-hosted</div>
+          <div class="card-footer"><span class="card-source">🔗 n8n.io</span><span class="card-meta">Open Source</span></div>
+        </div>
+        <div class="card ai-card" onclick="openModal('tool-langchain')">
+          <div class="card-tag ai">Framework</div>
+          <div class="card-title">LangChain — LLM Framework</div>
+          <div class="card-body">Framework ยอดนิยมสำหรับสร้าง LLM Applications รองรับ RAG, Agents, Memory, Tools</div>
+          <div class="card-footer"><span class="card-source">🔗 langchain.com</span><span class="card-meta">Python/JS</span></div>
+        </div>
+        <div class="card ai-card">
+          <div class="card-tag ai">Vector DB</div>
+          <div class="card-title">Qdrant — Vector Database</div>
+          <div class="card-body">Vector Database ประสิทธิภาพสูง รองรับ Semantic Search และ RAG พร้อม Filtering ขั้นสูง</div>
+          <div class="card-footer"><span class="card-source">🔗 qdrant.tech</span><span class="card-meta">Rust-based</span></div>
+        </div>
+        <div class="card ai-card">
+          <div class="card-tag ai">Observability</div>
+          <div class="card-title">LangFuse — LLM Analytics</div>
+          <div class="card-body">เครื่องมือ Monitor และ Debug LLM Applications ติดตาม Token Usage, Latency, Cost</div>
+          <div class="card-footer"><span class="card-source">🔗 langfuse.com</span><span class="card-meta">Self-hosted ✓</span></div>
+        </div>
+        <div class="card ai-card">
+          <div class="card-tag ai">Embedding</div>
+          <div class="card-title">Ollama — Local LLM Runner</div>
+          <div class="card-body">Run LLM บน Local Machine ได้ง่ายๆ รองรับ LLaMA, Mistral, Gemma และอีกมาก</div>
+          <div class="card-footer"><span class="card-source">🔗 ollama.ai</span><span class="card-meta">macOS/Linux</span></div>
+        </div>
+      </div>
+
+      <div class="sub-heading">🔌 API Providers & Cost</div>
+      <div class="table-wrap">
+        <div class="table-header-bar">
+          <div class="table-header-title">💰 ราคา API Token (โดยประมาณ)</div>
+          <div class="update-time">ข้อมูลสมมติ / Q1 2568</div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Provider</th><th>โมเดล</th><th>Input (per 1M)</th><th>Output (per 1M)</th><th>Context</th></tr></thead>
+          <tbody>
+            <tr><td><span class="td-symbol">OpenAI</span></td><td>GPT-4o</td><td class="td-up">$5.00</td><td class="td-down">$15.00</td><td style="font-family:var(--font-mono);font-size:12px;">128K</td></tr>
+            <tr><td><span class="td-symbol">Anthropic</span></td><td>Claude 3.5 Sonnet</td><td class="td-up">$3.00</td><td class="td-down">$15.00</td><td style="font-family:var(--font-mono);font-size:12px;">200K</td></tr>
+            <tr><td><span class="td-symbol">Google</span></td><td>Gemini 1.5 Pro</td><td class="td-up">$3.50</td><td class="td-down">$10.50</td><td style="font-family:var(--font-mono);font-size:12px;">1M</td></tr>
+            <tr><td><span class="td-symbol">OpenAI</span></td><td>GPT-4o mini</td><td class="td-up">$0.15</td><td class="td-down">$0.60</td><td style="font-family:var(--font-mono);font-size:12px;">128K</td></tr>
+            <tr><td><span class="td-symbol">Groq</span></td><td>LLaMA 3 70B</td><td class="td-up">$0.59</td><td class="td-down">$0.79</td><td style="font-family:var(--font-mono);font-size:12px;">8K</td></tr>
+            <tr><td><span class="td-symbol">iApp (TH)</span></td><td>Typhoon2</td><td class="td-up">$0.10</td><td class="td-down">$0.30</td><td style="font-family:var(--font-mono);font-size:12px;">8K</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sub-heading">🖥️ Embedding Models</div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-ai)">BAAI</div>
+          <div class="concept-name">bge-m3</div>
+          <div class="concept-def">Multi-lingual, Multi-granularity — รองรับภาษาไทยได้ดี ใช้ใน Dify</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-ai)">OpenAI</div>
+          <div class="concept-name">text-embedding-3</div>
+          <div class="concept-def">ประสิทธิภาพสูง ราคาถูก $0.02/1M tokens — เหมาะ Production</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-ai)">Cohere</div>
+          <div class="concept-name">embed-multilingual-v3</div>
+          <div class="concept-def">รองรับ 100+ ภาษา เหมาะกับเอกสารหลายภาษา</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-ai)">E5</div>
+          <div class="concept-name">multilingual-e5-large</div>
+          <div class="concept-def">Microsoft Research — Open-source เหมาะ Self-hosted</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RAG OVERVIEW ── -->
+    <div class="content-panel" id="panel-rag-overview">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-rag)">🔍 Retrieval-Augmented Generation</div>
+          <div class="section-title">RAG คืออะไร?</div>
+          <div class="section-desc">ความรู้พื้นฐานและแนวคิดหลักของ RAG</div>
+        </div>
+      </div>
+
+      <div class="featured-card" onclick="openModal('rag-what')">
+        <div>
+          <div class="featured-label" style="color:var(--accent-rag)">📚 ความรู้พื้นฐาน</div>
+          <div class="featured-title">RAG: การนำข้อมูลภายนอกมาเสริมพลังให้ LLM</div>
+          <div class="featured-body">RAG (Retrieval-Augmented Generation) คือเทคนิคที่ผสมผสาน Information Retrieval เข้ากับ LLM ทำให้โมเดลสามารถตอบคำถามด้วยข้อมูลที่เป็นปัจจุบันและแม่นยำ โดยไม่ต้อง Fine-tune โมเดลใหม่ทั้งหมด</div>
+          <div class="featured-tags">
+            <span class="tag-chip">Vector Search</span>
+            <span class="tag-chip">Embedding</span>
+            <span class="tag-chip">Knowledge Base</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="concept-grid">
+        <div class="concept-card" onclick="openModal('rag-chunking')">
+          <div class="concept-num" style="color:var(--accent-rag)">01</div>
+          <div class="concept-name">Document Chunking</div>
+          <div class="concept-def">การแบ่งเอกสารเป็นชิ้นเล็กๆ เพื่อให้ Embedding และ Retrieval มีประสิทธิภาพ</div>
+        </div>
+        <div class="concept-card" onclick="openModal('rag-embedding')">
+          <div class="concept-num" style="color:var(--accent-rag)">02</div>
+          <div class="concept-name">Embedding Model</div>
+          <div class="concept-def">การแปลงข้อความเป็น Vector ใน High-dimensional Space เพื่อ Semantic Search</div>
+        </div>
+        <div class="concept-card" onclick="openModal('rag-retrieval')">
+          <div class="concept-num" style="color:var(--accent-rag)">03</div>
+          <div class="concept-name">Retrieval Strategy</div>
+          <div class="concept-def">กลยุทธ์ดึงข้อมูลที่เกี่ยวข้อง — Dense, Sparse, Hybrid Retrieval</div>
+        </div>
+        <div class="concept-card" onclick="openModal('rag-rerank')">
+          <div class="concept-num" style="color:var(--accent-rag)">04</div>
+          <div class="concept-name">Reranking</div>
+          <div class="concept-def">การจัดเรียงผลลัพธ์ใหม่ด้วย Cross-Encoder เพื่อความแม่นยำสูงขึ้น</div>
+        </div>
+        <div class="concept-card" onclick="openModal('rag-hyde')">
+          <div class="concept-num" style="color:var(--accent-rag)">05</div>
+          <div class="concept-name">HyDE</div>
+          <div class="concept-def">Hypothetical Document Embeddings — ให้ LLM สร้างเอกสารสมมติก่อน Retrieve</div>
+        </div>
+        <div class="concept-card" onclick="openModal('rag-context')">
+          <div class="concept-num" style="color:var(--accent-rag)">06</div>
+          <div class="concept-name">Context Window</div>
+          <div class="concept-def">การจัดการ Context ที่ส่งให้ LLM — Packing, Compression, Lost in the Middle</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RAG PIPELINE ── -->
+    <div class="content-panel" id="panel-rag-pipeline">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-rag)">🔄 RAG Pipeline</div>
+          <div class="section-title">ขั้นตอนการทำงานของ RAG</div>
+          <div class="section-desc">ตั้งแต่ Indexing จนถึง Generation — ทำความเข้าใจทุกขั้นตอน</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px;">
+          <div style="text-align:center;padding:20px 12px;background:var(--surface2);border-radius:10px;border:1px solid rgba(124,58,237,0.2);">
+            <div style="font-size:28px;margin-bottom:8px;">📄</div>
+            <div style="font-size:12px;font-weight:600;color:var(--accent-rag);">1. Load</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">โหลดเอกสาร</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">→</div>
+          <div style="text-align:center;padding:20px 12px;background:var(--surface2);border-radius:10px;border:1px solid rgba(124,58,237,0.2);">
+            <div style="font-size:28px;margin-bottom:8px;">✂️</div>
+            <div style="font-size:12px;font-weight:600;color:var(--accent-rag);">2. Chunk</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">แบ่งชิ้นเอกสาร</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">→</div>
+          <div style="text-align:center;padding:20px 12px;background:var(--surface2);border-radius:10px;border:1px solid rgba(124,58,237,0.2);">
+            <div style="font-size:28px;margin-bottom:8px;">🔢</div>
+            <div style="font-size:12px;font-weight:600;color:var(--accent-rag);">3. Embed</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">แปลงเป็น Vector</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">→</div>
+          <div style="text-align:center;padding:20px 12px;background:var(--surface2);border-radius:10px;border:1px solid rgba(124,58,237,0.2);">
+            <div style="font-size:28px;margin-bottom:8px;">🗄️</div>
+            <div style="font-size:12px;font-weight:600;color:var(--accent-rag);">4. Store</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">เก็บใน Vector DB</div>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border);margin:20px 0;"></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;">
+          <div style="text-align:center;padding:20px 12px;background:rgba(0,212,255,0.05);border-radius:10px;border:1px solid rgba(0,212,255,0.15);">
+            <div style="font-size:28px;margin-bottom:8px;">❓</div>
+            <div style="font-size:12px;font-weight:600;color:var(--accent-ai);">5. Query</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">รับคำถาม</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">→</div>
+          <div style="text-align:center;padding:20px 12px;background:rgba(0,212,255,0.05);border-radius:10px;border:1px solid rgba(0,212,255,0.15);">
+            <div style="font-size:28px;margin-bottom:8px;">🔍</div>
+            <div style="font-size:12px;font-weight:600;color:var(--accent-ai);">6. Retrieve</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">ค้นหา Chunk</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">→</div>
+          <div style="text-align:center;padding:20px 12px;background:rgba(0,212,255,0.05);border-radius:10px;border:1px solid rgba(0,212,255,0.15);">
+            <div style="font-size:28px;margin-bottom:8px;">📝</div>
+            <div style="font-size:12px;font-weight:600;color:var(--accent-ai);">7. Augment</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">รวม Context</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">→</div>
+          <div style="text-align:center;padding:20px 12px;background:rgba(0,212,255,0.05);border-radius:10px;border:1px solid rgba(0,212,255,0.15);">
+            <div style="font-size:28px;margin-bottom:8px;">💬</div>
+            <div style="font-size:12px;font-weight:600;color:var(--accent-ai);">8. Generate</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">LLM ตอบ</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-heading">📋 รายละเอียดแต่ละขั้นตอน</div>
+      <div class="card-grid">
+        <div class="card rag-card">
+          <div class="card-tag rag">Step 1–2</div>
+          <div class="card-title">Document Loading & Chunking</div>
+          <div class="card-body">รองรับไฟล์ PDF, DOCX, TXT, HTML, MD — แบ่ง Chunk ด้วยกลยุทธ์ Fixed Size (512–1024 tokens), Recursive Split หรือ Semantic Chunking ควรมี Overlap 50–100 tokens เพื่อไม่ให้ข้อมูลขาดหาย</div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">Step 3–4</div>
+          <div class="card-title">Embedding & Vector Store</div>
+          <div class="card-body">แปลงแต่ละ Chunk เป็น Dense Vector ด้วย Embedding Model (เช่น bge-m3, text-embedding-3) จากนั้น Index ลงใน Vector Database เช่น Qdrant, ChromaDB, pgvector เพื่อรองรับ Similarity Search</div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">Step 5–6</div>
+          <div class="card-title">Query & Retrieval</div>
+          <div class="card-body">Embed Query ด้วยโมเดลเดียวกัน ค้นหา Chunk ที่ใกล้เคียงที่สุดด้วย Cosine Similarity หรือ ANN Search ดึง Top-K (เช่น K=5–10) แล้วผ่าน Reranker เพื่อจัดลำดับใหม่</div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">Step 7–8</div>
+          <div class="card-title">Augmentation & Generation</div>
+          <div class="card-body">นำ Chunk ที่ดึงมาประกอบเป็น Context ส่ง Prompt ที่มี [Context] + [Question] ให้ LLM สร้างคำตอบ ควรกำชับให้โมเดลอ้างอิงจาก Context เท่านั้น หากไม่พบให้บอกว่าไม่ทราบ</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">⚠️ ปัญหาที่พบบ่อยและวิธีแก้</div>
+      <div class="table-wrap">
+        <div class="table-header-bar"><div class="table-header-title">🔧 Common RAG Issues</div></div>
+        <table class="data-table">
+          <thead><tr><th>ปัญหา</th><th>สาเหตุ</th><th>วิธีแก้</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text-primary);font-weight:500;">Retrieval ไม่พบข้อมูล</td><td>Vocabulary Mismatch</td><td>ใช้ HyDE หรือ Query Expansion</td></tr>
+            <tr><td style="color:var(--text-primary);font-weight:500;">Chunk ขาดหาย Context</td><td>Chunk Size เล็กเกิน</td><td>เพิ่ม Parent-Child Chunking</td></tr>
+            <tr><td style="color:var(--text-primary);font-weight:500;">LLM Hallucinate</td><td>Context ไม่ครบ</td><td>เพิ่ม Top-K, ใช้ Reranker</td></tr>
+            <tr><td style="color:var(--text-primary);font-weight:500;">ตอบช้า / Latency สูง</td><td>Embedding ทุก Query</td><td>Cache Embedding, ใช้ ANN Index</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="content-panel" id="panel-rag-advanced">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-rag)">🚀 Advanced RAG</div>
+          <div class="section-title">เทคนิค RAG ขั้นสูง</div>
+          <div class="section-desc">HyDE, GraphRAG, RAPTOR และเทคนิคล่าสุด</div>
+        </div>
+      </div>
+      <div class="card-grid">
+        <div class="card rag-card" onclick="openModal('rag-hyde-detail')">
+          <div class="card-tag rag">HyDE</div>
+          <div class="card-title">Hypothetical Document Embeddings</div>
+          <div class="card-body">ให้ LLM สร้างเอกสาร "สมมติ" ที่น่าจะตอบคำถาม แล้วใช้เอกสารนั้น Embed เพื่อ Retrieve แทน Query โดยตรง — ลด Vocabulary Mismatch</div>
+          <div class="card-footer"><span class="card-source">📄 Gao et al. 2022</span></div>
+        </div>
+        <div class="card rag-card" onclick="openModal('rag-graphrag')">
+          <div class="card-tag rag">GraphRAG</div>
+          <div class="card-title">Graph-based RAG</div>
+          <div class="card-body">Microsoft Research — ใช้ Knowledge Graph แทน Vector Search เพื่อดึงข้อมูลที่มีความสัมพันธ์เชื่อมโยงกันได้ดีขึ้น</div>
+          <div class="card-footer"><span class="card-source">📄 Microsoft 2024</span></div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">RAPTOR</div>
+          <div class="card-title">Recursive Abstractive Processing</div>
+          <div class="card-body">สร้าง Hierarchical Summary Tree จากเอกสาร ช่วยให้ Retrieval ทำงานได้ดีทั้งในระดับ Detail และ Abstract</div>
+          <div class="card-footer"><span class="card-source">📄 Stanford 2024</span></div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">Self-RAG</div>
+          <div class="card-title">Self-Reflective Retrieval</div>
+          <div class="card-body">LLM ตัดสินใจเองว่าต้อง Retrieve หรือไม่ และประเมินคุณภาพผลลัพธ์ที่ได้รับ</div>
+          <div class="card-footer"><span class="card-source">📄 Asai et al. 2023</span></div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">ColBERT</div>
+          <div class="card-title">Late Interaction Retrieval</div>
+          <div class="card-body">เก็บ Embedding รายโทเค็น และคำนวณ Similarity แบบ Late Interaction ได้ผลดีกว่า Dense Retrieval</div>
+          <div class="card-footer"><span class="card-source">📄 Stanford 2021</span></div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">Contextual Retrieval</div>
+          <div class="card-title">Anthropic Contextual Retrieval</div>
+          <div class="card-body">เพิ่ม Context ให้แต่ละ Chunk ก่อน Embedding ด้วย LLM ช่วยให้ Chunk มี Context ครบถ้วน</div>
+          <div class="card-footer"><span class="card-source">📄 Anthropic 2024</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STOCK OVERVIEW ── -->
+    <div class="content-panel" id="panel-stock-overview">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-stock)">📈 ตลาดหลักทรัพย์</div>
+          <div class="section-title">ภาพรวมตลาดทุน</div>
+          <div class="section-desc">ข้อมูลตลาดหุ้นและแนวทางการลงทุน</div>
+        </div>
+      </div>
+
+      <!-- Ticker -->
+      <div class="ticker-bar">
+        <div class="ticker-label">LIVE</div>
+        <div class="ticker-items" id="ticker">
+          <div class="ticker-item"><span class="ticker-symbol">SET</span><span class="ticker-price">1,285.40</span><span class="ticker-change up">▲ +0.8%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">PTT</span><span class="ticker-price">32.50</span><span class="ticker-change down">▼ -1.2%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">ADVANC</span><span class="ticker-price">218.00</span><span class="ticker-change up">▲ +0.5%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">KBANK</span><span class="ticker-price">142.50</span><span class="ticker-change up">▲ +1.1%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">NVDA</span><span class="ticker-price">$875.50</span><span class="ticker-change up">▲ +2.3%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">AAPL</span><span class="ticker-price">$212.40</span><span class="ticker-change down">▼ -0.4%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$87,200</span><span class="ticker-change up">▲ +3.1%</span></div>
+          <!-- duplicate for loop -->
+          <div class="ticker-item"><span class="ticker-symbol">SET</span><span class="ticker-price">1,285.40</span><span class="ticker-change up">▲ +0.8%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">PTT</span><span class="ticker-price">32.50</span><span class="ticker-change down">▼ -1.2%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">ADVANC</span><span class="ticker-price">218.00</span><span class="ticker-change up">▲ +0.5%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">KBANK</span><span class="ticker-price">142.50</span><span class="ticker-change up">▲ +1.1%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">NVDA</span><span class="ticker-price">$875.50</span><span class="ticker-change up">▲ +2.3%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">AAPL</span><span class="ticker-price">$212.40</span><span class="ticker-change down">▼ -0.4%</span></div>
+          <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$87,200</span><span class="ticker-change up">▲ +3.1%</span></div>
+        </div>
+      </div>
+
+      <div class="concept-grid">
+        <div class="concept-card" onclick="showPanel('stock-thai',null)">
+          <div class="concept-num" style="color:var(--accent-stock)">🇹🇭</div>
+          <div class="concept-name">ตลาดหลักทรัพย์ไทย</div>
+          <div class="concept-def">SET Index, mai, หุ้นเด่น, กองทุน LTF/RMF</div>
+        </div>
+        <div class="concept-card" onclick="showPanel('stock-us',null)">
+          <div class="concept-num" style="color:var(--accent-stock)">🇺🇸</div>
+          <div class="concept-name">ตลาดสหรัฐฯ</div>
+          <div class="concept-def">S&P500, Nasdaq, Dow Jones, หุ้น Tech</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">📊</div>
+          <div class="concept-name">PE Ratio & Valuation</div>
+          <div class="concept-def">P/E, P/BV, EV/EBITDA — เครื่องมือประเมินมูลค่า</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">💰</div>
+          <div class="concept-name">DCA Strategy</div>
+          <div class="concept-def">Dollar Cost Averaging — ลงทุนสม่ำเสมอลดความเสี่ยง</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">🌐</div>
+          <div class="concept-name">ETF & Index Fund</div>
+          <div class="concept-def">กองทุนดัชนีต้นทุนต่ำ เหมาะกับนักลงทุนระยะยาว</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">⚠️</div>
+          <div class="concept-name">Risk Management</div>
+          <div class="concept-def">Diversification, Stop Loss, Position Sizing</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STOCK THAI ── -->
+    <div class="content-panel" id="panel-stock-thai">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-stock)">🇹🇭 SET / Thailand</div>
+          <div class="section-title">หุ้นไทย — ตลาดหลักทรัพย์แห่งประเทศไทย</div>
+          <div class="section-desc">ข้อมูลสมมติเพื่อการศึกษา — ไม่ใช่คำแนะนำการลงทุน</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header-bar">
+          <div class="table-header-title">📊 หุ้นเด่นใน SET50</div>
+          <div class="update-time">ข้อมูลสมมติ / เพื่อการศึกษา</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>หลักทรัพย์</th><th>ราคา (บาท)</th><th>เปลี่ยนแปลง</th><th>P/E</th><th>กลุ่มธุรกิจ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="td-symbol">PTT</span></td><td>32.50</td><td class="td-down">-1.2%</td><td style="font-family:var(--font-mono);">9.2x</td><td><span class="sector-pill">พลังงาน</span></td></tr>
+            <tr><td><span class="td-symbol">KBANK</span></td><td>142.50</td><td class="td-up">+1.1%</td><td style="font-family:var(--font-mono);">8.5x</td><td><span class="sector-pill">ธนาคาร</span></td></tr>
+            <tr><td><span class="td-symbol">ADVANC</span></td><td>218.00</td><td class="td-up">+0.5%</td><td style="font-family:var(--font-mono);">22.1x</td><td><span class="sector-pill">โทรคมนาคม</span></td></tr>
+            <tr><td><span class="td-symbol">AOT</span></td><td>62.75</td><td class="td-up">+0.3%</td><td style="font-family:var(--font-mono);">35.8x</td><td><span class="sector-pill">ท่าอากาศยาน</span></td></tr>
+            <tr><td><span class="td-symbol">SCB</span></td><td>108.00</td><td class="td-down">-0.5%</td><td style="font-family:var(--font-mono);">9.8x</td><td><span class="sector-pill">ธนาคาร</span></td></tr>
+            <tr><td><span class="td-symbol">CPF</span></td><td>28.25</td><td class="td-up">+1.8%</td><td style="font-family:var(--font-mono);">15.2x</td><td><span class="sector-pill">อาหาร</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sub-heading">🏭 กลุ่มอุตสาหกรรมใน SET</div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">ENERGY</div>
+          <div class="concept-name">พลังงานและสาธารณูปโภค</div>
+          <div class="concept-def">PTT, PTTEP, GULF, RATCH, EA — คิดเป็นสัดส่วนใหญ่ใน SET Index</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">BANK</div>
+          <div class="concept-name">ธนาคารและการเงิน</div>
+          <div class="concept-def">KBANK, SCB, BBL, KTB, BAY — รายได้หลักจาก Net Interest Margin</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">PROP</div>
+          <div class="concept-name">อสังหาริมทรัพย์</div>
+          <div class="concept-def">LH, SIRI, AP, SC — ขึ้นลงตามวัฏจักรดอกเบี้ยและกำลังซื้อ</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">TECH</div>
+          <div class="concept-name">เทคโนโลยีและโทรคมนาคม</div>
+          <div class="concept-def">ADVANC, TRUE, DELTA, HANA — กำลังเติบโตจาก 5G และ Data Center</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">💡 กลยุทธ์การลงทุนในหุ้นไทย</div>
+      <div class="card-grid">
+        <div class="card stock-card">
+          <div class="card-tag stock">DCA</div>
+          <div class="card-title">Dollar Cost Averaging</div>
+          <div class="card-body">ลงทุนสม่ำเสมอทุกเดือน ไม่ว่าราคาจะขึ้นหรือลง — เหมาะกับผู้ลงทุนระยะยาว ลด Timing Risk</div>
+        </div>
+        <div class="card stock-card">
+          <div class="card-tag stock">Dividend</div>
+          <div class="card-title">Dividend Investing</div>
+          <div class="card-body">เน้นหุ้นปันผลสม่ำเสมอ Yield 3-6% เช่น หุ้นธนาคาร สาธารณูปโภค — รายได้ Passive ระยะยาว</div>
+        </div>
+        <div class="card stock-card">
+          <div class="card-tag stock">LTF/RMF</div>
+          <div class="card-title">กองทุนลดหย่อนภาษี</div>
+          <div class="card-body">SSF ลดหย่อนได้ 30% สูงสุด 200,000 บาท, RMF ลดหย่อนได้ 30% สูงสุด 500,000 บาท — ลงทุนและประหยัดภาษี</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NEWS LATEST ── -->
+    <div class="content-panel" id="panel-news-latest">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-news)">🔥 Breaking News</div>
+          <div class="section-title">ข่าวล่าสุด</div>
+          <div class="section-desc">รวมข่าว AI, เทคโนโลยี และตลาดทุน</div>
+        </div>
+      </div>
+      <div class="card-grid">
+        <div class="card news-card" onclick="openModal('news-1')">
+          <div class="card-tag news">AI</div>
+          <div class="card-title">OpenAI เปิดตัว GPT-5 รุ่น Preview — Reasoning ขั้นสูงที่สุด</div>
+          <div class="card-body">OpenAI ประกาศเปิดตัวโมเดลรุ่นใหม่ที่มีความสามารถ Reasoning ที่ก้าวกระโดด รองรับ Context 256K tokens</div>
+          <div class="card-footer"><span>Reuters</span><span class="card-meta">2 ชม.ที่แล้ว</span></div>
+        </div>
+        <div class="card news-card" onclick="openModal('news-2')">
+          <div class="card-tag news">หุ้น</div>
+          <div class="card-title">Nvidia แตะ Market Cap $3 ล้านล้าน — AI Chip Demand ยังแข็งแกร่ง</div>
+          <div class="card-body">หุ้น NVDA ขึ้นต่อเนื่องหลังประกาศรายได้ Q1 เกินคาด Data Center Revenue โตกว่า 400% YoY</div>
+          <div class="card-footer"><span>Bloomberg</span><span class="card-meta">5 ชม.ที่แล้ว</span></div>
+        </div>
+        <div class="card news-card" onclick="openModal('news-3')">
+          <div class="card-tag news">Tech</div>
+          <div class="card-title">Google DeepMind เผย AlphaFold 3 — โปรตีนสู่ DNA</div>
+          <div class="card-body">DeepMind อัปเกรด AlphaFold ให้ครอบคลุมโมเลกุลชีวภาพทุกประเภท เปิดยุคใหม่วิทยาศาสตร์ยา</div>
+          <div class="card-footer"><span>Nature</span><span class="card-meta">1 วันที่แล้ว</span></div>
+        </div>
+        <div class="card news-card">
+          <div class="card-tag news">ราคาหุ้น</div>
+          <div class="card-title">SET ปิดบวก — ต่างชาติซื้อสุทธิหุ้นกลุ่มพลังงาน</div>
+          <div class="card-body">ดัชนีตลาดหุ้นไทยปิดที่ 1,285 จุด บวก 0.8% นักลงทุนต่างชาติซื้อสุทธิ 1.2 พันล้านบาท</div>
+          <div class="card-footer"><span>Bangkok Post</span><span class="card-meta">วันนี้</span></div>
+        </div>
+        <div class="card news-card">
+          <div class="card-tag news">Policy</div>
+          <div class="card-title">EU AI Act มีผลบังคับใช้ — บริษัท AI ต้องปฏิบัติตาม</div>
+          <div class="card-body">กฎหมาย AI ของสหภาพยุโรปเริ่มมีผลบังคับ High-Risk AI Systems ต้องผ่านการประเมินความเสี่ยง</div>
+          <div class="card-footer"><span>Euractiv</span><span class="card-meta">2 วันที่แล้ว</span></div>
+        </div>
+        <div class="card news-card">
+          <div class="card-tag news">RAG</div>
+          <div class="card-title">Anthropic เผยแพร่ Contextual Retrieval — ปรับปรุง RAG Accuracy</div>
+          <div class="card-body">เทคนิคใหม่จาก Anthropic เพิ่ม Context ให้ทุก Chunk ด้วย Claude ก่อน Index ลด Retrieval Failure 67%</div>
+          <div class="card-footer"><span>Anthropic Blog</span><span class="card-meta">3 วันที่แล้ว</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STOCK FUNDAMENTAL ── -->
+    <div class="content-panel" id="panel-stock-fundamental">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-stock)">📊 Fundamental Analysis</div>
+          <div class="section-title">วิเคราะห์ปัจจัยพื้นฐาน</div>
+          <div class="section-desc">เข้าใจค่าที่ใช้ประเมินมูลค่าที่แท้จริงของหุ้น</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">📐 Valuation Ratios</div>
+      <div class="concept-grid">
+        <div class="concept-card" onclick="openModal('fund-pe')">
+          <div class="concept-num" style="color:var(--accent-stock)">P/E</div>
+          <div class="concept-name">Price-to-Earnings Ratio</div>
+          <div class="concept-def">ราคา ÷ กำไรต่อหุ้น — ค่าต่ำ = หุ้นถูก (เชิงเปรียบเทียบในอุตสาหกรรมเดียวกัน)</div>
+        </div>
+        <div class="concept-card" onclick="openModal('fund-pb')">
+          <div class="concept-num" style="color:var(--accent-stock)">P/B</div>
+          <div class="concept-name">Price-to-Book Ratio</div>
+          <div class="concept-def">เปรียบราคาตลาดกับมูลค่าทางบัญชี — &lt;1 หมายถึงต่ำกว่าทรัพย์สิน</div>
+        </div>
+        <div class="concept-card" onclick="openModal('fund-roe')">
+          <div class="concept-num" style="color:var(--accent-stock)">ROE</div>
+          <div class="concept-name">Return on Equity</div>
+          <div class="concept-def">ผลตอบแทนต่อส่วนทุน — สูงแสดงถึงประสิทธิภาพการทำกำไร ควร &gt;15%</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">D/E</div>
+          <div class="concept-name">Debt-to-Equity Ratio</div>
+          <div class="concept-def">อัตราส่วนหนี้ต่อทุน — ยิ่งสูงยิ่งเสี่ยง ควรต่ำกว่า 1 ยกเว้นธนาคาร</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">FCF</div>
+          <div class="concept-name">Free Cash Flow</div>
+          <div class="concept-def">กระแสเงินสดอิสระหลังหักการลงทุน (CapEx) — FCF บวกและเติบโตคือสัญญาณดี</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">EPS</div>
+          <div class="concept-name">Earnings Per Share</div>
+          <div class="concept-def">กำไรสุทธิ ÷ จำนวนหุ้น — ดูแนวโน้มการเติบโต YoY เทียบกับ Consensus</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">Div</div>
+          <div class="concept-name">Dividend Yield</div>
+          <div class="concept-def">เงินปันผลต่อปี ÷ ราคาหุ้น — Yield 3–6% ถือว่าน่าสนใจสำหรับนักลงทุนระยะยาว</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">EV</div>
+          <div class="concept-name">EV/EBITDA</div>
+          <div class="concept-def">Enterprise Value ÷ กำไรก่อนหักดอกเบี้ยและภาษี — ใช้เปรียบเทียบข้ามบริษัทที่มีหนี้ต่างกัน</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">📋 Framework วิเคราะห์หุ้น</div>
+      <div class="card-grid">
+        <div class="card stock-card">
+          <div class="card-tag stock">Moat</div>
+          <div class="card-title">Economic Moat (ความได้เปรียบเชิงแข่งขัน)</div>
+          <div class="card-body">คำถามสำคัญ: บริษัทนี้มีอะไรที่คู่แข่งลอกเลียนได้ยาก? เช่น Network Effect (LINE), ต้นทุนสลับ (Oracle), Brand (Apple), Patent, Scale Advantage</div>
+        </div>
+        <div class="card stock-card">
+          <div class="card-tag stock">DCF</div>
+          <div class="card-title">Discounted Cash Flow</div>
+          <div class="card-body">ประเมินมูลค่าด้วย FCF ที่คาดว่าจะเกิดขึ้นในอนาคต คิดลดกลับมาเป็น Present Value ใช้ Discount Rate = Cost of Capital (WACC)</div>
+        </div>
+        <div class="card stock-card">
+          <div class="card-tag stock">3 งบ</div>
+          <div class="card-title">3 งบการเงินที่ต้องอ่าน</div>
+          <div class="card-body">งบกำไรขาดทุน (Profitability), งบดุล (Financial Health), งบกระแสเงินสด (Cash Reality) — อ่านทั้ง 3 ควบคู่กันก่อนลงทุน</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AI ETHICS ── -->
+    <div class="content-panel" id="panel-ai-ethics">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-ai)">⚖️ AI Ethics & Governance</div>
+          <div class="section-title">จริยธรรมและธรรมาภิบาล AI</div>
+          <div class="section-desc">หลักการและกรอบกำกับดูแล AI อย่างมีความรับผิดชอบ</div>
+        </div>
+      </div>
+      <div class="card-grid">
+        <div class="card ai-card"><div class="card-tag ai">Safety</div><div class="card-title">AI Safety & Alignment</div><div class="card-body">การพัฒนา AI ที่ปลอดภัยและสอดคล้องกับเจตนารมณ์ของมนุษย์ — RLHF (Reinforcement Learning from Human Feedback), Constitutional AI ของ Anthropic, Red Teaming เพื่อค้นหาช่องโหว่</div></div>
+        <div class="card ai-card"><div class="card-tag ai">Bias</div><div class="card-title">Algorithmic Bias & Fairness</div><div class="card-body">อคติในข้อมูล Train ส่งผลให้ AI ตัดสินใจไม่เป็นธรรม เช่น ปฏิเสธสินเชื่อจากเชื้อชาติ หรือคัดคนออกจากประวัติของโรงเรียน — ต้องทำ Bias Audit ก่อน Deploy</div></div>
+        <div class="card ai-card"><div class="card-tag ai">Privacy</div><div class="card-title">Data Privacy & PDPA</div><div class="card-body">การคุ้มครองข้อมูลส่วนบุคคลในยุค AI — GDPR ยุโรป, PDPA ไทย (พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562), Privacy by Design, Data Minimization</div></div>
+        <div class="card ai-card"><div class="card-tag ai">Regulation</div><div class="card-title">EU AI Act</div><div class="card-body">กฎหมาย AI ฉบับแรกของโลก จัดระดับความเสี่ยง 4 ระดับ: Unacceptable (ห้ามใช้), High (ต้องตรวจสอบ), Limited (แจ้งผู้ใช้), Minimal (อิสระ) — มีผลบังคับใช้ 2024</div></div>
+        <div class="card ai-card"><div class="card-tag ai">Explainability</div><div class="card-title">Explainable AI (XAI)</div><div class="card-body">ความสามารถอธิบายว่า AI ตัดสินใจอย่างไร — สำคัญมากใน High-Risk Domain เช่น การแพทย์ กฎหมาย และ Compliance เครื่องมือ: SHAP, LIME, Attention Map</div></div>
+        <div class="card ai-card"><div class="card-tag ai">Governance</div><div class="card-title">AI Governance Framework</div><div class="card-body">กรอบบริหาร AI ขององค์กร — Policy, Risk Assessment, Model Registry, Human Oversight, Incident Response ตัวอย่าง: NIST AI RMF, ISO/IEC 42001</div></div>
+      </div>
+
+      <div class="sub-heading">🌐 กรอบ AI Governance ระดับโลก</div>
+      <div class="table-wrap">
+        <div class="table-header-bar"><div class="table-header-title">📋 เปรียบเทียบ Framework หลัก</div><div class="update-time">คลิกชื่อเพื่อดูเอกสาร</div></div>
+        <table class="data-table">
+          <thead><tr><th>Framework</th><th>ออกโดย</th><th>โฟกัส</th><th>สถานะ</th><th>เอกสาร</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689" target="_blank" style="color:var(--accent-ai);font-weight:700;text-decoration:none;">EU AI Act</a></td>
+              <td>European Union</td><td>Risk-based Regulation</td>
+              <td><span class="tag-chip" style="color:var(--accent-stock);">บังคับใช้แล้ว</span></td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689" target="_blank" class="doc-link">📄 Official Text</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://airc.nist.gov/Home" target="_blank" style="color:var(--accent-ai);font-weight:700;text-decoration:none;">NIST AI RMF</a></td>
+              <td>US NIST</td><td>Risk Management</td>
+              <td><span class="tag-chip" style="color:var(--accent-news);">Voluntary</span></td>
+              <td><a href="https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf" target="_blank" class="doc-link">📄 AI 100-1 PDF</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.iso.org/standard/81230.html" target="_blank" style="color:var(--accent-ai);font-weight:700;text-decoration:none;">ISO/IEC 42001</a></td>
+              <td>ISO / IEC</td><td>AI Management System</td>
+              <td><span class="tag-chip" style="color:var(--accent-news);">Voluntary</span></td>
+              <td><a href="https://www.iso.org/standard/81230.html" target="_blank" class="doc-link">📄 ISO Catalogue</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://unesdoc.unesco.org/ark:/48223/pf0000381137" target="_blank" style="color:var(--accent-ai);font-weight:700;text-decoration:none;">UNESCO AI Ethics</a></td>
+              <td>UNESCO</td><td>Human Rights & Values</td>
+              <td><span class="tag-chip" style="color:var(--accent-news);">Guidance</span></td>
+              <td><a href="https://unesdoc.unesco.org/ark:/48223/pf0000381137" target="_blank" class="doc-link">📄 Recommendation</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.mdes.go.th/law/6355" target="_blank" style="color:var(--accent-ai);font-weight:700;text-decoration:none;">พ.ร.บ. PDPA ไทย</a></td>
+              <td>รัฐบาลไทย</td><td>Data Protection</td>
+              <td><span class="tag-chip" style="color:var(--accent-stock);">บังคับใช้แล้ว</span></td>
+              <td><a href="https://www.ratchakitcha.soc.go.th/DATA/PDF/2562/A/069/T_0052.PDF" target="_blank" class="doc-link">📄 ราชกิจจาฯ</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.etda.or.th/en/Our-Service/standard-and-policy/artificial-intelligence.html" target="_blank" style="color:var(--accent-ai);font-weight:700;text-decoration:none;">Thailand AI Policy</a></td>
+              <td>ETDA / MDES</td><td>National AI Strategy</td>
+              <td><span class="tag-chip" style="color:var(--accent-news);">In Progress</span></td>
+              <td><a href="https://www.etda.or.th/en/Our-Service/standard-and-policy/artificial-intelligence.html" target="_blank" class="doc-link">📄 ETDA Portal</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.oecd.org/going-digital/ai/principles/" target="_blank" style="color:var(--accent-ai);font-weight:700;text-decoration:none;">OECD AI Principles</a></td>
+              <td>OECD</td><td>Responsible AI</td>
+              <td><span class="tag-chip" style="color:var(--accent-news);">Guidance</span></td>
+              <td><a href="https://www.oecd.org/going-digital/ai/principles/" target="_blank" class="doc-link">📄 Principles</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.pdpc.gov.sg/Guidelines-and-Consultation/2020/01/Model-AI-Governance-Framework" target="_blank" style="color:var(--accent-ai);font-weight:700;text-decoration:none;">Singapore MAIGF</a></td>
+              <td>PDPC Singapore</td><td>Practical Governance</td>
+              <td><span class="tag-chip" style="color:var(--accent-stock);">Published</span></td>
+              <td><a href="https://www.pdpc.gov.sg/Guidelines-and-Consultation/2020/01/Model-AI-Governance-Framework" target="_blank" class="doc-link">📄 Framework v2</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── DEFAULT (ซ่อนไว้ panels อื่นๆ) ── -->
+    <div class="content-panel" id="panel-ai-agents">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-ai)">⚡ AI Agents</div>
+          <div class="section-title">AI Agents — ระบบอัตโนมัติอัจฉริยะ</div>
+          <div class="section-desc">จาก Chatbot แบบ Turn-by-Turn สู่ Autonomous Agent ที่วางแผนและดำเนินการได้เอง</div>
+        </div>
+      </div>
+      <div class="featured-card">
+        <div>
+          <div class="featured-label" style="color:var(--accent-ai)">🔬 แนวคิดหลัก</div>
+          <div class="featured-title">จาก Chatbot สู่ Autonomous Agent</div>
+          <div class="featured-body">AI Agent คือระบบที่สามารถวางแผน ตัดสินใจ และดำเนินการได้เองโดยมีเป้าหมาย — ใช้ LLM เป็น "สมอง" ร่วมกับ Tools และ Memory เพื่อแก้ปัญหาที่ซับซ้อนหลายขั้นตอน</div>
+          <div class="featured-tags"><span class="tag-chip">ReAct</span><span class="tag-chip">Tool Use</span><span class="tag-chip">Planning</span><span class="tag-chip">Memory</span></div>
+        </div>
+      </div>
+
+      <div class="sub-heading">🧱 สถาปัตยกรรมของ AI Agent</div>
+      <div class="concept-grid">
+        <div class="concept-card"><div class="concept-num">🧠</div><div class="concept-name">LLM (สมอง)</div><div class="concept-def">ใช้ LLM วางแผน ตัดสินใจ และสร้าง Action — GPT-4o, Claude 3.5, Gemini Flash</div></div>
+        <div class="concept-card"><div class="concept-num">🔧</div><div class="concept-name">Tools (มือ)</div><div class="concept-def">Web Search, Code Execution, API Call, File I/O, Database Query — ขยายความสามารถ</div></div>
+        <div class="concept-card"><div class="concept-num">💾</div><div class="concept-name">Memory (ความจำ)</div><div class="concept-def">Short-term (Context Window), Long-term (Vector DB), Episodic (การกระทำที่ผ่านมา)</div></div>
+        <div class="concept-card"><div class="concept-num">🎯</div><div class="concept-name">Planner (วางแผน)</div><div class="concept-def">แบ่งงานใหญ่ออกเป็น Subtask — CoT, ToT (Tree of Thoughts), ReAct Loop</div></div>
+      </div>
+
+      <div class="sub-heading">⚙️ Framework ยอดนิยม</div>
+      <div class="card-grid">
+        <div class="card ai-card">
+          <div class="card-tag ai">Microsoft</div>
+          <div class="card-title">AutoGen</div>
+          <div class="card-body">Multi-Agent framework — Agent สนทนาและทำงานร่วมกันได้ รองรับ Code Generation, Review, Execution แบบ Automated</div>
+          <div class="card-footer"><span class="card-source">🔗 github.com/microsoft/autogen</span></div>
+        </div>
+        <div class="card ai-card">
+          <div class="card-tag ai">CrewAI</div>
+          <div class="card-title">CrewAI</div>
+          <div class="card-body">สร้าง "ทีม" AI Agent ที่มีบทบาทเฉพาะทาง — Researcher, Writer, Reviewer ทำงานเป็น Crew สู่เป้าหมายเดียวกัน</div>
+          <div class="card-footer"><span class="card-source">🔗 crewai.com</span></div>
+        </div>
+        <div class="card ai-card">
+          <div class="card-tag ai">LangGraph</div>
+          <div class="card-title">LangGraph</div>
+          <div class="card-body">สร้าง Stateful Agent Workflow แบบ Graph — รองรับ Loop, Branching, Human-in-the-Loop Checkpoints</div>
+          <div class="card-footer"><span class="card-source">🔗 langchain-ai/langgraph</span></div>
+        </div>
+        <div class="card ai-card">
+          <div class="card-tag ai">Dify</div>
+          <div class="card-title">Dify Agent Mode</div>
+          <div class="card-body">สร้าง Agent ด้วย UI No-Code — ตั้ง Tools, Instructions, Memory แบบ Drag-and-Drop เหมาะ Prototype</div>
+          <div class="card-footer"><span class="card-source">🔗 dify.ai</span></div>
+        </div>
+      </div>
+
+      <div class="sub-heading">⚠️ ความท้าทายของ AI Agent</div>
+      <div class="table-wrap">
+        <div class="table-header-bar"><div class="table-header-title">🔍 ปัญหาที่ต้องระวัง</div></div>
+        <table class="data-table">
+          <thead><tr><th>ปัญหา</th><th>คำอธิบาย</th><th>วิธีรับมือ</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text-primary);font-weight:500;">Hallucination ใน Action</td><td>Agent สร้าง Action ที่ไม่มีอยู่จริง</td><td>Constrained Output, Tool Validation</td></tr>
+            <tr><td style="color:var(--text-primary);font-weight:500;">Infinite Loop</td><td>วน Loop โดยไม่หยุด</td><td>Max Iterations, Timeout Guard</td></tr>
+            <tr><td style="color:var(--text-primary);font-weight:500;">Prompt Injection</td><td>ข้อมูลภายนอกหลอก Agent</td><td>Input Sanitization, Human Checkpoint</td></tr>
+            <tr><td style="color:var(--text-primary);font-weight:500;">Cost Runaway</td><td>เรียก LLM ซ้ำจนค่าใช้จ่ายพุ่ง</td><td>Budget Limit, Caching, Token Monitor</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-ai-news">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-eyebrow" style="color:var(--accent-ai)">📰 AI News</div>
+          <div class="section-title">ข่าว AI ล่าสุด</div>
+          <div class="section-desc">อัปเดตอัตโนมัติทุก 3 วัน ด้วย AI — คลิก Refresh เพื่ออัปเดตทันที</div>
+        </div>
+        <div class="section-actions">
+          <div id="news-status" class="news-status-pill"></div>
+          <button class="btn-filter active" id="btn-refresh-news" onclick="refreshAINews()">
+            <span id="refresh-icon">⟳</span> Refresh ข่าว
+          </button>
+        </div>
+      </div>
+
+      <div id="news-meta-bar" class="news-meta-bar">
+        <span id="news-last-updated">📅 ข้อมูลเริ่มต้น (ยังไม่ได้ Refresh)</span>
+        <span id="news-next-update" style="margin-left:auto;color:var(--text-muted);font-size:11px;"></span>
+      </div>
+
+      <div id="news-loading" style="display:none;padding:16px 0;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+
+      <div id="news-grid" class="card-grid">
+        <div class="card ai-card"><div class="card-tag ai">Research</div><div class="card-title">DeepSeek R2 — Open Source Reasoning</div><div class="card-body">DeepSeek เปิดตัวโมเดล Reasoning รุ่นใหม่ Open-source ประสิทธิภาพใกล้เคียง OpenAI o1 ในราคาต่ำกว่า 10 เท่า ใช้ MoE Architecture ทำให้ Inference ถูกกว่า</div><div class="card-footer"><span>Hugging Face</span><span class="card-meta">1 วันที่แล้ว</span></div></div>
+        <div class="card ai-card"><div class="card-tag ai">Product</div><div class="card-title">Google NotebookLM รองรับภาษาไทย</div><div class="card-body">Google เพิ่มการรองรับภาษาไทยใน NotebookLM Audio Overviews สร้างพอดแคสต์จากเอกสารภาษาไทยได้ รองรับ PDF และ Google Docs</div><div class="card-footer"><span>Google Blog</span><span class="card-meta">3 วันที่แล้ว</span></div></div>
+        <div class="card ai-card"><div class="card-tag ai">Regulation</div><div class="card-title">ไทยเตรียมออก AI Framework</div><div class="card-body">สำนักงาน กสทช. ร่วมกับ ETDA เตรียมกรอบการกำกับดูแล AI ครอบคลุม Deepfake, Generative AI, High-Risk AI ใน Healthcare และ Finance</div><div class="card-footer"><span>ไทยรัฐ</span><span class="card-meta">5 วันที่แล้ว</span></div></div>
+        <div class="card ai-card"><div class="card-tag ai">Research</div><div class="card-title">Anthropic: Constitutional AI 2.0</div><div class="card-body">Anthropic เผยแพร่งานวิจัย Constitutional AI รุ่นใหม่ ให้ AI ประเมินตัวเองด้วยหลักจริยธรรมชุดใหม่ที่ละเอียดขึ้น ลด Harmful Output ได้ถึง 45%</div><div class="card-footer"><span>Anthropic Research</span><span class="card-meta">1 สัปดาห์ที่แล้ว</span></div></div>
+        <div class="card ai-card"><div class="card-tag ai">Enterprise</div><div class="card-title">Microsoft Copilot ใน Office 365</div><div class="card-body">Microsoft ขยาย Copilot ไปยัง Excel, PowerPoint, Outlook แบบ GA — ผู้ใช้ธุรกิจกว่า 300 ล้านคนเข้าถึง AI ได้ทันที</div><div class="card-footer"><span>Microsoft Blog</span><span class="card-meta">1 สัปดาห์ที่แล้ว</span></div></div>
+        <div class="card ai-card"><div class="card-tag ai">Open Source</div><div class="card-title">Llama 3.3 70B — SOTA Open Source</div><div class="card-body">Meta ปล่อย Llama 3.3 70B ประสิทธิภาพเทียบชั้น GPT-4o mini แต่ Self-hosted ได้ฟรี เหมาะ Local LLM ที่ต้องการ Data Privacy</div><div class="card-footer"><span>Meta AI</span><span class="card-meta">2 สัปดาห์ที่แล้ว</span></div></div>
+        <div class="card ai-card"><div class="card-tag ai">Benchmark</div><div class="card-title">MMLU Pro — Benchmark ยุคใหม่</div><div class="card-body">MMLU Pro แทนที่ MMLU ดั้งเดิม ยากขึ้น 10 เท่า ทดสอบ Reasoning ที่ซับซ้อน Claude 3.5 Sonnet และ GPT-4o อยู่แถว Top</div><div class="card-footer"><span>Papers With Code</span><span class="card-meta">2 สัปดาห์ที่แล้ว</span></div></div>
+        <div class="card ai-card"><div class="card-tag ai">Infrastructure</div><div class="card-title">Data Center ไทยบูม — AWS เข้าลงทุน</div><div class="card-body">AWS ประกาศลงทุน Data Center ในไทย $5B ใน 5 ปี หนุน AI Infrastructure Cloud Hyperscaler แห่เข้าไทยทั้ง Google, Microsoft</div><div class="card-footer"><span>Bangkok Post</span><span class="card-meta">3 สัปดาห์ที่แล้ว</span></div></div>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-rag-vector">
+      <div class="section-header"><div class="section-title-wrap"><div class="section-eyebrow" style="color:var(--accent-rag)">📐 Vector Database</div><div class="section-title">ฐานข้อมูล Vector</div><div class="section-desc">เปรียบเทียบ Vector DB สำหรับงาน RAG</div></div></div>
+
+      <div class="table-wrap" style="margin-bottom:24px;">
+        <div class="table-header-bar"><div class="table-header-title">📊 เปรียบเทียบ Vector Databases</div></div>
+        <table class="data-table">
+          <thead><tr><th>Database</th><th>License</th><th>ความเร็ว</th><th>Hybrid Search</th><th>เหมาะกับ</th></tr></thead>
+          <tbody>
+            <tr><td><span class="td-symbol">Qdrant</span></td><td><span class="tag-chip">Apache 2.0</span></td><td class="td-up">สูงมาก</td><td>✅</td><td>Production Self-hosted</td></tr>
+            <tr><td><span class="td-symbol">ChromaDB</span></td><td><span class="tag-chip">Apache 2.0</span></td><td style="color:var(--accent-news);">ปานกลาง</td><td>❌</td><td>Prototype / Dev</td></tr>
+            <tr><td><span class="td-symbol">Weaviate</span></td><td><span class="tag-chip">BSD-3</span></td><td class="td-up">สูง</td><td>✅</td><td>Enterprise, GraphQL</td></tr>
+            <tr><td><span class="td-symbol">pgvector</span></td><td><span class="tag-chip">PostgreSQL</span></td><td style="color:var(--accent-news);">ปานกลาง</td><td>✅</td><td>ใช้ PostgreSQL อยู่แล้ว</td></tr>
+            <tr><td><span class="td-symbol">Pinecone</span></td><td><span class="tag-chip" style="color:#ef4444;">Managed</span></td><td class="td-up">สูงมาก</td><td>✅</td><td>Cloud, ไม่อยาก Manage</td></tr>
+            <tr><td><span class="td-symbol">Milvus</span></td><td><span class="tag-chip">Apache 2.0</span></td><td class="td-up">สูงมาก</td><td>✅</td><td>Billion-scale Enterprise</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sub-heading">🔍 วิธีทำ Similarity Search</div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">Cosine</div>
+          <div class="concept-name">Cosine Similarity</div>
+          <div class="concept-def">วัดมุมระหว่าง Vector — ค่า 1 = เหมือนกันสมบูรณ์ เหมาะกับ Text Embedding</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">Dot</div>
+          <div class="concept-name">Dot Product</div>
+          <div class="concept-def">คูณ Vector แล้วรวม — เร็วกว่า Cosine เหมาะ Normalized Vector</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">L2</div>
+          <div class="concept-name">Euclidean Distance</div>
+          <div class="concept-def">ระยะทางตรง — เหมาะกับ Image Embedding หรือ Dense Retrieval</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">BM25</div>
+          <div class="concept-name">BM25 Sparse Retrieval</div>
+          <div class="concept-def">Keyword-based แบบ TF-IDF รุ่นปรับปรุง — เหมาะ Hybrid Search</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-rag-dify">
+      <div class="section-header"><div class="section-title-wrap"><div class="section-eyebrow" style="color:var(--accent-rag)">⚙️ Dify Platform</div><div class="section-title">Dify — LLM App Framework</div><div class="section-desc">สร้าง RAG Application และ AI Workflow แบบ Low-Code</div></div></div>
+      <div class="featured-card"><div><div class="featured-label" style="color:var(--accent-rag)">🛠️ Platform Overview</div><div class="featured-title">Dify: สร้าง RAG Application ด้วย Low-Code</div><div class="featured-body">Dify (Community Edition) เป็น Open-source platform สำหรับสร้าง AI Applications รองรับ Knowledge Base, Workflow, Agent และ Chatbot — Self-hosted บน Docker พร้อม UI สำหรับ Non-developer</div><div class="featured-tags"><span class="tag-chip">Knowledge Base</span><span class="tag-chip">Workflow App</span><span class="tag-chip">HyDE</span><span class="tag-chip">Docker</span></div></div></div>
+
+      <div class="sub-heading">⚡ Node Types ใน Workflow App</div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">Start</div>
+          <div class="concept-name">Start Node</div>
+          <div class="concept-def">รับ Input จากผู้ใช้ — ใช้ <code style="color:var(--accent-rag);">{{#start.query#}}</code> ใน Workflow (ต่างจาก Chatflow ที่ใช้ sys.query)</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">LLM</div>
+          <div class="concept-name">LLM Node</div>
+          <div class="concept-def">เรียก Model ที่ตั้งค่าไว้ — ระบุ System Prompt, Variables และ Context ที่จะส่ง</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">KB</div>
+          <div class="concept-name">Knowledge Retrieval Node</div>
+          <div class="concept-def">ดึง Chunk จาก Knowledge Base — ตั้ง Top-K, Score Threshold, Reranker</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">If/Else</div>
+          <div class="concept-name">Condition Node</div>
+          <div class="concept-def">แยก Flow ตามเงื่อนไข เช่น Score &lt; 0.4 ให้ Fallback ไปอีก KB</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">Code</div>
+          <div class="concept-name">Code Node (Python/JS)</div>
+          <div class="concept-def">รัน Script กำหนดเอง — ชื่อ Variable ต้องเป็น ASCII เท่านั้น ห้ามใช้ภาษาไทย</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-rag)">Iter</div>
+          <div class="concept-name">Iteration Node</div>
+          <div class="concept-def">วน Loop ข้อมูล Array — Input ต้องเป็น Array Type (ไม่ใช่ String จาก LLM โดยตรง)</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">🐳 การติดตั้ง Self-hosted</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);line-height:2;">
+          <div style="color:var(--text-muted);margin-bottom:8px;"># Clone และ Start ด้วย Docker Compose</div>
+          <div><span style="color:var(--accent-stock);">git</span> clone https://github.com/langgenius/dify.git</div>
+          <div><span style="color:var(--accent-stock);">cd</span> dify/docker</div>
+          <div><span style="color:var(--accent-stock);">cp</span> .env.example .env</div>
+          <div><span style="color:var(--accent-stock);">docker</span> compose up -d</div>
+          <div style="color:var(--text-muted);margin-top:12px;"># เข้าใช้งานที่ http://localhost</div>
+          <div style="color:var(--text-muted);"># Default: Weaviate + PostgreSQL + Redis</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">⚠️ ข้อควรระวัง (Gotchas)</div>
+      <div class="card-grid">
+        <div class="card rag-card">
+          <div class="card-tag rag">Code Node</div>
+          <div class="card-title">Variable ต้องเป็น ASCII เท่านั้น</div>
+          <div class="card-body">Code Node ใน Dify รับได้เฉพาะชื่อ Variable แบบ ASCII — ห้ามใช้ภาษาไทย, em-dash (—), หรือ Backtick ใน variable name มิฉะนั้นจะ Error</div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">Iteration</div>
+          <div class="card-title">Input ต้องเป็น Array Type</div>
+          <div class="card-body">Iteration Node รับเฉพาะ Array — หาก LLM Output เป็น String ต้องผ่าน Code Node แปลงด้วย json.loads() ก่อน</div>
+        </div>
+        <div class="card rag-card">
+          <div class="card-tag rag">Workflow Query</div>
+          <div class="card-title">ตัวแปร Query ใน Workflow App</div>
+          <div class="card-body">ใน Workflow App ใช้ <code style="color:var(--accent-rag);">{{#start.query#}}</code> — ไม่ใช่ <code>{{sys.query}}</code> แบบ Chatflow เพราะจะ Error</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-rag-usecase">
+      <div class="section-header"><div class="section-title-wrap"><div class="section-eyebrow" style="color:var(--accent-rag)">💼 Use Cases</div><div class="section-title">การประยุกต์ใช้ RAG</div><div class="section-desc">ตัวอย่าง Use Case จริงในองค์กรและธุรกิจ</div></div></div>
+      <div class="card-grid">
+        <div class="card rag-card"><div class="card-tag rag">Compliance</div><div class="card-title">ระบบ Q&A กฎระเบียบองค์กร</div><div class="card-body">ใช้ RAG ตอบคำถามกฎเกณฑ์ภายใน ระเบียบปฏิบัติ และ Compliance Manual โดยอ้างอิงแหล่งที่มาได้ชัดเจน — ลดภาระ Compliance Officer และเพิ่มความสม่ำเสมอ</div></div>
+        <div class="card rag-card"><div class="card-tag rag">Legal</div><div class="card-title">ค้นหากฎหมายและข้อบังคับ</div><div class="card-body">Retrieve กฎหมายที่เกี่ยวข้องจาก Knowledge Base ขนาดใหญ่ ช่วยนักกฎหมายและ Compliance Officer ค้นหา พ.ร.บ., กฎกระทรวง, ประกาศ กสทช. ได้รวดเร็ว</div></div>
+        <div class="card rag-card"><div class="card-tag rag">Customer</div><div class="card-title">Customer Support Bot</div><div class="card-body">ตอบคำถามลูกค้าจากคู่มือ FAQ และ Product Documentation โดยมีแหล่งอ้างอิง ลดจำนวน Ticket และเวลาตอบสนองเฉลี่ย</div></div>
+        <div class="card rag-card"><div class="card-tag rag">HR</div><div class="card-title">HR Policy Chatbot</div><div class="card-body">ตอบคำถามพนักงานเรื่องสวัสดิการ วันลา ระเบียบบุคคล — ลดคำถามซ้ำซากถึง HR Team ได้ถึง 60–70%</div></div>
+        <div class="card rag-card"><div class="card-tag rag">IT</div><div class="card-title">IT Knowledge Base</div><div class="card-body">Runbook, Troubleshooting Guide, Configuration Manual — ให้ทีม IT ค้นหาวิธีแก้ปัญหาได้เองโดยไม่ต้องถามผู้เชี่ยวชาญ</div></div>
+        <div class="card rag-card"><div class="card-tag rag">Research</div><div class="card-title">Research Assistant</div><div class="card-body">สรุปและค้นหาข้อมูลจากเอกสารวิจัย รายงาน Annual Report หรือ White Paper จำนวนมาก ด้วย Citation ที่ชัดเจน</div></div>
+      </div>
+
+      <div class="sub-heading">📊 ROI ของระบบ RAG</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">
+          <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:28px;font-weight:700;color:var(--accent-rag);font-family:var(--font-mono);">60-70%</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">ลด Repetitive Questions</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:28px;font-weight:700;color:var(--accent-stock);font-family:var(--font-mono);">80%</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">เร็วกว่าค้นหาด้วยมือ</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:28px;font-weight:700;color:var(--accent-ai);font-family:var(--font-mono);">24/7</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">พร้อมตอบตลอดเวลา</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:28px;font-weight:700;color:var(--accent-news);font-family:var(--font-mono);">~฿2</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">ต้นทุนต่อคำถาม (est.)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-stock-us">
+      <div class="section-header"><div class="section-title-wrap"><div class="section-eyebrow" style="color:var(--accent-stock)">🇺🇸 US Markets</div><div class="section-title">ตลาดหุ้นสหรัฐอเมริกา</div><div class="section-desc">S&P 500, Nasdaq, Dow Jones และหุ้น Tech ชั้นนำ</div></div></div>
+      <div class="table-wrap">
+        <div class="table-header-bar"><div class="table-header-title">🔥 หุ้น Tech ชั้นนำ (Magnificent 7)</div><div class="update-time">ข้อมูลสมมติ / เพื่อการศึกษา</div></div>
+        <table class="data-table">
+          <thead><tr><th>Symbol</th><th>ราคา (USD)</th><th>Change</th><th>Market Cap</th><th>Sector</th></tr></thead>
+          <tbody>
+            <tr><td><span class="td-symbol">NVDA</span></td><td>$875.50</td><td class="td-up">+2.3%</td><td>$2.15T</td><td><span class="sector-pill">Semiconductors</span></td></tr>
+            <tr><td><span class="td-symbol">AAPL</span></td><td>$212.40</td><td class="td-down">-0.4%</td><td>$3.28T</td><td><span class="sector-pill">Consumer Tech</span></td></tr>
+            <tr><td><span class="td-symbol">MSFT</span></td><td>$420.80</td><td class="td-up">+0.9%</td><td>$3.12T</td><td><span class="sector-pill">Cloud/AI</span></td></tr>
+            <tr><td><span class="td-symbol">GOOGL</span></td><td>$178.20</td><td class="td-up">+1.2%</td><td>$2.18T</td><td><span class="sector-pill">Search/AI</span></td></tr>
+            <tr><td><span class="td-symbol">AMZN</span></td><td>$198.60</td><td class="td-up">+0.7%</td><td>$2.05T</td><td><span class="sector-pill">E-commerce/Cloud</span></td></tr>
+            <tr><td><span class="td-symbol">META</span></td><td>$524.30</td><td class="td-up">+1.5%</td><td>$1.35T</td><td><span class="sector-pill">Social/AI</span></td></tr>
+            <tr><td><span class="td-symbol">TSLA</span></td><td>$182.50</td><td class="td-down">-2.1%</td><td>$580B</td><td><span class="sector-pill">EV/Energy</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sub-heading">📊 ดัชนีหลักสหรัฐ</div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">S&P</div>
+          <div class="concept-name">S&P 500</div>
+          <div class="concept-def">500 บริษัทใหญ่ที่สุดใน US — เกณฑ์มาตรฐานหลักของตลาดหุ้น ผลตอบแทนเฉลี่ย ~10%/ปี</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">NDX</div>
+          <div class="concept-name">Nasdaq 100</div>
+          <div class="concept-def">100 บริษัท Tech ชั้นนำ — Volatile สูงกว่า S&P500 แต่ผลตอบแทนสูงกว่าในระยะยาว</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">DJI</div>
+          <div class="concept-name">Dow Jones</div>
+          <div class="concept-def">30 บริษัท Blue-chip — เก่าแก่ที่สุด แต่ไม่ครอบคลุม Tech เท่า Nasdaq</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">VIX</div>
+          <div class="concept-name">VIX — Fear Index</div>
+          <div class="concept-def">&gt;30 = ตลาดกลัว/Volatile สูง, &lt;20 = ตลาดสงบ — ใช้ประเมิน Sentiment</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">🌐 วิธีเข้าถึงหุ้น US จากไทย</div>
+      <div class="card-grid">
+        <div class="card stock-card">
+          <div class="card-tag stock">Broker</div>
+          <div class="card-title">Broker ไทยที่มีบัญชี US</div>
+          <div class="card-body">Settrade (SCB Securities), Yuanta, KGI, Phillip เปิดบัญชีหุ้น US ผ่านบัญชีหุ้นไทย — ค่าคอมมิชชัน ~0.15–0.2%</div>
+        </div>
+        <div class="card stock-card">
+          <div class="card-tag stock">ETF</div>
+          <div class="card-title">กองทุน ETF ใน SET</div>
+          <div class="card-body">EQLH, KFUSIDIV, ASP-NGE — กองทุนรวมที่ลงทุนใน S&P500 หรือ Nasdaq ไม่ต้องเปิดบัญชีต่างประเทศ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-stock-technical">
+      <div class="section-header"><div class="section-title-wrap"><div class="section-eyebrow" style="color:var(--accent-stock)">📉 Technical Analysis</div><div class="section-title">การวิเคราะห์ทางเทคนิค</div><div class="section-desc">เครื่องมืออ่านกราฟและสัญญาณซื้อขาย</div></div></div>
+
+      <div class="sub-heading">📈 Trend Indicators</div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">MA</div>
+          <div class="concept-name">Moving Average</div>
+          <div class="concept-def">MA5/MA20/MA50/MA200 — Golden Cross (MA50 ตัด MA200 ขึ้น) = สัญญาณซื้อ, Death Cross = สัญญาณขาย</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">EMA</div>
+          <div class="concept-name">Exponential MA</div>
+          <div class="concept-def">ให้น้ำหนักข้อมูลล่าสุดมากกว่า — ตอบสนองเร็วกว่า SMA เหมาะกับ Day/Swing Trade</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">MACD</div>
+          <div class="concept-name">MACD</div>
+          <div class="concept-def">EMA12 - EMA26 + Signal Line — Histogram บวก = momentum ขาขึ้น, ลบ = ขาลง</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">BB</div>
+          <div class="concept-name">Bollinger Bands</div>
+          <div class="concept-def">MA20 ± 2 SD — ราคาชนขอบบน = Overbought, ขอบล่าง = Oversold, Band แคบ = Breakout กำลังจะมา</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">⚡ Momentum Indicators</div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">RSI</div>
+          <div class="concept-name">RSI (14)</div>
+          <div class="concept-def">&gt;70 = Overbought (พิจารณาขาย), &lt;30 = Oversold (พิจารณาซื้อ) — ระวัง Divergence</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">Stoch</div>
+          <div class="concept-name">Stochastic Oscillator</div>
+          <div class="concept-def">%K และ %D ข้าม 80/20 เป็นสัญญาณ — เหมาะกับตลาด Sideways มากกว่า Trending</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">Vol</div>
+          <div class="concept-name">Volume Analysis</div>
+          <div class="concept-def">ราคาขึ้นพร้อม Volume สูง = Breakout แท้จริง, ขึ้นพร้อม Volume ต่ำ = อ่อนแอ อาจ Fake</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num" style="color:var(--accent-stock)">Fib</div>
+          <div class="concept-name">Fibonacci Retracement</div>
+          <div class="concept-def">แนว Support/Resistance จาก Fib 23.6%, 38.2%, 50%, 61.8% — จุดเข้า/ออกยอดนิยม</div>
+        </div>
+      </div>
+
+      <div class="sub-heading">🕯️ Candlestick Patterns</div>
+      <div class="table-wrap">
+        <div class="table-header-bar"><div class="table-header-title">รูปแบบแท่งเทียนที่ควรรู้</div></div>
+        <table class="data-table">
+          <thead><tr><th>Pattern</th><th>ความหมาย</th><th>ความน่าเชื่อถือ</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:600;color:var(--accent-stock);">Hammer 🔨</td><td>กลับตัวขาขึ้นที่ก้นตลาด</td><td class="td-up">สูง</td></tr>
+            <tr><td style="font-weight:600;color:var(--accent-stock);">Bullish Engulfing</td><td>แท่งเขียวกลืนแท่งแดง = สัญญาณซื้อ</td><td class="td-up">สูง</td></tr>
+            <tr><td style="font-weight:600;color:#ef4444;">Shooting Star ⭐</td><td>กลับตัวขาลงที่ยอดตลาด</td><td class="td-up">สูง</td></tr>
+            <tr><td style="font-weight:600;color:var(--accent-news);">Doji ✙</td><td>ลังเล — ผู้ซื้อ/ขายสูสี รอ Confirmation</td><td style="color:var(--accent-news);">ปานกลาง</td></tr>
+            <tr><td style="font-weight:600;color:var(--accent-stock);">Morning Star 🌅</td><td>3 แท่ง — กลับตัวขาขึ้นที่ก้น</td><td class="td-up">สูงมาก</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-stock-news">
+      <div class="section-header"><div class="section-title-wrap"><div class="section-eyebrow" style="color:var(--accent-stock)">📰 Stock News</div><div class="section-title">ข่าวหุ้น</div><div class="section-desc">ข่าวตลาดทุน เศรษฐกิจ และนโยบายการเงินล่าสุด</div></div></div>
+      <div class="card-grid">
+        <div class="card stock-card"><div class="card-tag stock">Fed</div><div class="card-title">Fed คงอัตราดอกเบี้ย — รอข้อมูลเงินเฟ้อ</div><div class="card-body">FOMC ลงมติคง Fed Funds Rate ที่ 5.25–5.50% ตลาดรอสัญญาณปรับลดครั้งแรก Dot Plot ชี้อาจลดได้ 2–3 ครั้งในปี 2568 หาก CPI ลงต่อ</div><div class="card-footer"><span>CNBC</span><span class="card-meta">วันนี้</span></div></div>
+        <div class="card stock-card"><div class="card-tag stock">SET</div><div class="card-title">นักลงทุนต่างชาติกลับมาซื้อสุทธิ</div><div class="card-body">Foreign Fund Flow บวกครั้งแรกในรอบ 3 เดือน หลังค่าเงินบาทแข็งค่าขึ้น กลุ่มพลังงานและธนาคารได้รับเงินไหลเข้า Sentiment ดีขึ้น</div><div class="card-footer"><span>กรุงเทพธุรกิจ</span><span class="card-meta">1 วันที่แล้ว</span></div></div>
+        <div class="card stock-card"><div class="card-tag stock">Crypto</div><div class="card-title">Bitcoin ทดสอบแนวต้าน $90,000</div><div class="card-body">BTC ขึ้นทดสอบ $90K หลังข่าว ETF Inflow แข็งแกร่ง Altcoin ตามขึ้น RSI เข้าโซน Overbought 72 ระวังการปรับฐาน</div><div class="card-footer"><span>CoinDesk</span><span class="card-meta">2 วันที่แล้ว</span></div></div>
+        <div class="card stock-card"><div class="card-tag stock">GDP</div><div class="card-title">GDP ไทย Q4 โต 3.2% — ต่ำกว่าคาด</div><div class="card-body">สภาพัฒน์รายงาน GDP ไทย Q4/67 โต 3.2% ต่ำกว่าคาด 3.5% จากภาคส่งออกชะลอตัว การท่องเที่ยวยังเป็นตัวหลัก</div><div class="card-footer"><span>NESDC</span><span class="card-meta">3 วันที่แล้ว</span></div></div>
+        <div class="card stock-card"><div class="card-tag stock">IPO</div><div class="card-title">หุ้น IPO AI Data Center เปิดจอง</div><div class="card-body">บริษัท Data Center รายใหม่ยื่น Filing เข้า SET เล็งระดมทุน 3 พันล้าน ลงทุน Hyperscale Data Center รองรับ AI Workload</div><div class="card-footer"><span>เดลินิวส์</span><span class="card-meta">4 วันที่แล้ว</span></div></div>
+        <div class="card stock-card"><div class="card-tag stock">Bond</div><div class="card-title">พันธบัตรรัฐบาลไทย 10 ปี ให้ผล 2.8%</div><div class="card-body">อัตราผลตอบแทนพันธบัตร 10 ปีแตะ 2.8% นักลงทุน Conservative ยังชื่นชอบ Risk-free Return ระดับนี้</div><div class="card-footer"><span>ThaiBMA</span><span class="card-meta">5 วันที่แล้ว</span></div></div>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-news-weekly">
+      <div class="section-header"><div class="section-title-wrap"><div class="section-eyebrow" style="color:var(--accent-news)">📅 Weekly Digest</div><div class="section-title">สรุปข่าวประจำสัปดาห์</div><div class="section-desc">รวมเรื่องสำคัญที่ควรรู้ในสัปดาห์นี้</div></div></div>
+
+      <div class="featured-card" style="cursor:default;">
+        <div>
+          <div class="featured-label" style="color:var(--accent-news)">📊 สัปดาห์ที่ 13 — มีนาคม 2568</div>
+          <div class="featured-title">5 เรื่องสำคัญแห่งสัปดาห์</div>
+          <div class="featured-body">ภาพรวมใหญ่: AI Regulation เดินหน้า, ตลาดหุ้น US แกว่งจากข้อมูล Macro, ราคา Semiconductor ปรับตัวขึ้นต่อ</div>
+          <div class="featured-tags">
+            <span class="tag-chip">AI</span><span class="tag-chip">หุ้น</span><span class="tag-chip">Tech</span><span class="tag-chip">Policy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <div class="card news-card">
+          <div class="card-tag news">🔥 AI</div>
+          <div class="card-title">OpenAI เตรียมปล่อย GPT-5</div>
+          <div class="card-body">Preview เปิดให้ Plus/Pro ใช้ก่อน มีความสามารถ Reasoning ระดับ PhD ใน STEM — คาดเปิด API เร็วๆ นี้</div>
+          <div class="card-footer"><span>สำคัญ:</span><span class="card-meta" style="color:var(--accent-ai);">สูง</span></div>
+        </div>
+        <div class="card news-card">
+          <div class="card-tag news">📈 หุ้น</div>
+          <div class="card-title">SET Index +2.1% รายสัปดาห์</div>
+          <div class="card-body">ดัชนีปรับตัวขึ้นทำ New High ในรอบ 2 เดือน หนุนโดยกลุ่มพลังงานและโทรคมนาคม Volume ซื้อขายเฉลี่ย 5.2 หมื่นล้าน/วัน</div>
+          <div class="card-footer"><span>สำคัญ:</span><span class="card-meta" style="color:var(--accent-stock);">สูง</span></div>
+        </div>
+        <div class="card news-card">
+          <div class="card-tag news">🤖 Open Source</div>
+          <div class="card-title">DeepSeek R2 เทียบชั้น o3</div>
+          <div class="card-body">DeepSeek ปล่อยโมเดล Reasoning รุ่นใหม่ Open-source — Benchmark ใกล้เคียง OpenAI o3 ในราคาต่ำกว่า 10 เท่า</div>
+          <div class="card-footer"><span>สำคัญ:</span><span class="card-meta" style="color:var(--accent-ai);">สูงมาก</span></div>
+        </div>
+        <div class="card news-card">
+          <div class="card-tag news">⚖️ Policy</div>
+          <div class="card-title">EU AI Act เริ่ม Enforcement</div>
+          <div class="card-body">High-Risk AI Systems ต้องเริ่มปฏิบัติตามภายใน 12 เดือน รวมถึง AI สำหรับ Credit Scoring, HR, และ Critical Infrastructure</div>
+          <div class="card-footer"><span>สำคัญ:</span><span class="card-meta" style="color:var(--accent-news);">กลาง</span></div>
+        </div>
+        <div class="card news-card">
+          <div class="card-tag news">💻 Chip</div>
+          <div class="card-title">Nvidia ประกาศ Blackwell Ultra</div>
+          <div class="card-body">GPU รุ่นใหม่ประสิทธิภาพสูงขึ้น 3x จาก H100 เมื่อรัน LLM Inference — Data Center ทั่วโลกต่อคิวซื้อ</div>
+          <div class="card-footer"><span>สำคัญ:</span><span class="card-meta" style="color:var(--accent-stock);">สูง</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-panel" id="panel-news-global">
+      <div class="section-header"><div class="section-title-wrap"><div class="section-eyebrow" style="color:var(--accent-news)">🌏 Global News</div><div class="section-title">ข่าวต่างประเทศ</div><div class="section-desc">เศรษฐกิจโลก ภูมิรัฐศาสตร์ และ Tech Policy</div></div></div>
+      <div class="card-grid">
+        <div class="card news-card"><div class="card-tag news">US</div><div class="card-title">US-China Tech War ทวีความเข้มข้น</div><div class="card-body">สหรัฐฯ ออกมาตรการจำกัดการส่งออก AI Chip ไปจีนรอบใหม่ ครอบคลุม H100 และรุ่นที่ Downgrade แล้ว กระทบ Nvidia รายได้จีนลด 20%</div><div class="card-footer"><span>FT</span><span class="card-meta">2 วันที่แล้ว</span></div></div>
+        <div class="card news-card"><div class="card-tag news">EU</div><div class="card-title">ECB ส่งสัญญาณลดดอกเบี้ยรอบที่ 4</div><div class="card-body">Lagarde ส่งสัญญาณลดดอกเบี้ย เงินเฟ้อ Eurozone ใกล้เป้า 2% ตลาดหุ้นยุโรปบวก CAC40 และ DAX ขึ้น New High</div><div class="card-footer"><span>Reuters</span><span class="card-meta">3 วันที่แล้ว</span></div></div>
+        <div class="card news-card"><div class="card-tag news">China</div><div class="card-title">จีนลงทุน AI $140B ใน 5 ปี</div><div class="card-body">รัฐบาลจีนประกาศแผนลงทุน AI และ Semiconductor เร่งพัฒนา SMIC และ Huawei HiSilicon เป็น Chipmaker ในประเทศ</div><div class="card-footer"><span>SCMP</span><span class="card-meta">4 วันที่แล้ว</span></div></div>
+        <div class="card news-card"><div class="card-tag news">Japan</div><div class="card-title">BoJ ขึ้นดอกเบี้ย — เยนแข็งค่า</div><div class="card-body">Bank of Japan ปรับขึ้น Policy Rate เป็น 0.5% ครั้งแรกในรอบ 17 ปี เยนแข็งค่าทำ Nikkei ร่วง Exporters ได้รับผลกระทบ</div><div class="card-footer"><span>Nikkei</span><span class="card-meta">1 สัปดาห์ที่แล้ว</span></div></div>
+        <div class="card news-card"><div class="card-tag news">India</div><div class="card-title">อินเดีย Tech Hub เติบโตเร็วที่สุดในโลก</div><div class="card-body">Bengaluru และ Hyderabad กลายเป็น Global AI Hub AI Startup ระดม VC ได้ $8.5B ในปีที่ผ่านมา</div><div class="card-footer"><span>Economic Times</span><span class="card-meta">5 วันที่แล้ว</span></div></div>
+        <div class="card news-card"><div class="card-tag news">ASEAN</div><div class="card-title">ASEAN Digital Economy แตะ $1T ปี 2568</div><div class="card-body">Google-Temasek รายงาน ASEAN Digital Economy แตะ $1 Trillion ปีนี้ ไทยโต 14% YoY จาก E-commerce และ Fintech</div><div class="card-footer"><span>e-Conomy SEA</span><span class="card-meta">1 สัปดาห์ที่แล้ว</span></div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-eyebrow" id="modalEyebrow"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-tags" id="modalTags"></div>
+  </div>
+</div>
+
+<script>
+  // ── Clock ──
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ── Nav: Toggle Category ──
+  function toggleCat(btn, cat) {
+    const subitems = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.nav-cat-btn').forEach(b => {
+      b.classList.remove('open');
+      b.nextElementSibling.classList.remove('open');
+    });
+
+    if (!isOpen) {
+      btn.classList.add('open');
+      subitems.classList.add('open');
+    }
+    
+    // Set active on category
+    document.querySelectorAll('.nav-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ── Show Panel ──
+  function showPanel(panelId, subBtn) {
+    document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById('panel-' + panelId);
+    if (panel) panel.classList.add('active');
+
+    if (subBtn) {
+      document.querySelectorAll('.nav-sub-btn').forEach(b => b.classList.remove('active'));
+      subBtn.classList.add('active');
+    }
+  }
+
+  // ── Modal Data ──
+  const modals = {
+    'ai-featured': {
+      eyebrow: '🌟 บทความเด่น',
+      title: 'Generative AI กำลังเปลี่ยนแปลงโลกธุรกิจอย่างไร?',
+      body: `<p>Generative AI ได้กลายเป็นเทคโนโลยีที่เปลี่ยนโลกธุรกิจอย่างแท้จริงในช่วง 2-3 ปีที่ผ่านมา องค์กรชั้นนำทั่วโลกต่างเร่งนำ AI มาปรับใช้ในกระบวนการทำงาน</p>
+      <p><strong>ผลกระทบใน 5 อุตสาหกรรมหลัก:</strong></p>
+      <ul>
+        <li><strong>การเงินและธนาคาร:</strong> การตรวจจับการฉ้อโกง, การวิเคราะห์ความเสี่ยง, Robo-advisor</li>
+        <li><strong>สุขภาพ:</strong> การวินิจฉัยโรค, Drug Discovery, การสรุปเวชระเบียน</li>
+        <li><strong>กฎหมายและ Compliance:</strong> การร่างสัญญา, การค้นหากฎหมาย, Compliance Automation</li>
+        <li><strong>การผลิต:</strong> Predictive Maintenance, Quality Control, Supply Chain</li>
+        <li><strong>การศึกษา:</strong> Personalized Learning, AI Tutor, Content Generation</li>
+      </ul>`,
+      tags: ['Generative AI', 'LLM', 'Enterprise AI']
+    },
+    'ai-ml': {
+      eyebrow: '🤖 แนวคิดพื้นฐาน AI',
+      title: 'Machine Learning คืออะไร?',
+      body: `<p>Machine Learning (ML) คือสาขาย่อยของ AI ที่ให้คอมพิวเตอร์ "เรียนรู้" จากข้อมูลโดยไม่ต้องโปรแกรมกฎเกณฑ์ทุกอย่างอย่างชัดเจน</p>
+      <p><strong>ประเภทหลักของ ML:</strong></p>
+      <ul>
+        <li><strong>Supervised Learning:</strong> เรียนจากข้อมูลที่มี Label เช่น Email Spam Detection</li>
+        <li><strong>Unsupervised Learning:</strong> หาแพทเทิร์นในข้อมูลที่ไม่มี Label เช่น Customer Clustering</li>
+        <li><strong>Reinforcement Learning:</strong> เรียนจากการทดลองและรับ Reward/Penalty เช่น AlphaGo</li>
+      </ul>`,
+      tags: ['ML', 'Supervised', 'Unsupervised', 'RL']
+    },
+    'ai-transformer': {
+      eyebrow: '🧠 Deep Learning Architecture',
+      title: 'Transformer Architecture',
+      body: `<p>Transformer คือสถาปัตยกรรม Neural Network ที่เปลี่ยนโฉมหน้า NLP และ AI สมัยใหม่ทั้งหมด เสนอครั้งแรกในบทความ "Attention is All You Need" (Google, 2017)</p>
+      <p><strong>องค์ประกอบสำคัญ:</strong></p>
+      <ul>
+        <li><strong>Self-Attention:</strong> ให้โมเดลโฟกัสส่วนต่างๆ ของ Input พร้อมกัน</li>
+        <li><strong>Multi-Head Attention:</strong> หลาย Attention Head ทำงานพร้อมกัน</li>
+        <li><strong>Positional Encoding:</strong> เพิ่มข้อมูลตำแหน่งให้โทเค็น</li>
+        <li><strong>Feed-Forward Network:</strong> ประมวลผล Representation</li>
+      </ul>`,
+      tags: ['Transformer', 'Attention', 'NLP']
+    },
+    'rag-what': {
+      eyebrow: '🔍 RAG Fundamentals',
+      title: 'RAG — Retrieval-Augmented Generation',
+      body: `<p>RAG คือเทคนิคที่ผสม Information Retrieval กับ LLM Generation เพื่อตอบคำถามด้วยข้อมูลที่เชื่อถือได้และเป็นปัจจุบัน</p>
+      <p><strong>ทำไมต้องใช้ RAG?</strong></p>
+      <ul>
+        <li>LLM มีข้อมูลถึงแค่ Training Cutoff — RAG เพิ่มข้อมูลใหม่ได้ทันที</li>
+        <li>ลด Hallucination — ให้ Context ที่น่าเชื่อถือแก่โมเดล</li>
+        <li>อ้างอิงแหล่งที่มาได้ชัดเจน</li>
+        <li>ไม่ต้อง Fine-tune โมเดลใหม่ทั้งหมด ประหยัดค่าใช้จ่าย</li>
+      </ul>`,
+      tags: ['RAG', 'Retrieval', 'LLM', 'Knowledge Base']
+    },
+    'rag-hyde-detail': {
+      eyebrow: '🚀 Advanced RAG',
+      title: 'HyDE — Hypothetical Document Embeddings',
+      body: `<p>HyDE เป็นเทคนิคที่พัฒนาโดย Gao et al. (2022) แก้ปัญหา Vocabulary Mismatch ระหว่าง Query และ Document</p>
+      <p><strong>วิธีทำงาน:</strong></p>
+      <ul>
+        <li>1. รับ Query จากผู้ใช้</li>
+        <li>2. ให้ LLM สร้างเอกสาร "สมมติ" ที่น่าจะตอบคำถาม (Hypothetical Document)</li>
+        <li>3. Embed เอกสารสมมตินั้น (ไม่ใช่ Query โดยตรง)</li>
+        <li>4. ใช้ Vector นั้น Retrieve จาก Knowledge Base</li>
+      </ul>
+      <p><strong>ข้อดี:</strong> เอกสารสมมติมีภาษาใกล้เคียงกับเอกสารจริงมากกว่า Query สั้นๆ ของผู้ใช้</p>`,
+      tags: ['HyDE', 'Advanced RAG', 'Embedding', 'Query Expansion']
+    },
+    'tool-dify': {
+      eyebrow: '🛠️ AI Tools',
+      title: 'Dify — Open Source LLM Application Framework',
+      body: `<p>Dify คือ Open-source platform สำหรับสร้าง AI Applications ที่ใช้ LLM เป็นพื้นฐาน รองรับ Chatbot, Workflow, Agent และ RAG Application</p>
+      <p><strong>ความสามารถหลัก:</strong></p>
+      <ul>
+        <li><strong>Knowledge Base:</strong> อัปโหลดเอกสาร, Chunking, Embedding, RAG</li>
+        <li><strong>Workflow App:</strong> สร้าง Multi-step AI Pipeline แบบ Visual</li>
+        <li><strong>Agent:</strong> ให้ AI ใช้ Tools และ Plugin</li>
+        <li><strong>Observability:</strong> ติดตาม Token, Latency, Cost</li>
+      </ul>
+      <p><strong>Community Edition:</strong> Self-hosted บน Docker ฟรี ไม่มีข้อจำกัด</p>`,
+      tags: ['Dify', 'RAG', 'Workflow', 'Self-hosted']
+    },
+    'news-1': {
+      eyebrow: '📰 AI News',
+      title: 'OpenAI เปิดตัว GPT-5 Preview',
+      body: `<p>OpenAI ได้ประกาศเปิดตัว GPT-5 รุ่น Preview สำหรับ ChatGPT Plus และ Pro Users โดยเป็นโมเดลที่มีความสามารถ Reasoning ที่ก้าวกระโดดจาก GPT-4o</p>
+      <p><strong>คุณสมบัติเด่น:</strong></p>
+      <ul>
+        <li>Context Window: 256K tokens</li>
+        <li>ความสามารถ Reasoning เทียบเท่า o3</li>
+        <li>Multimodal: ข้อความ ภาพ เสียง วิดีโอ</li>
+        <li>เร็วกว่า o1 ถึง 3 เท่า</li>
+      </ul>`,
+      tags: ['GPT-5', 'OpenAI', 'LLM']
+    },
+    'rag-chunking': {
+      eyebrow: '✂️ RAG Fundamentals',
+      title: 'Document Chunking Strategies',
+      body: `<p>การแบ่งเอกสารเป็น Chunk คือขั้นตอนสำคัญที่ส่งผลต่อประสิทธิภาพ RAG อย่างมาก</p>
+      <p><strong>กลยุทธ์หลัก:</strong></p>
+      <ul>
+        <li><strong>Fixed Size:</strong> แบ่งตามจำนวน Token เช่น 512, 1024 tokens</li>
+        <li><strong>Recursive Character:</strong> แบ่งตาม Separator เช่น ย่อหน้า, ประโยค</li>
+        <li><strong>Semantic Chunking:</strong> แบ่งตาม Semantic Similarity</li>
+        <li><strong>Regex Chunking:</strong> ใช้ Pattern เช่น ข้อ/หมวด ในกฎหมายไทย</li>
+      </ul>
+      <p><strong>Overlap:</strong> ควรมี Chunk Overlap 10-20% เพื่อไม่ให้ข้อมูลขาดหาย</p>`,
+      tags: ['Chunking', 'Document Processing', 'RAG']
+    }
+  };
+
+  function openModal(id) {
+    const data = modals[id];
+    if (!data) return;
+    document.getElementById('modalEyebrow').textContent = data.eyebrow;
+    document.getElementById('modalTitle').textContent = data.title;
+    document.getElementById('modalBody').innerHTML = data.body;
+    const tagsEl = document.getElementById('modalTags');
+    tagsEl.innerHTML = data.tags.map(t => `<span class="tag-chip">${t}</span>`).join('');
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById('modalOverlay') || e.currentTarget.classList.contains('modal-close')) {
+      document.getElementById('modalOverlay').classList.remove('open');
+    }
+  }
+
+  // ── Search ──
+  function handleSearch(val) {
+    if (!val.trim()) return;
+    const v = val.toLowerCase();
+    const allPanels = document.querySelectorAll('.content-panel');
+    let found = null;
+    allPanels.forEach(p => {
+      if (p.textContent.toLowerCase().includes(v) && !found) found = p.id.replace('panel-', '');
+    });
+    if (found) showPanel(found, null);
+  }
+
+  // ══════════════════════════════════════════════
+  // AI NEWS AUTO-REFRESH SYSTEM (GitHub Pages)
+  // ══════════════════════════════════════════════
+  // news.json สร้างโดย GitHub Actions ทุก 3 วัน
+  // HTML นี้แค่ fetch ไฟล์ JSON — ไม่มี API Key ใน browser
+
+  const NEWS_JSON_URL = 'news.json';    // relative path — ใช้ได้ทั้ง local และ GitHub Pages
+  const NEWS_STORAGE_KEY = 'ai_news_cache';
+  const NEWS_TS_KEY      = 'ai_news_timestamp';
+  const CACHE_TTL_MS     = 3 * 24 * 60 * 60 * 1000; // 3 วัน
+
+  const TAG_COLORS = {
+    'Research': 'ai', 'Product': 'ai', 'Regulation': 'rag',
+    'Enterprise': 'ai', 'Open Source': 'ai', 'Infrastructure': 'stock',
+    'Policy': 'news', 'Benchmark': 'rag', 'Safety': 'news',
+    'Tools': 'ai', 'Model': 'ai', 'Startup': 'news'
+  };
+
+  function getTagClass(tag) { return TAG_COLORS[tag] || 'ai'; }
+
+  function renderNewsCards(articles) {
+    const grid = document.getElementById('news-grid');
+    if (!articles || !articles.length) return;
+    grid.innerHTML = articles.map(a => `
+      <div class="card ai-card" style="cursor:default;">
+        <div class="card-tag ${getTagClass(a.tag)}">${a.tag || 'AI'}</div>
+        <div class="card-title">${a.title}</div>
+        <div class="card-body">${a.summary}</div>
+        <div class="card-footer">
+          <span class="card-source">${a.source || ''}</span>
+          <span class="card-meta">${a.timeAgo || ''}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  function updateMetaBar(generatedAt, generatedAtTH) {
+    const bar   = document.getElementById('news-meta-bar');
+    const lastEl = document.getElementById('news-last-updated');
+    const nextEl = document.getElementById('news-next-update');
+    if (!generatedAt) return;
+    const ts   = new Date(generatedAt).getTime();
+    const next = new Date(ts + CACHE_TTL_MS);
+    const fmtNext = next.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+    lastEl.innerHTML = `<span class="auto-badge">🤖 AI Generated</span>&nbsp; สร้างเมื่อ: ${generatedAtTH || generatedAt}`;
+    nextEl.textContent = `GitHub Actions รัน: ${fmtNext}`;
+    bar.style.display = 'flex';
+  }
+
+  function setRefreshBtn(loading) {
+    const btn    = document.getElementById('btn-refresh-news');
+    const icon   = document.getElementById('refresh-icon');
+    const status = document.getElementById('news-status');
+    if (loading) {
+      btn.disabled = true;
+      icon.className = 'spinning'; icon.textContent = '⟳';
+      status.className = 'news-status-pill refreshing';
+      status.textContent = '⚡ กำลังโหลด...';
+    } else {
+      btn.disabled = false;
+      icon.className = ''; icon.textContent = '⟳';
+    }
+  }
+
+  async function refreshAINews() {
+    setRefreshBtn(true);
+    const loading = document.getElementById('news-loading');
+    const grid    = document.getElementById('news-grid');
+    const status  = document.getElementById('news-status');
+
+    loading.style.display = 'block';
+    grid.style.opacity = '0.3';
+
+    try {
+      // Bust cache with timestamp so browser doesn't serve stale file
+      const res = await fetch(`${NEWS_JSON_URL}?t=${Date.now()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      const articles = data.articles || [];
+
+      // Cache locally so we survive offline / fast reloads
+      try {
+        localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(articles));
+        localStorage.setItem(NEWS_TS_KEY, String(new Date(data.generatedAt).getTime()));
+        localStorage.setItem('ai_news_meta', JSON.stringify({
+          generatedAt: data.generatedAt,
+          generatedAtTH: data.generatedAtTH
+        }));
+      } catch(e) {}
+
+      renderNewsCards(articles);
+      updateMetaBar(data.generatedAt, data.generatedAtTH);
+
+      status.className = 'news-status-pill done';
+      status.textContent = `✓ โหลดสำเร็จ (${articles.length} รายการ)`;
+      setTimeout(() => { status.textContent = ''; }, 3000);
+
+    } catch (err) {
+      console.warn('Could not load news.json:', err.message);
+      status.className = 'news-status-pill error';
+      status.textContent = '✗ ไม่พบ news.json — ยังใช้ข้อมูลเริ่มต้น';
+      setTimeout(() => { status.textContent = ''; }, 5000);
+    }
+
+    loading.style.display = 'none';
+    grid.style.opacity = '1';
+    setRefreshBtn(false);
+  }
+
+  function checkAutoRefresh() {
+    // Try to load cached data first (instant UX)
+    try {
+      const cached = localStorage.getItem(NEWS_STORAGE_KEY);
+      const ts     = parseInt(localStorage.getItem(NEWS_TS_KEY) || '0');
+      const meta   = JSON.parse(localStorage.getItem('ai_news_meta') || '{}');
+      if (cached && ts) {
+        renderNewsCards(JSON.parse(cached));
+        updateMetaBar(meta.generatedAt, meta.generatedAtTH);
+        // Silently refresh from server if localStorage is stale
+        if (Date.now() - ts > CACHE_TTL_MS) refreshAINews();
+        return;
+      }
+    } catch(e) {}
+    // No cache — quietly try to fetch news.json (won't error on static site)
+    refreshAINews();
+  }
+
+  window.addEventListener('load', checkAutoRefresh);
+</script>
+</body>
+</html>

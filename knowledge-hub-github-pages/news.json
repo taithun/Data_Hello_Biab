@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-03-30T00:00:00.000Z",
+  "generatedAtTH": "30 Mar 2026 00:00 UTC",
+  "model": "claude-sonnet-4-20250514",
+  "articles": [
+    {
+      "tag": "Research",
+      "title": "DeepSeek R2 — Open Source Reasoning ประสิทธิภาพสูง",
+      "summary": "DeepSeek เปิดตัวโมเดล Reasoning รุ่นใหม่ Open-source ประสิทธิภาพใกล้เคียง OpenAI o1 ในราคาต่ำกว่า 10 เท่า ใช้ MoE Architecture",
+      "source": "Hugging Face",
+      "timeAgo": "1 วันที่แล้ว"
+    },
+    {
+      "tag": "Product",
+      "title": "Google NotebookLM รองรับภาษาไทยแล้ว",
+      "summary": "Google เพิ่มการรองรับภาษาไทยใน NotebookLM Audio Overviews สร้างพอดแคสต์จากเอกสารภาษาไทยได้ รองรับ PDF และ Google Docs",
+      "source": "Google Blog",
+      "timeAgo": "3 วันที่แล้ว"
+    },
+    {
+      "tag": "Regulation",
+      "title": "ไทยเตรียมออก AI Framework — ETDA นำทีม",
+      "summary": "สำนักงาน กสทช. ร่วมกับ ETDA เตรียมกรอบการกำกับดูแล AI ครอบคลุม Deepfake, Generative AI, High-Risk AI ใน Healthcare และ Finance",
+      "source": "ไทยรัฐ",
+      "timeAgo": "5 วันที่แล้ว"
+    },
+    {
+      "tag": "Research",
+      "title": "Anthropic เผย Constitutional AI 2.0",
+      "summary": "Anthropic เผยแพร่งานวิจัย Constitutional AI รุ่นใหม่ ให้ AI ประเมินตัวเองด้วยหลักจริยธรรมที่ละเอียดขึ้น ลด Harmful Output 45%",
+      "source": "Anthropic Research",
+      "timeAgo": "1 สัปดาห์ที่แล้ว"
+    },
+    {
+      "tag": "Enterprise",
+      "title": "Microsoft Copilot ขยายสู่ Office 365 ทั่วโลก",
+      "summary": "Microsoft ขยาย Copilot ไปยัง Excel, PowerPoint, Outlook แบบ GA ผู้ใช้ธุรกิจกว่า 300 ล้านคนเข้าถึง AI ได้ทันที",
+      "source": "Microsoft Blog",
+      "timeAgo": "1 สัปดาห์ที่แล้ว"
+    },
+    {
+      "tag": "Open Source",
+      "title": "Llama 3.3 70B — SOTA สำหรับ Self-hosted AI",
+      "summary": "Meta ปล่อย Llama 3.3 70B ประสิทธิภาพเทียบชั้น GPT-4o mini แต่ Self-hosted ได้ฟรี เหมาะกับองค์กรที่ต้องการ Data Privacy",
+      "source": "Meta AI",
+      "timeAgo": "2 สัปดาห์ที่แล้ว"
+    },
+    {
+      "tag": "Benchmark",
+      "title": "MMLU Pro — Benchmark AI รุ่นใหม่ยากขึ้น 10 เท่า",
+      "summary": "MMLU Pro แทนที่ MMLU ดั้งเดิม ทดสอบ Reasoning ที่ซับซ้อน Claude 3.5 Sonnet และ GPT-4o อยู่แถว Top ของ Leaderboard",
+      "source": "Papers With Code",
+      "timeAgo": "2 สัปดาห์ที่แล้ว"
+    },
+    {
+      "tag": "Infrastructure",
+      "title": "AWS ลงทุน Data Center ไทย $5B ใน 5 ปี",
+      "summary": "AWS ประกาศลงทุน Data Center ในไทย $5 พันล้านดอลลาร์ หนุน AI Infrastructure Cloud Hyperscaler แห่เข้าไทยทั้ง Google และ Microsoft",
+      "source": "Bangkok Post",
+      "timeAgo": "3 สัปดาห์ที่แล้ว"
+    }
+  ]
+}
